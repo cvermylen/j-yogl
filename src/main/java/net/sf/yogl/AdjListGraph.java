@@ -23,8 +23,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
+import java.util.Set;
 
 import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.DuplicateNodeException;
@@ -32,6 +33,7 @@ import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.impl.DuplicateEdgeException;
+import net.sf.yogl.impl.DuplicateVertexException;
 import net.sf.yogl.impl.Edge;
 import net.sf.yogl.impl.ImplementationGraph;
 import net.sf.yogl.impl.NodeContainer;
@@ -58,7 +60,7 @@ import net.sf.yogl.types.VertexType;
  * @version 1.0
  */
 
-public final class AdjListGraph implements ImplementationGraph {
+public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> implements ImplementationGraph <VK, VV, EK, EV> {
 
 	/** Since it should be too tedious to traverse the whole graph
 	 * just to count the number of edges, this data is stored here.
@@ -68,16 +70,16 @@ public final class AdjListGraph implements ImplementationGraph {
 	/** 'vertices' contains all vertices of the graph. This vector
 	 * is automatically resized when all entries are occupied.
 	 */
-	Map vertices = null;
+	Map<VK, Vertex<VK, VV, EK, EV>> vertices = null;
 
 	/** Contains the list of all entry points in the graph.
 	 *  When a new node is created, it is by default inserted into the set.
 	 */
-	private HashSet allStartNodeKeys = new HashSet();
+	private HashSet<VK> allStartNodeKeys = new HashSet<VK>();
 
 	/** basic ctor, no default value
 	 */
-	public AdjListGraph(Map prototype) throws GraphCorruptedException {
+	public AdjListGraph(Map<VK, Vertex<VK, VV, EK, EV>> prototype) throws GraphCorruptedException {
 		if (!prototype.isEmpty()) {
 			throw new GraphCorruptedException("The map must be empty");
 		}
@@ -92,11 +94,11 @@ public final class AdjListGraph implements ImplementationGraph {
 	 * @exception DuplicateVertexException if the user-defined node
 	 *            is already present in the graph
 	 */
-	public void addNode(Object nodeKey, Object nodeValue)
+	public void addNode(VK nodeKey, VV nodeValue)
 		throws DuplicateNodeException {
 
 		if (!existsNode(nodeKey)) {
-			Vertex rVertex = new Vertex(nodeValue);
+			Vertex<VK, VV, EK, EV> rVertex = new Vertex<>(nodeKey, nodeValue);
 			this.vertices.put(nodeKey, rVertex);
 			this.allStartNodeKeys.add(nodeKey);
 		} else {
@@ -123,42 +125,39 @@ public final class AdjListGraph implements ImplementationGraph {
 		return new BreadthFirstIterator(this, startingNodeKey, maxCycles);
 	}
 
-	/** @see AbstractGraph#clone
+	/** @see Graph#clone
 	 */
 	public Object clone() {
 		throw new UnsupportedOperationException();
 	}
 
-	/** @see AbstractGraph#deepCopy
+	/** @see Graph#deepCopy
 	 */
-	public void deepCopy(AbstractGraph dest) throws GraphException {
+	public void deepCopy(Graph<VK, VV, EK, EV> dest) throws GraphException {
 
-		Object[] keys = this.getNodesKeys();
-		for (int i = 0; i < keys.length; i++) {
-			int type = this.getNodeType(keys[i]);
-			Object value = this.getNodeValue(keys[i]);
-			dest.addNode(keys[i], value);
+		for(Vertex<VK, VV, EK, EV> v : this.getVertices(0xFFFFFFFF)){
+			dest.addNode(v.getKey(), v.getUserValue());
 		}
 
-		LinksIterator iter = this.linksKeysIterator();
+		LinksIterator<VK, VV, EK, EV> iter = this.linksKeysIterator();
 		while (iter.hasNext()) {
-			Object linkValue = iter.next();
-			Object fromKey = iter.getOriginator();
-			Object toKey = iter.getDestination();
-			dest.addLinkLast(fromKey, toKey, linkValue, null);
+			EV linkValue = iter.next();
+			VK fromKey = iter.getOriginator();
+			VK toKey = iter.getDestination();
+			dest.addLinkLast(fromKey, toKey, , linkValue);
 		}
 	}
 
-	/** @see AbstractGraph#depthFirstIterator
+	/** @see Graph#depthFirstIterator
 	 */
-	public DepthFirstIterator depthFirstIterator(Object node, int maxCycling)
+	public DepthFirstIterator depthFirstIterator(VK node, int maxCycling)
 		throws GraphException {
 		return new DepthFirstIterator(this, node, maxCycling);
 	}
 
-	/** @see AbstractGraph#existsNode
+	/** @see Graph#existsNode
 	 */
-	public boolean existsNode(Object nodeKey) {
+	public boolean existsNode(VK nodeKey) {
 		return vertices.containsKey(nodeKey);
 	}
 
@@ -169,9 +168,9 @@ public final class AdjListGraph implements ImplementationGraph {
 	 * @exception VertexNotFoundException  thrown if rhs was not
 	 *            found in the graph.
 	 */
-	private Object findNodeByKey(Object nodeKey) throws NodeNotFoundException {
+	private VV findNodeByKey(VK nodeKey) throws NodeNotFoundException {
 
-		Vertex v = findVertexByKey(nodeKey);
+		Vertex<VK, VV, EK, EV> v = findVertexByKey(nodeKey);
 		return v.getUserValue();
 	}
 
@@ -182,11 +181,11 @@ public final class AdjListGraph implements ImplementationGraph {
 	 * @exception VertexNotFoundException  thrown if rhs was not
 	 *            found in the graph.
 	 */
-	public Vertex findVertexByKey(Object nodeKey)
+	public Vertex<VK,VV, EK, EV> findVertexByKey(VK nodeKey)
 		throws NodeNotFoundException {
 		if (!vertices.containsKey(nodeKey))
 			throw new NodeNotFoundException(nodeKey.toString());
-		return (Vertex) vertices.get(nodeKey);
+		return vertices.get(nodeKey);
 	}
 
 	/** Returns a matrix of boolean values, where each node is at the
@@ -203,19 +202,19 @@ public final class AdjListGraph implements ImplementationGraph {
 	 * @exception VertexNotFoundException if 1 of the 2 nodes does not
 	 *            exists.
 	 */
-	public Object[] getLinksKeysBetween(Object nodeFromKey, Object nodeToKey)
+	public EV[] getLinksKeysBetween(VK nodeFromKey, VK nodeToKey)
 		throws NodeNotFoundException {
 
-		ArrayList result = new ArrayList();
-		Vertex p = findVertexByKey(nodeFromKey);
+		ArrayList<EV> result = new ArrayList<>();
+		Vertex<VK,VV, EK, EV> p = findVertexByKey(nodeFromKey);
 		//retrieve all edges
-		Edge[] eList = p.getNeighbors();
+		Edge<VK, EK, EV>[] eList = p.getNeighbors();
 		for (int i = 0; i < eList.length; i++) {
 			// compare references, not the values
 			if (eList[i]
 				.getNextVertexKey()
 				.equals(findVertexByKey(nodeToKey))) {
-				Object o = eList[i].getUserValue();
+				EV o = eList[i].getUserValue();
 				if (o instanceof NodeContainer) {
 					o = ((NodeContainer) o).getValue();
 				}
@@ -229,7 +228,7 @@ public final class AdjListGraph implements ImplementationGraph {
 	 *  An entry point is a node with no 'predecessor'.
 	 */
 	private void buildAllStartNodeKeys() {
-		HashSet result = new HashSet(vertices.keySet());
+		HashSet<VK> result = new HashSet<VK>(vertices.keySet());
 		Iterator entriesIter = vertices.entrySet().iterator();
 		while (entriesIter.hasNext()) {
 			Map.Entry entry = (Map.Entry) entriesIter.next();
@@ -249,8 +248,8 @@ public final class AdjListGraph implements ImplementationGraph {
 	 *  An entry point is a node with no 'predecessor'.
 	 * @return an array of node keys.
 	 */
-	public Object[] getAllStartNodeKeys() {
-		return allStartNodeKeys.toArray();
+	public Collection<VK> getAllStartNodeKeys() {
+		return allStartNodeKeys;
 	}
 
 	/** @return true if the node is an entry point in the graph.
@@ -266,7 +265,7 @@ public final class AdjListGraph implements ImplementationGraph {
 	 * and any other accessible node.
 	 * The root node is at level 0.
 	 */
-	public int getDepth(Object startingNode) throws GraphException {
+	public int getDepth(VK startingNode) throws GraphException {
 		throw new GraphException("Not yet implemented");
 	}
 
@@ -274,35 +273,36 @@ public final class AdjListGraph implements ImplementationGraph {
 	 *  method looks for 'predecessor' nodes and their relation to the
 	 *  given node.
 	 */
-	public Object[] getIncomingLinksKeys(Object nodeToKey)
+	public EK[] getIncomingLinksKeys(VK nodeToKey)
 		throws NodeNotFoundException {
-		ArrayList result = new ArrayList();
-		Vertex to = findVertexByKey(nodeToKey);
-		Iterator iter = vertices.values().iterator();
+		ArrayList<EK> result = new ArrayList<>();
+		Vertex<VK,VV,EK,EV> to = findVertexByKey(nodeToKey);
+		Iterator<Vertex<VK,VV,EK,EV>> iter = vertices.values().iterator();
 		while (iter.hasNext()) {
-			Vertex vertex = (Vertex) iter.next();
-			Edge[] edge = vertex.getEdgeTo(nodeToKey);
+			Vertex<VK,VV,EK,EV> vertex = iter.next();
+			Edge<VK,EK,EV>[] edge = vertex.getEdgeTo(nodeToKey);
 			if (null != edge) {
 				for (int i = 0; i < edge.length; i++) {
 					result.add(edge[i].getEdgeKey());
 				}
 			}
 		}
-		return result.toArray();
+		return (EK[])result.toArray();
 	}
 
 	/** Return the list of direct predecessors and their associated
 	 * link
 	 * x[0][i] = node; x[1][i] = link
+	 * TODO: should be replaced by a Map....
 	 */
-	public Object[][] getIncomingLinksKeysAndNodesKeys(Object nodeToKey)
+	public Object[][] getIncomingLinksKeysAndNodesKeys(VK nodeToKey)
 		throws NodeNotFoundException {
 		ArrayList result = new ArrayList();
-		Iterator nodesIter = this.vertices.entrySet().iterator();
+		Iterator<Map.Entry<VK, Vertex<VK,VV,EK,EV>>> nodesIter = this.vertices.entrySet().iterator();
 		while (nodesIter.hasNext()) {
-			Map.Entry entry = (Map.Entry) nodesIter.next();
-			Vertex vertex = (Vertex) entry.getValue();
-			Edge[] edges = vertex.getEdgeTo(nodeToKey);
+			Map.Entry<VK, Vertex<VK,VV,EK,EV>> entry = nodesIter.next();
+			Vertex<VK,VV,EK,EV> vertex = entry.getValue();
+			Edge<VK,EK,EV>[] edges = vertex.getEdgeTo(nodeToKey);
 			for (int i = 0; i < edges.length; i++) {
 				if (edges[i].getNextVertexKey().equals(nodeToKey)) {
 					Object[] r = new Object[2];
@@ -329,44 +329,43 @@ public final class AdjListGraph implements ImplementationGraph {
 		return this.vertices.size();
 	}
 
-	/** @see AbstractGraph#getNodeKeys
+	/** @see Graph#getNodeKeys
 	 */
-	public Object[] getNodesKeys() throws GraphCorruptedException {
-
-		return this.getNodesKeys((int) 0xFFFFFFFF);
+	public Set<VK> getNodesKeys() throws GraphCorruptedException {
+		return vertices.keySet();
 	}
 
-	/** @see AbstractGraph#getNodes
+	/** @see Graph#getNodes
 	 */
-	public Object[] getNodesKeys(int nodeType) throws GraphCorruptedException {
+	public List<Vertex<VK,VV,EK,EV>> getVertices(int nodeType) throws GraphCorruptedException {
 
-		ArrayList list = new ArrayList();
+		ArrayList<Vertex<VK,VV,EK,EV>> list = new ArrayList<>();
 		try {
-			Iterator iter = vertices.entrySet().iterator();
+			Iterator<Map.Entry<VK, Vertex<VK,VV,EK,EV>>> iter = vertices.entrySet().iterator();
 			while (iter.hasNext()) {
-				Map.Entry entry = (Map.Entry) iter.next();
-				Object key = entry.getKey();
-				Vertex vertex = (Vertex) entry.getValue();
+				Map.Entry<VK, Vertex<VK,VV,EK,EV>> entry = iter.next();
+				VK key = entry.getKey();
+				Vertex<VK,VV,EK,EV> vertex = entry.getValue();
 				if ((getNodeType(key) & nodeType) != 0) {
 					if ((getNodeType(key) == VertexType.START)
 						|| (getNodeType(key) == VertexType.STARTEND)) {
-						list.add(0, key);
+						list.add(0, vertex);
 					} else {
-						list.add(key);
+						list.add(vertex);
 					}
 				}
 			}
-			return list.toArray();
+			return list;
 		} catch (NodeNotFoundException e1) {
 			throw new GraphCorruptedException(e1);
 		}
 	}
 
-	/** @see AbstractGraph#getType
+	/** @see Graph#getType
 	 */
-	public int getNodeType(Object nodeKey) throws NodeNotFoundException {
+	public int getNodeType(VK nodeKey) throws NodeNotFoundException {
 		if (this.allStartNodeKeys.contains(nodeKey)) {
-			Vertex vertex = findVertexByKey(nodeKey);
+			Vertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
 			if ((vertex.getNeighbors() == null)
 				|| (vertex.getNeighbors().length == 0)) {
 				return VertexType.STARTEND;
@@ -374,7 +373,7 @@ public final class AdjListGraph implements ImplementationGraph {
 				return VertexType.START;
 			}
 		} else {
-			Vertex vertex = findVertexByKey(nodeKey);
+			Vertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
 			if ((vertex.getNeighbors() == null)
 				|| (vertex.getNeighbors().length == 0)) {
 				return VertexType.END;
@@ -384,44 +383,41 @@ public final class AdjListGraph implements ImplementationGraph {
 		}
 	}
 
-	/** @see AbstractGraph#getNodeValue
+	/** @see Graph#getNodeValue
 	 */
-	public Object getNodeValue(Object nodeKey) {
-		Vertex v = (Vertex) this.vertices.get(nodeKey);
+	public VV getNodeValue(VK nodeKey) {
+		Vertex<VK, VV, EK, EV> v = this.vertices.get(nodeKey);
 		if (v == null)
 			return null;
 		return v.getUserValue();
 	}
 
-	/** @see AbstractGraph#getOutgoingLinksKeys
+	/** @see Graph#getOutgoingLinksKeys
 	 */
-	public Object[] getOutgoingLinksKeys(Object nodeFromKey)
+	public EK[] getOutgoingLinksKeys(VK nodeFromKey)
 		throws GraphException {
 
-		ArrayList result = new ArrayList();
-		Vertex p = findVertexByKey(nodeFromKey);
+		ArrayList<EK> result = new ArrayList<>();
+		Vertex<VK, VV, EK, EV> p = findVertexByKey(nodeFromKey);
 		//retrieve all edges
-		Edge[] eList = p.getNeighbors();
+		Edge<VK, EK, EV>[] eList = p.getNeighbors();
 		if (eList != null) {
 			for (int i = 0; i < eList.length; i++) {
 				// compare references, not the values
-				Object value = eList[i].getUserValue();
-				if (value instanceof NodeContainer) {
-					value = ((NodeContainer) value).getValue();
-				}
+				EK value = eList[i].getEdgeKey();
 				result.add(value);
 			}
 		}
-		return result.toArray();
+		return (EK[])result.toArray();
 	}
 
 	/** Returns an array of all outgoing edges and the associated
 	 * destination node.
 	 */
-	public Object[][] getOutgoingLinksKeysAndNodesKeys(Object nodeKeyFrom)
+	public Object[][] getOutgoingLinksKeysAndNodesKeys(VK nodeKeyFrom)
 		throws GraphException {
-		Vertex v = this.findVertexByKey(nodeKeyFrom);
-		Edge[] edges = v.getNeighbors();
+		Vertex<VK,VV,EK,EV> v = this.findVertexByKey(nodeKeyFrom);
+		Edge<VK,EK,EV>[] edges = v.getNeighbors();
 		Object[][] result = new Object[edges.length][2];
 		for (int i = 0; i < edges.length; i++) {
 			result[i][0] = edges[i].getEdgeKey();
@@ -432,38 +428,38 @@ public final class AdjListGraph implements ImplementationGraph {
 
 	/** return all predecessor nodes to a given node.
 	 */
-	public Object[] getPredecessorNodesKeys(Object nodeToKey)
+	public VK[] getPredecessorNodesKeys(VK nodeToKey)
 		throws GraphException {
 
-		ArrayList result = new ArrayList();
-		Vertex to = (Vertex) findVertexByKey(nodeToKey);
-		Iterator iter = vertices.keySet().iterator();
+		ArrayList<VK> result = new ArrayList<>();
+		Vertex<VK,VV,EK,EV> to = findVertexByKey(nodeToKey);
+		Iterator<Map.Entry<VK, Vertex<VK,VV,EK,EV>>>iter = vertices.entrySet().iterator();
 		while (iter.hasNext()) {
-			Map.Entry entry = (Map.Entry) iter.next();
-			Vertex vertex = (Vertex) entry.getValue();
-			if (null != (vertex.getEdgeTo(to))) {
+			Map.Entry<VK, Vertex<VK,VV,EK,EV>> entry = iter.next();
+			Vertex<VK,VV,EK,EV> vertex = entry.getValue();
+			if (null != (vertex.getEdgeTo(to.getKey()))) {
 				result.add(entry.getKey());
 			}
 		}
-		return result.toArray();
+		return (VK[])result.toArray();
 	}
 
 	/** Return all predecessor nodes for a given node and link
 	 */
-	public Object[] getPredecessorNodesKeys(Object nodeToKey, Object link) {
-		ArrayList result = new ArrayList();
-		Iterator iter = vertices.entrySet().iterator();
+	public VK[] getPredecessorNodesKeys(VK nodeToKey, EK link) {
+		ArrayList<VK> result = new ArrayList<>();
+		Iterator<Map.Entry<VK, Vertex<VK, VV, EK, EV>>> iter = vertices.entrySet().iterator();
 		while (iter.hasNext()) {
-			Map.Entry entry = (Map.Entry) iter.next();
-			Vertex vertex = (Vertex) entry.getValue();
-			Edge[] edges = vertex.getEdgeTo(nodeToKey);
+			Map.Entry<VK, Vertex<VK, VV, EK, EV>> entry = iter.next();
+			Vertex<VK, VV, EK, EV> vertex = entry.getValue();
+			Edge<VK, EK, EV>[] edges = vertex.getEdgeTo(nodeToKey);
 			if ((null != edges) && (edges.length > 0)) {
 				if (edges[0].getUserValue().equals(link)) {
 					result.add(entry.getKey());
 				}
 			}
 		}
-		return result.toArray();
+		return (VK[])result.toArray();
 	}
 
 	/** Ask the graph to return the list of all nodes that are adjacent
@@ -476,12 +472,12 @@ public final class AdjListGraph implements ImplementationGraph {
 	 *       requested neighbors. The minimal distance is 1: returns the
 	 *       immediate neighbors.
 	 */
-	public Object[] getSuccessorNodesKeys(Object nodeFromKey, int steps)
+	public VK[] getSuccessorNodesKeys(VK nodeFromKey, int steps)
 		throws GraphException {
-		ArrayList result = new ArrayList();
+		ArrayList<VK> result = new ArrayList<>();
 		if (steps == 1) {
-			Vertex p = findVertexByKey(nodeFromKey);
-			Edge[] eList = p.getNeighbors();
+			Vertex<VK, VV, EK, EV> p = findVertexByKey(nodeFromKey);
+			Edge<VK, EK, EV>[] eList = p.getNeighbors();
 			if (eList != null) {
 				for (int i = 0; i < eList.length; i++) {
 					result.add(eList[i].getNextVertexKey());
@@ -490,7 +486,7 @@ public final class AdjListGraph implements ImplementationGraph {
 		} else {
 			throw new GraphException("Not yet implemented");
 		}
-		return result.toArray();
+		return (VK[])result.toArray();
 	}
 
 	/** special getter method
@@ -502,28 +498,27 @@ public final class AdjListGraph implements ImplementationGraph {
 	 * @param edge describes the connection edge that must match
 	 * @exception VertexNotFoundException if 'vertex' does not exists
 	 */
-	public Object[] getSuccessorNodesKeys(Object nodeFromKey, Object link)
+	public VK[] getSuccessorNodesKeys(VK nodeFromKey, EK link)
 		throws GraphException {
-		ArrayList result = new ArrayList();
-		Vertex p = findVertexByKey(nodeFromKey);
-		Edge[] eList = p.getNeighbors();
+		ArrayList<VK> result = new ArrayList<>();
+		Vertex<VK, VV, EK, EV> p = findVertexByKey(nodeFromKey);
+		Edge<VK, EK, EV>[] eList = p.getNeighbors();
 		if (eList != null) {
 			for (int i = 0; i < eList.length; i++) {
 				result.add(eList[i].getNextVertexKey());
 			}
 		}
-		return result.toArray();
+		return (VK[])result.toArray();
 	}
 
 	/** Returns a list of Vertex which are directly adjacent to the node.
 	 */
-	public Vertex[] getSuccessorVertices(Vertex node)
+	public List<Vertex<VK, VV, EK, EV>> getSuccessorVertices(Vertex<VK, VV, EK, EV> node)
 		throws NodeNotFoundException {
-		Vertex[] result = null;
-		Edge[] edges = node.getNeighbors();
-		result = new Vertex[edges.length];
+		Edge<VK, EK, EV>[] edges = node.getNeighbors();
+		List<Vertex<VK, VV, EK, EV>>result = new ArrayList<>();
 		for (int i = 0; i < edges.length; i++) {
-			result[i] = findVertexByKey(edges[i].getNextVertexKey());
+			result.add(i, findVertexByKey(edges[i].getNextVertexKey()));
 		}
 		return result;
 	}
@@ -531,52 +526,52 @@ public final class AdjListGraph implements ImplementationGraph {
 	/** Return a list of Vertex which are immediately adjacent to the given
 	 *  Vertex
 	 */
-	public Vertex[] getSuccessorVertices(Vertex vertex, Object link)
+	public Vertex<VK,VV,EK,EV>[] getSuccessorVertices(Vertex<VK,VV,EK,EV> vertex, EV link)
 		throws NodeNotFoundException {
-		ArrayList result = new ArrayList();
-		Edge[] eList = vertex.getNeighbors();
+		ArrayList<Vertex<VK,VV,EK,EV>> result = new ArrayList<>();
+		Edge<VK,EK,EV>[] eList = vertex.getNeighbors();
 		if (eList != null) {
-			result = new ArrayList();
+			result = new ArrayList<>();
 			//loop for each edge connected to the vertex
 
 			for (int i = 0; i < eList.length; i++) {
-				Object edgeValue = eList[i].getUserValue();
+				EV edgeValue = eList[i].getUserValue();
 				if (edgeValue instanceof NodeContainer) {
 					edgeValue = ((NodeContainer) edgeValue).getValue();
 				}
 				if ((link == null)
 					|| ((edgeValue != null) && (edgeValue.equals(link)))) {
-					Vertex v1 = findVertexByKey(eList[i].getNextVertexKey());
+					Vertex<VK,VV,EK,EV> v1 = findVertexByKey(eList[i].getNextVertexKey());
 					result.add(v1);
 				}
 			}
 		}
-		return (Vertex[]) result.toArray(new Vertex[result.size()]);
+		return result.toArray(new Vertex[result.size()]);
 	}
 
-	/** @see AbstractGraph#getPassage
+	/** @see Graph#getPassage
 	 */
-	public int getVisitCount(Object nodeKey) throws GraphException {
+	public int getVisitCount(VK nodeKey) throws GraphException {
 
-		Vertex vertex = findVertexByKey(nodeKey);
+		Vertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
 		return vertex.getTraversals();
 	}
 
-	/** @see AbstractGraph#incPassage
+	/** @see Graph#incPassage
 	 */
-	public int incVisitCount(Object nodeKey) throws GraphException {
+	public int incVisitCount(VK nodeKey) throws GraphException {
 
-		Vertex vertex = findVertexByKey(nodeKey);
+		Vertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
 		return vertex.incTraversals();
 	}
 
-	/** @see AbstractGraph#addLinkFirst
+	/** @see Graph#addLinkFirst
 	 */
 	public void addLinkFirst(
-		Object nodeKeyFrom,
-		Object nodeKeyTo,
-		Object linkKey,
-		Object linkValue)
+		VK nodeKeyFrom,
+		VK nodeKeyTo,
+		EK linkKey,
+		EV linkValue)
 		throws
 			DuplicateLinkException,
 			NodeNotFoundException,
@@ -590,10 +585,10 @@ public final class AdjListGraph implements ImplementationGraph {
 		}
 		try {
 			//create the new edge
-			Edge newEdge = new Edge(linkKey, nodeKeyTo, linkValue);
+			Edge<VK, EK, EV> newEdge = new Edge<>(linkKey, nodeKeyTo, linkValue);
 			//retrieve all edges connected to node1
-			Vertex vertexFrom = findVertexByKey(nodeKeyFrom);
-			Edge[] eList1 = vertexFrom.getNeighbors();
+			Vertex<VK, VV, EK, EV> vertexFrom = findVertexByKey(nodeKeyFrom);
+			Edge<VK, EK, EV>[] eList1 = vertexFrom.getNeighbors();
 			//check that edge does not exists
 			for (int i = 0; i < eList1.length; i++) {
 				if (newEdge.equals(eList1[i])) {
@@ -616,12 +611,12 @@ public final class AdjListGraph implements ImplementationGraph {
 		}
 	}
 
-	/** @see AbstractGraph#addLinkFirst
+	/** @see Graph#addLinkFirst
 	 */
 	public void addLinkFirst(
-		Object nodeKeyFrom,
-		Object nodeKeyTo,
-		Object linkKey)
+		VK nodeKeyFrom,
+		VK nodeKeyTo,
+		EK linkKey)
 		throws
 			DuplicateLinkException,
 			NodeNotFoundException,
@@ -644,10 +639,10 @@ public final class AdjListGraph implements ImplementationGraph {
 	 *            is badly constructed
 	 */
 	public void addLinkLast(
-		Object nodeKeyFrom,
-		Object nodeKeyTo,
-		Object linkKey,
-		Object linkValue)
+		VK nodeKeyFrom,
+		VK nodeKeyTo,
+		EK linkKey,
+		EV linkValue)
 		throws
 			NodeNotFoundException,
 			DuplicateLinkException,
@@ -657,10 +652,10 @@ public final class AdjListGraph implements ImplementationGraph {
 			throw new NodeNotFoundException(nodeKeyTo.toString());
 		try {
 			//create the new edge
-			Edge newEdge = new Edge(linkKey, nodeKeyTo, linkValue);
+			Edge<VK, EK, EV> newEdge = new Edge<>(linkKey, nodeKeyTo, linkValue);
 			//retrieve all edges connected to node1
-			Vertex vertexFrom = findVertexByKey(nodeKeyFrom);
-			Edge[] eList1 = vertexFrom.getNeighbors();
+			Vertex<VK, VV, EK, EV> vertexFrom = findVertexByKey(nodeKeyFrom);
+			Edge<VK, EK, EV>[] eList1 = vertexFrom.getNeighbors();
 			//check that edge does not exists
 			for (int i = 0; i < eList1.length; i++) {
 				if (newEdge.equals(eList1[i])) {
@@ -686,12 +681,12 @@ public final class AdjListGraph implements ImplementationGraph {
 		}
 	}
 
-	/** @see AbstractGraph#addLinkLast
+	/** @see Graph#addLinkLast
 	 */
 	public void addLinkLast(
-		Object nodeKeyFrom,
-		Object nodeKeyTo,
-		Object linkKey)
+		VK nodeKeyFrom,
+		VK nodeKeyTo,
+		EK linkKey)
 		throws
 			NodeNotFoundException,
 			DuplicateLinkException,
@@ -707,21 +702,21 @@ public final class AdjListGraph implements ImplementationGraph {
 		return this.vertices.isEmpty();
 	}
 
-	/** @see graph.AbstractGraph#linksIterator
+	/** @see graph.Graph#linksIterator
 	 */
-	public LinksIterator linksKeysIterator() throws GraphException {
+	public LinksIterator<VK, VV, EK, EV> linksKeysIterator() throws GraphException {
 
-		return new LinksIterator(this);
+		return new LinksIterator<>(this);
 	}
 
 	/** Method to retrieve all nodes, via an iterator. Return the 'user value'
 	 */
-	public Collection nodesKeySet() {
+	public Collection<VK> nodesKeySet() {
 
-		LinkedList nodes = new LinkedList();
-		Iterator vertexIter = vertices.keySet().iterator();
+		LinkedList<VK> nodes = new LinkedList<>();
+		Iterator<VK> vertexIter = vertices.keySet().iterator();
 		while (vertexIter.hasNext()) {
-			Object key = vertexIter.next();
+			VK key = vertexIter.next();
 			nodes.addLast(key);
 		}
 		return nodes;
@@ -729,25 +724,25 @@ public final class AdjListGraph implements ImplementationGraph {
 
 	/** Method to retrieve all nodes, via an iterator. Return the 'user value'
 	 */
-	public Collection nodesValues() {
+	public Collection<VV> nodesValues() {
 
-		LinkedList nodes = new LinkedList();
-		Iterator vertexIter = vertices.values().iterator();
+		LinkedList<VV> nodes = new LinkedList<>();
+		Iterator<Vertex<VK, VV, EK, EV>> vertexIter = vertices.values().iterator();
 		while (vertexIter.hasNext()) {
-			Vertex vertex = (Vertex) vertexIter.next();
+			Vertex<VK, VV, EK, EV> vertex = vertexIter.next();
 			nodes.addLast(vertex.getUserValue());
 		}
 		return nodes;
 	}
 
-	/** @see AbstractGraph#linksValues()
+	/** @see Graph#linksValues()
 	 */
-	public Collection linksValues() {
-		Vector v = new Vector();
-		Iterator verticesIter = vertices.values().iterator();
+	public Collection<EV> linksValues() {
+		LinkedList<EV> v = new LinkedList<>();
+		Iterator<Vertex<VK, VV, EK, EV>> verticesIter = vertices.values().iterator();
 		while (verticesIter.hasNext()) {
-			Vertex vertex = (Vertex) verticesIter.next();
-			Edge[] edges = vertex.getNeighbors();
+			Vertex<VK, VV, EK, EV> vertex = verticesIter.next();
+			Edge<VK, EK, EV>[] edges = vertex.getNeighbors();
 			for (int i = 0; i < edges.length; i++) {
 				v.add(edges[i].getUserValue());
 			}
@@ -757,10 +752,10 @@ public final class AdjListGraph implements ImplementationGraph {
 
 	/** Removes all links between the given nodes.
 	 */
-	public void removeAllLinksBetween(Object nodeKeyFrom, Object nodeKeyTo)
+	public void removeAllLinksBetween(VK nodeKeyFrom, VK nodeKeyTo)
 		throws GraphException {
-		Vertex from = this.findVertexByKey(nodeKeyFrom);
-		Edge[] edges = from.getEdgeTo(nodeKeyTo);
+		Vertex<VK, VV, EK, EV> from = this.findVertexByKey(nodeKeyFrom);
+		Edge<VK, EK, EV>[] edges = from.getEdgeTo(nodeKeyTo);
 		if (edges != null) {
 			for (int i = 0; i < edges.length; i++) {
 				from.removeEdge(edges[i]);
@@ -777,12 +772,12 @@ public final class AdjListGraph implements ImplementationGraph {
 	 * @param link between node1 and node2 to be removed
 	 */
 	public void removeLink(
-		Object nodeFromKey,
-		Object nodeToKey,
-		Object linkKey)
+		VK nodeFromKey,
+		VK nodeToKey,
+		EK linkKey)
 		throws GraphException {
 
-		Vertex vertexFrom = findVertexByKey(nodeFromKey);
+		Vertex<VK, VV, EK, EV> vertexFrom = findVertexByKey(nodeFromKey);
 		vertexFrom.removeEdgeByKey(linkKey);
 
 		numberOfEdges--;
@@ -796,15 +791,15 @@ public final class AdjListGraph implements ImplementationGraph {
 	 * removed vertex are removed.
 	 * @param node user-defined to be removed
 	 */
-	public void removeNode(Object nodeKey) throws NodeNotFoundException {
+	public void removeNode(VK nodeKey) throws NodeNotFoundException {
 
-		Vertex v = this.findVertexByKey(nodeKey);
+		Vertex<VK, VV, EK, EV> v = this.findVertexByKey(nodeKey);
 		this.numberOfEdges -= v.getCountEdges();
 		//remove all links to the node
-		Iterator vertexIter = vertices.values().iterator();
+		Iterator<Vertex<VK, VV, EK, EV>> vertexIter = vertices.values().iterator();
 		while (vertexIter.hasNext()) {
-			Vertex vertex = (Vertex) vertexIter.next();
-			Edge[] edges = vertex.getEdgeTo(nodeKey);
+			Vertex<VK, VV, EK, EV> vertex = vertexIter.next();
+			Edge<VK, EK, EV>[] edges = vertex.getEdgeTo(nodeKey);
 			if (edges != null) {
 				for (int i = 0; i < edges.length; i++) {
 					vertex.removeEdge(edges[i]);
@@ -816,27 +811,27 @@ public final class AdjListGraph implements ImplementationGraph {
 		buildAllStartNodeKeys();
 	}
 
-	/** @see AbstractGraph#setPassage
+	/** @see Graph#setPassage
 	 */
 	public void setAllVisitCounts(int count) throws GraphException {
-		Iterator nodeValuesIter = this.vertices.values().iterator();
+		Iterator<Vertex<VK, VV, EK, EV>> nodeValuesIter = this.vertices.values().iterator();
 		while (nodeValuesIter.hasNext()) {
-			Vertex vertex = (Vertex) nodeValuesIter.next();
+			Vertex<VK, VV, EK, EV> vertex = nodeValuesIter.next();
 			vertex.setTraversals(count);
 		}
 	}
 
-	/** @see AbstractGraph#setPassage
+	/** @see Graph#setPassage
 	 */
-	public void setVisitCount(Object nodeKey, int count)
+	public void setVisitCount(VK nodeKey, int count)
 		throws GraphException {
-		Vertex vertex = findVertexByKey(nodeKey);
+		Vertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
 		vertex.setTraversals(count);
 	}
 
-	/** @see AbstractGraph#tryAddNode
+	/** @see Graph#tryAddNode
 	 */
-	public Object tryAddNode(Object nodeKey, Object nodeValue) {
+	public Object tryAddNode(VK nodeKey, VV nodeValue) {
 
 		try {
 			addNode(nodeKey, nodeValue);
@@ -845,13 +840,13 @@ public final class AdjListGraph implements ImplementationGraph {
 		return null;
 	}
 
-	/** @see AbstractGraph#tryAddLinkFirst
+	/** @see Graph#tryAddLinkFirst
 	 */
 	public void tryAddLinkFirst(
-		Object nodeFrom,
-		Object nodeTo,
-		Object linkKey,
-		Object linkValue)
+		VK nodeFrom,
+		VK nodeTo,
+		EK linkKey,
+		EV linkValue)
 		throws NodeNotFoundException, GraphCorruptedException {
 
 		try {
@@ -861,13 +856,13 @@ public final class AdjListGraph implements ImplementationGraph {
 		}
 	}
 
-	/** @see AbstractGraph#tryAddLinkLast
+	/** @see Graph#tryAddLinkLast
 	 */
 	public void tryAddLinkLast(
-		Object nodeFromKey,
-		Object nodeToKey,
-		Object linkKey,
-		Object linkValue)
+		VK nodeFromKey,
+		VK nodeToKey,
+		EK linkKey,
+		EV linkValue)
 		throws NodeNotFoundException, GraphCorruptedException {
 
 		try {
@@ -876,13 +871,13 @@ public final class AdjListGraph implements ImplementationGraph {
 		}
 	}
 
-	/** @see AbstractGraph#getOutgoingLinkValue(java.lang.Object, java.lang.Object)
+	/** @see Graph#getOutgoingLinkValue(java.lang.Object, java.lang.Object)
 	 */
-	public Object getOutgoingLinkValue(Object nodeKeyFrom, Object linkKey)
+	public EV getOutgoingLinkValue(VK nodeKeyFrom, EK linkKey)
 		throws NodeNotFoundException {
-		Object result = null;
-		Vertex vertex = this.findVertexByKey(nodeKeyFrom);
-		Edge edge = vertex.getEdge(linkKey);
+		EV result = null;
+		Vertex<VK, VV, EK, EV> vertex = this.findVertexByKey(nodeKeyFrom);
+		Edge<VK, EK, EV> edge = vertex.getEdge(linkKey);
 		if (edge != null)
 			result = edge.getUserValue();
 		return result;
@@ -890,13 +885,13 @@ public final class AdjListGraph implements ImplementationGraph {
 
 	public int getMaxInDegree() {
 		int max = 0;
-		HashMap counts = new HashMap();
-		Iterator verticesIter = vertices.values().iterator();
+		HashMap<VK, Integer> counts = new HashMap<>();
+		Iterator<Vertex<VK, VV, EK, EV>> verticesIter = vertices.values().iterator();
 		while(verticesIter.hasNext()){
-			Vertex vertex = (Vertex)verticesIter.next();
-			Edge[]edges = vertex.getNeighbors();
+			Vertex<VK, VV, EK, EV> vertex = verticesIter.next();
+			Edge<VK, EK, EV>[]edges = vertex.getNeighbors();
 			for(int i=0; i < edges.length; i++){
-				Object vertexKey = edges[i].getNextVertexKey();
+				VK vertexKey = edges[i].getNextVertexKey();
 				if(!counts.containsKey(vertexKey)){
 					counts.put(vertexKey, new Integer(1));
 					max = Math.max(max, 1);
@@ -913,9 +908,9 @@ public final class AdjListGraph implements ImplementationGraph {
 
 	public int getMaxOutDegree() {
 		int max = 0;
-		Iterator verticesIter = vertices.values().iterator();
+		Iterator<Vertex<VK, VV, EK, EV>> verticesIter = vertices.values().iterator();
 		while(verticesIter.hasNext()){
-			Vertex vertex = (Vertex)verticesIter.next();
+			Vertex<VK, VV, EK, EV> vertex = verticesIter.next();
 			max = Math.max(max, vertex.getCountEdges());
 		}
 		return max;

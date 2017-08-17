@@ -20,8 +20,9 @@ package net.sf.yogl.extras;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import net.sf.yogl.AbstractGraph;
+
 import net.sf.yogl.DepthFirstIterator;
+import net.sf.yogl.Graph;
 import net.sf.yogl.GraphAdapter;
 import net.sf.yogl.LinksIterator;
 import net.sf.yogl.exceptions.GraphCorruptedException;
@@ -37,11 +38,11 @@ public final class GraphUtil {
 	 *  The resulting subgraph will contain one entry point
 	 *  and one exit point.
 	 */
-	public static void subgraph(
-		GraphAdapter graph,
-		GraphAdapter result,
-		Object startNodeKey,
-		Object endNodeKey)
+	public static <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> void subgraph(
+		GraphAdapter<VK,VV,EK,EV> graph,
+		GraphAdapter<VK,VV,EK,EV> result,
+		VK startNodeKey,
+		VK endNodeKey)
 		throws GraphException {
 
 		if (graph == null) {
@@ -72,7 +73,7 @@ public final class GraphUtil {
 				if (nodesArray.size() - links.length - 1 != 0) {
 					throw new GraphCorruptedException(
 						"mismatch between link & node lists " ); }
-				Object leftNodeKey = nodesIter.next();
+				VK leftNodeKey = nodesIter.next();
 				Object leftNodeValue = graph.getNodeValue(leftNodeKey);
 				Object rightNodeKey = null;
 				Object rightNodeValue = null;
@@ -114,7 +115,7 @@ public final class GraphUtil {
 				destination.tryAddNode(endNodeKey, endNodeValue);
 				return;
 		}
-		Object[] startList = (Object[]) source.getNodesKeys(VertexType.START);
+		Object[] startList = (Object[]) source.getVertices(VertexType.START);
 		//Iterator iter = startList.iterator();
 		for (int i = 0; i < startList.length; i++) {
 			//while(iter.hasNext()){
@@ -169,7 +170,7 @@ public final class GraphUtil {
 	 *  @param graph the whole graph to be stringified
 	     *  @param indent justify some tabs from the left
 	 */
-	public static String depthFirstToString(AbstractGraph graph, int indent)
+	public static String depthFirstToString(Graph graph, int indent)
 		throws GraphException {
 
 		StringBuffer result = new StringBuffer();
@@ -247,7 +248,7 @@ public final class GraphUtil {
 			throw new NullPointerException("parameter subgraph is null");
 
 		//Insert all nodes from subgraph into the dest graph
-		Object[] intermediateNodes = subgraph.getNodesKeys(VertexType.NONE);
+		Object[] intermediateNodes = subgraph.getVertices(VertexType.NONE);
 		//Iterator intermediateIter = intermediateNodes.iterator();
 		//while(intermediateIter.hasNext()){
 		for (int i = 0; i < intermediateNodes.length; i++) {
@@ -258,7 +259,7 @@ public final class GraphUtil {
 		//extract the start & end nodes from the subgraph
 		//extract the start nodes from the subgraph. Should be max 1.
 		Object[] startList = null;
-		startList = subgraph.getNodesKeys(VertexType.START);
+		startList = subgraph.getVertices(VertexType.START);
 		if (startList.length != 1) {
 			throw new GraphException(
 				"parameter subgraph should "
@@ -269,7 +270,7 @@ public final class GraphUtil {
 		
 		//extract the end node from the subgraph. Should be max 1.
 		Object[] endList = null;
-		endList = subgraph.getNodesKeys(VertexType.END);
+		endList = subgraph.getVertices(VertexType.END);
 		if (endList.length != 1) {
 			throw new GraphException(
 				"parameter graph should " + "contain 1 and only 1 'end' node");

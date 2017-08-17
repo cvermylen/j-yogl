@@ -29,7 +29,7 @@ package net.sf.yogl.impl;
  *  - the interger 'vertex' value points to the destination vertex.
  */
 
-public class Edge {
+public class Edge <VK extends Comparable<VK>, EK extends Comparable<EK>, EV>{
 	/** used by traversal algorithms to indicate the number
 	 * of times the edge has been visited.
 	 */
@@ -37,22 +37,22 @@ public class Edge {
 
 	// index in the vertices vector. Is used as a pointer
 	// to the 'next' vertex.
-	private Object nextVertexKey = null;
+	private VK nextVertexKey = null;
 
 	//Unique identifier for this edge. Uniqueness is applicable to
 	//edges contained in the outgoing list of the Vertex.
-	private Object edgeKey = null;
+	private EK edgeKey = null;
 	
 	// Value associated to the edge. It is assumed that the 'equals' 
 	// function is defined on the user object.
-	private Object userValue = null;
+	private EV userValue = null;
 
 	/** 
 	 * @param v points to the destination vertex. 
 	 * @param rValue refers to an object that is of the type used
 	 * to define all edges in the graph.
 	 */
-	public Edge(Object edgeKey, Object nextVertexKey, Object userValue) {
+	public Edge(EK edgeKey, VK nextVertexKey, EV userValue) {
 		this.edgeKey = edgeKey;
 		this.nextVertexKey = nextVertexKey;
 		this.userValue = userValue;
@@ -61,8 +61,8 @@ public class Edge {
 	/** duplicate referenced edge
 	 * @return a copy of this Edge
 	 */
-	public Object clone() {
-		Edge dup = new Edge(this.edgeKey, this.nextVertexKey, this.userValue);
+	public Edge<VK, EK, EV> clone() {
+		Edge<VK, EK, EV> dup = new Edge<VK, EK, EV>(this.edgeKey, this.nextVertexKey, this.userValue);
 		return dup;
 	}
 
@@ -78,7 +78,7 @@ public class Edge {
 		boolean result = false;
 
 		if (rhs instanceof Edge) {
-			result = edgeKey.equals(((Edge) rhs).edgeKey);
+			result = edgeKey.equals(((Edge<VK, EK, EV>) rhs).edgeKey);
 		}
 		return result;
 	}
@@ -86,7 +86,7 @@ public class Edge {
 	/** getter method
 	 * @return the 'value' referred to
 	 */
-	public Object getUserValue() {
+	public EV getUserValue() {
 		return userValue;
 	}
 
@@ -97,7 +97,7 @@ public class Edge {
 		this.traversals = traversals;
 	}
 
-	public void setUserValue(Object userValue) {
+	public void setUserValue(EV userValue) {
 
 		this.userValue = userValue;
 	}
@@ -118,14 +118,14 @@ public class Edge {
 	/** setter method
 	 * @param vertex is the new Vertex this edge points to
 	 */
-	public void setNextVertexKey(Object nextVertexKey) {
+	public void setNextVertexKey(VK nextVertexKey) {
 		this.nextVertexKey = nextVertexKey;
 	}
 
 	/** getter method
 	 * @ return the vertex this edge points to
 	 */
-	public Object getNextVertexKey() {
+	public VK getNextVertexKey() {
 		return nextVertexKey;
 	}
 
@@ -148,7 +148,7 @@ public class Edge {
 	/**
 	 * @return
 	 */
-	public Object getEdgeKey() {
+	public EK getEdgeKey() {
 		return edgeKey;
 	}
 

@@ -17,10 +17,11 @@
    
 package net.sf.yogl.impl;
 
-import java.util.Iterator;
 import java.util.ArrayList;
-import net.sf.yogl.exceptions.*;
+import java.util.Iterator;
 
+import net.sf.yogl.Node;
+import net.sf.yogl.exceptions.GraphCorruptedException;
 /**
  * The Vertex describes the node of the graph. It is a container for a
  * user defined object.
@@ -30,9 +31,10 @@ import net.sf.yogl.exceptions.*;
  *  - an integer indicating the number of times this node has been visited
  *    by an algorithm
  *  - a boolean indicating if the vertex is free or not
+ *  V = user value Object
  */
 
-public class Vertex{
+public class Vertex <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> implements Node{
     /** Depending on the graph implementation, entries may not be deleted. They are
      * just market as 'free'.
      */
@@ -46,32 +48,32 @@ public class Vertex{
     
     /** contains the list of all adjacent vertices.
      */
-    private ListMap outgoingEdges = new ListMap();
+    private ListMap<VK, VV, EK, EV> outgoingEdges = new ListMap<VK, VV, EK, EV>();
+    
+    /** Key must be comparable
+     * 
+     */
+    VK key;
     
     /** Application class data. Refers to an object having the
      * 'equals' method defined.
      */
-    Object userValue = null;
-    
-    /** basic ctor
-     */
-    public Vertex(){
-    }
+    VV userValue = null;
     
     /** ctor with initialisation
      * @param type associates a type to the contents ofthe vertex
      * @param userValue refers to the node object
      */
-    public Vertex(Object userValue){
+    public Vertex(VK key, VV userValue){
+    	this.key = key;
         this.userValue = userValue;
     }
     
-    public Object clone(){
+    public Vertex<VK, VV, EK, EV> clone(){
         
-        Vertex cloned = new Vertex();
+        Vertex<VK, VV, EK, EV> cloned = new Vertex<VK, VV, EK, EV>(key, userValue);
         cloned.freeEntry = freeEntry;
         cloned.traversals = traversals;
-        cloned.userValue = userValue;
         cloned.outgoingEdges = outgoingEdges;
         return cloned;
     }
@@ -83,7 +85,7 @@ public class Vertex{
      * @return a boolean userValue indicating if the user defined node
      * matches or not.
      */
-    public boolean equals(Vertex vertex){
+    public boolean equals(Vertex<VK, VV, EK, EV> vertex){
         boolean res = false;
         if( (userValue != null) && (vertex != null) ){
             res = userValue.equals(vertex.getUserValue());
@@ -130,7 +132,7 @@ public class Vertex{
     /** getter method
      * @return the object userValue associated to the vertex.
      */
-    public Object getUserValue(){
+    public VV getUserValue(){
         return userValue;
     }
     
@@ -139,12 +141,12 @@ public class Vertex{
      *  @return an edge or null if both vertex (this & to)
      *          are not connected.
      */
-    public Edge[]getEdgeTo(Object key){
+    public Edge<VK, EK, EV>[]getEdgeTo(VK key){
         
-        ArrayList result = new ArrayList();
-        Iterator iter = outgoingEdges.values().iterator();
+        ArrayList<Edge<VK, EK, EV>> result = new ArrayList<>();
+        Iterator<Edge<VK, EK, EV>> iter = outgoingEdges.values().iterator();
         while(iter.hasNext()){
-            Edge edge = (Edge)iter.next();
+            Edge<VK, EK, EV> edge = iter.next();
             if(edge.getNextVertexKey().equals(key)){
                 result.add(edge);
                 break;
@@ -153,7 +155,7 @@ public class Vertex{
         if(result.size() == 0){
         	return null;
         }else{
-        	return (Edge[])result.toArray(new Edge[result.size()]);
+        	return (Edge<VK, EK, EV>[])result.toArray(new Edge[result.size()]);
         }
     }
     
@@ -185,18 +187,18 @@ public class Vertex{
      *    removing elements
      * @return the list of outgoing edges
      */
-    public Edge[]getNeighbors(){
-    	ArrayList result = new ArrayList(outgoingEdges.values());
-        return (Edge[])result.toArray(new Edge[outgoingEdges.size()]);
+    public Edge<VK, EK, EV>[]getNeighbors(){
+    	ArrayList<Edge<VK, EK, EV>> result = new ArrayList<>(outgoingEdges.values());
+        return (Edge<VK, EK, EV>[])result.toArray(new Edge[outgoingEdges.size()]);
     }
     
-    public Object getNextVertexKey(Object edgeKey){
-    	Edge edge = getEdge(edgeKey);
+    public VK getNextVertexKey(EK edgeKey){
+    	Edge<VK, EK, EV> edge = getEdge(edgeKey);
     	return edge.getNextVertexKey();
     }
     
-    public Edge getEdge(Object edgeKey){
-    	return (Edge)outgoingEdges.get(edgeKey);
+    public Edge<VK, EK, EV> getEdge(EK edgeKey){
+    	return (Edge<VK, EK, EV>)outgoingEdges.get(edgeKey);
     }
     
     /** This method insert a new edge between 'this' vertex
@@ -205,7 +207,7 @@ public class Vertex{
      * @exception GraphCorruptedException if 'edge' cannot
      *            be inserted in the neighbors list.
      */
-    public void addEdgeLast(Edge newEdge)throws GraphCorruptedException{
+    public void addEdgeLast(Edge<VK, EK, EV> newEdge)throws GraphCorruptedException{
         if (newEdge != null){
             if (outgoingEdges != null){
                 outgoingEdges.addLast(newEdge.getEdgeKey(), newEdge);
@@ -224,7 +226,7 @@ public class Vertex{
      * @exception InvalidVertexException if 'edge' cannot
      *            be inserted in the neighbors list.
      */
-    public void addEdgeFirst(Edge newEdge)throws GraphCorruptedException{
+    public void addEdgeFirst(Edge<VK, EK, EV> newEdge)throws GraphCorruptedException{
         if (newEdge != null){
             if (outgoingEdges != null){
                 outgoingEdges.addFirst(newEdge.getEdgeKey(), newEdge);
@@ -238,13 +240,13 @@ public class Vertex{
     /** Removes from the neighbors list the edge given as parameter
      * @param edge to be removed
      */
-    public void removeEdge(Edge edge){
+    public void removeEdge(Edge<VK, EK, EV> edge){
         if (edge != null){
             outgoingEdges.remove(edge.getEdgeKey());
         }
     }
     
-    public void removeEdgeByKey(Object edgeKey){
+    public void removeEdgeByKey(EK edgeKey){
     	if (edgeKey != null){
             outgoingEdges.remove(edgeKey);
         }
@@ -257,5 +259,9 @@ public class Vertex{
      */
     public void clearEdges(){
         outgoingEdges.clear();
+    }
+    
+    public VK getKey(){
+    	return key;
     }
 }

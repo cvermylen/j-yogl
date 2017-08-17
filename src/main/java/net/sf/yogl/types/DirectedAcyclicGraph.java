@@ -17,7 +17,6 @@
    
 package net.sf.yogl.types;
 
-import net.sf.yogl.AbstractGraph;
 import net.sf.yogl.GraphAdapter;
 import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.GraphCorruptedException;
@@ -35,37 +34,33 @@ import net.sf.yogl.impl.DuplicateVertexException;
  * method LinkedList getNeighbors is inherited
  */
 
-public final class DirectedAcyclicGraph extends GraphAdapter {
+public final class DirectedAcyclicGraph<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends GraphAdapter<VK,VV,EK,EV> {
 
-	public DirectedAcyclicGraph(AbstractGraph graph) {
-		super(graph);
-	}
-
-	/** @see graph.AbstractGraph.getNeighbors
+	/** @see graph.Graph.getNeighbors
 	 */
-	public Object[] getSuccessorNodesKeys(Object nodeKeyFrom, int steps)
+	public VK[] getSuccessorNodesKeys(VK nodeKeyFrom, int steps)
 		throws GraphException {
 
 		return graph.getSuccessorNodesKeys(nodeKeyFrom, steps);
 	}
 
-	/** @see graph.AbstractGraph.getNeighbors
+	/** @see graph.Graph.getNeighbors
 	 */
-	public Object[] getSuccessorNodesKeys(Object nodeKeyFrom, Object linkKey)
+	public VK[] getSuccessorNodesKeys(VK nodeKeyFrom, EK linkKey)
 		throws GraphException {
 
 		return graph.getSuccessorNodesKeys(nodeKeyFrom, linkKey);
 	}
 
-	/** @see graph.AbstractGraph.getLinks
+	/** @see graph.Graph.getLinks
 	 */
-	public Object[] getLinksKeysBetween(Object nodeKeyFrom, Object nodeKeyTo) throws NodeNotFoundException
+	public EK[] getLinksKeysBetween(VK nodeKeyFrom, VK nodeKeyTo) throws NodeNotFoundException
 		{
 
 		return graph.getLinksKeysBetween(nodeKeyFrom, nodeKeyFrom);
 	}
 
-	public void addNode(Object nodeKey, Object nodeValue)
+	public void addNode(VK nodeKey, VV nodeValue)
 		throws GraphException {
 
 		try {
@@ -75,13 +70,13 @@ public final class DirectedAcyclicGraph extends GraphAdapter {
 		}
 	}
 
-	/** @see graph.AbstractGraph.insertLink
+	/** @see graph.Graph.insertLink
 	 */
 	public void addLinkLast(
-		Object nodeKeyFrom,
-		Object nodeKeyTo,
-		Object linkKey,
-		Object linkValue)
+		VK nodeKeyFrom,
+		VK nodeKeyTo,
+		EK linkKey,
+		EV linkValue)
 		throws
 			NodeNotFoundException,
 			DuplicateLinkException,
@@ -90,18 +85,18 @@ public final class DirectedAcyclicGraph extends GraphAdapter {
 		graph.addLinkLast(nodeKeyFrom, nodeKeyTo, linkKey, linkValue);
 	}
 
-	/** @see graph.AbstractGraph.removeNode
+	/** @see graph.Graph.removeNode
 	 */
-	public void removeNode(Object nodeKey) throws NodeNotFoundException {
+	public void removeNode(VK nodeKey) throws NodeNotFoundException {
 
 		if (nodeKey != null) {
 			super.removeNode(nodeKey);
 		}
 	}
 
-	/** @see graph.AbstractGraph.removeLink
+	/** @see graph.Graph.removeLink
 	 */
-	public void removeLink(Object nodeFrom, Object nodeTo, Object linkKey)
+	public void removeLink(VK nodeFrom, VK nodeTo, EK linkKey)
 		throws GraphException {
 
 		graph.removeLink(nodeFrom, nodeTo, linkKey);

@@ -19,34 +19,26 @@ package net.sf.yogl.types;
 
 import java.util.Collection;
 
-import net.sf.yogl.AbstractGraph;
 import net.sf.yogl.GraphAdapter;
 import net.sf.yogl.exceptions.GraphException;
 
 /** Simple graph which does not contains any data. Nodes and links
  *  are just identified by keys.
  */
-public final class NoDataGraph extends GraphAdapter {
+public final class NoDataGraph<VK extends Comparable<VK>, EK extends Comparable<EK>> extends GraphAdapter<VK, Object, EK, Object> {
 
-	/**
-	 * @param graph
-	 */
-	public NoDataGraph(AbstractGraph graph) {
-		super(graph);
-	}
-
-	public void addNode(Object nodeKey) throws GraphException{
+	public void addNode(VK nodeKey) throws GraphException{
 		super.addNode(nodeKey, "");
 	}
 	
-	public void addNode(Object nodeKey, Object nodeValue)throws GraphException{
+	public void addNode(VK nodeKey, Object nodeValue)throws GraphException{
 		super.addNode(nodeKey, "");
 	}
 	public Collection nodesValues(){
 		return null;
 	}
 	
-	public void tryAddNode(Object nodeKey) throws GraphException{
+	public void tryAddNode(VK nodeKey) throws GraphException{
 		super.tryAddNode(nodeKey, null);
 	}
 }

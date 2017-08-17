@@ -17,7 +17,7 @@
    
 package net.sf.yogl.impl;
 
-import java.util.Stack;
+import java.util.LinkedList;
 
 /** Class used to manage the path of vertices followed during
  * the traversal. Object are pushed on a stack with the number of adjacent
@@ -26,27 +26,27 @@ import java.util.Stack;
  * object reaches 0, the top object is removed.
  */
 
-public class Path{
+public class Path<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV>{
 	
 	/** Reference to the vertex' node
 	 */
-	private Object nodeKey = null;
+	private VK nodeKey = null;
 	
-	private Edge popedValue = null;
+	private Edge<VK,EK,EV> popedValue = null;
 	
 	/** Reference to links exiting from this vertex
 	 *  Order in this stack is extremely important.
 	 *  It MUST follow the same order as the one in the
 	 *  vStack.
 	 */
-	private Stack outgoingEdges = null;
+	private LinkedList<Edge<VK,EK,EV>> outgoingEdges = null;
 	
-	public Path(Object nodeKey, Edge[]eArray){
+	public Path(VK nodeKey, Edge<VK,EK,EV>[]eArray){
 		this.nodeKey = nodeKey;
-		this.outgoingEdges = new Stack();
-		outgoingEdges.push(new Edge(null, null, null));
+		this.outgoingEdges = new LinkedList<>();
+		outgoingEdges.push(new Edge<>(null, null, null));
 			for (int i=eArray.length-1; i>= 0; i--){
-				outgoingEdges.push(((Edge)eArray[i]));
+				outgoingEdges.push(eArray[i]);
 			}
 	}
 
@@ -55,9 +55,9 @@ public class Path{
 	 *  @return the edge used to access to the next
 	 *  node
 	 */
-	public Edge dec(){
+	public Edge<VK,EK,EV> dec(){
 		
-		Edge usedEdge = (Edge)outgoingEdges.pop();
+		Edge<VK,EK,EV> usedEdge = outgoingEdges.pop();
 		popedValue = usedEdge;
 		return usedEdge;
 	}
@@ -72,25 +72,25 @@ public class Path{
 	/** getter method
 	 * @return the vertex index
 	 */
-	public Object getNodeKey(){
+	public VK getNodeKey(){
 		return nodeKey;
 	}
 	
 	/** getter method
 	 *  @return the current edge
 	 */
-	public Edge getEdge(){
-		Edge edge = null;
+	public Edge<VK,EK,EV> getEdge(){
+		Edge<VK,EK,EV> edge = null;
 		
 		if(!outgoingEdges.isEmpty()){
 			if(outgoingEdges.size() > 1){ //last element is empty string
-				edge = (Edge)outgoingEdges.peek();
+				edge = outgoingEdges.peek();
 			}
 		}
 		return edge;
 	}
 	
-	public Edge getPopedValue(){
+	public Edge<VK,EK,EV> getPopedValue(){
 		
 		return popedValue;
 	}
@@ -98,6 +98,14 @@ public class Path{
 	public String toString(){
 		
 		String result = "Path(Node("+nodeKey+")PopedValue("+popedValue+"))";
+		return result;
+	}
+	
+	public Path<VK, VV, EK, EV> clone(){
+		Path<VK, VV, EK, EV>result = this.clone();
+		result.nodeKey = this.nodeKey;
+		result.popedValue = this.popedValue;
+		result.outgoingEdges = this.outgoingEdges.stream().map(e -> e.clone()).collect(LinkedList::new, LinkedList::add, LinkedList::addAll);
 		return result;
 	}
 }

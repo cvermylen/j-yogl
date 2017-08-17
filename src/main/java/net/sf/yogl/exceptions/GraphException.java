@@ -17,7 +17,7 @@
    
 package net.sf.yogl.exceptions;
 
-import net.sf.yogl.AbstractGraph;
+import net.sf.yogl.Graph;
 
 /**
  * 'GraphException' is the root class for all exceptions thrown by graph methods. The purpose of this class
@@ -27,7 +27,7 @@ public class GraphException extends Exception {
 
 	private static final long serialVersionUID = 8963356757643065040L;
 
-	private AbstractGraph graph;
+	private Graph graph;
 	
 	/**
 	 * Constructor for GraphException.
@@ -59,14 +59,14 @@ public class GraphException extends Exception {
 	/**
 	 * @return
 	 */
-	public AbstractGraph getGraph() {
+	public Graph getGraph() {
 		return graph;
 	}
 
 	/**
 	 * @param graph
 	 */
-	public void setGraph(AbstractGraph graph) {
+	public void setGraph(Graph graph) {
 		this.graph = graph;
 	}
 

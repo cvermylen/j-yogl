@@ -23,42 +23,39 @@ import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
+import net.sf.yogl.impl.DuplicateVertexException;
 import net.sf.yogl.impl.ImplementationGraph;
+import net.sf.yogl.impl.Vertex;
 
 /** The Adapter defines 3 methods that can't be overloaded, and 6 that can
  * be overloaded.
  */
-public class GraphAdapter implements AbstractGraph {
+public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> implements Graph<VK, VV, EK, EV> {
 
-	//refer to the actula implementation of the graph
-	protected ImplementationGraph graph = null;
+	//refer to the actual implementation of the graph
+	protected ImplementationGraph<VK, VV, EK, EV> graph = null;
 
-	public GraphAdapter(AbstractGraph graph) {
-		if(graph instanceof ImplementationGraph)
-		this.graph = (ImplementationGraph)graph;
-	}
-
-	protected final ImplementationGraph getImplementation(){
+	protected final ImplementationGraph<VK, VV, EK, EV> getImplementation(){
 		return graph;
 	}
 	
-	/** @see graph.AbstractGraph#getCountNodes
+	/** @see graph.Graph#getCountNodes
 	 */
 	public final int getNodeCount() {
 
 		return graph.getNodeCount();
 	}
 
-	/** @see graph.AbstractGraph#getCountLinks
+	/** @see graph.Graph#getCountLinks
 	 */
 	public final int getLinkCount() {
 
 		return graph.getLinkCount();
 	}
 
-	/** @see graph.AbstractGraph#getLinks
+	/** @see graph.Graph#getLinks
 	 */
-	public Object[] getOutgoingLinksKeys(Object nodeKeyFrom)
+	public EK[] getOutgoingLinksKeys(VK nodeKeyFrom)
 		throws GraphException {
 
 		if (nodeKeyFrom == null)
@@ -67,9 +64,9 @@ public class GraphAdapter implements AbstractGraph {
 		return graph.getOutgoingLinksKeys(nodeKeyFrom);
 	}
 
-	/** @see graph.AbstractGraph#getLinks
+	/** @see graph.Graph#getLinks
 	 */
-	public Object[] getLinksKeysBetween(Object nodeKeyFrom, Object nodeKeyTo)
+	public EK[] getLinksKeysBetween(VK nodeKeyFrom, VK nodeKeyTo)
 		throws NodeNotFoundException {
 
 		if (nodeKeyFrom == null)
@@ -80,14 +77,14 @@ public class GraphAdapter implements AbstractGraph {
 		return graph.getLinksKeysBetween(nodeKeyFrom, nodeKeyTo);
 	}
 
-	public Object[][] getOutgoingLinksKeysAndNodesKeys(Object nodeKeyTo)
+	public Object[][] getOutgoingLinksKeysAndNodesKeys(VK nodeKeyTo)
 		throws GraphException {
 		return graph.getOutgoingLinksKeysAndNodesKeys(nodeKeyTo);
 	}
 
-	/** @see graph.AbstractGraph#getNeighbors
+	/** @see graph.Graph#getNeighbors
 	 */
-	public Object[] getSuccessorNodesKeys(Object nodeKeyFrom, int steps)
+	public VK[] getSuccessorNodesKeys(VK nodeKeyFrom, int steps)
 		throws GraphException {
 
 		if (nodeKeyFrom == null)
@@ -96,9 +93,9 @@ public class GraphAdapter implements AbstractGraph {
 		return graph.getSuccessorNodesKeys(nodeKeyFrom, steps);
 	}
 
-	/** @see graph.AbstractGraph#getNeighbors
+	/** @see graph.Graph#getNeighbors
 	 */
-	public Object[] getSuccessorNodesKeys(Object nodeKeyFrom, Object link)
+	public VK[] getSuccessorNodesKeys(VK nodeKeyFrom, EK link)
 		throws GraphException {
 
 		if (nodeKeyFrom == null)
@@ -109,28 +106,28 @@ public class GraphAdapter implements AbstractGraph {
 		return graph.getSuccessorNodesKeys(nodeKeyFrom, link);
 	}
 
-	/** @see graph.AbstractGraph#getNodes
+	/** @see graph.Graph#getNodes
 	 */
-	public final Object[] getNodesKeys() throws GraphCorruptedException {
+	public final VK[] getNodesKeys() throws GraphCorruptedException {
 
 		return graph.getNodesKeys();
 	}
 
-	/** @see graph.AbstractGraph#getNodes
+	/** @see graph.Graph#getNodes
 	 */
-	public final Object[] getNodesKeys(int nodeType)
+	public final Collection<Vertex<VK,VV,EK,EV>> getVertices(int nodeType)
 		throws GraphCorruptedException {
 
-		return graph.getNodesKeys(nodeType);
+		return graph.getVertices(nodeType);
 	}
 
-	public final Object getNodeValue(Object nodeKey) {
+	public final VV getNodeValue(VK nodeKey) {
 		return graph.getNodeValue(nodeKey);
 	}
 
-	/** @see graph.AbstractGraph#getPredecessors
+	/** @see graph.Graph#getPredecessors
 	 */
-	public Object[] getPredecessorNodesKeys(Object nodeKeyTo)
+	public VK[] getPredecessorNodesKeys(VK nodeKeyTo)
 		throws GraphException {
 
 		if (nodeKeyTo == null) {
@@ -139,9 +136,9 @@ public class GraphAdapter implements AbstractGraph {
 		return graph.getPredecessorNodesKeys(nodeKeyTo);
 	}
 
-	/** @see graph.AbstractGraph#getPredecessors
+	/** @see graph.Graph#getPredecessors
 	 */
-	public Object[] getPredecessorNodesKeys(Object nodeKeyTo, Object link)
+	public VK[] getPredecessorNodesKeys(VK nodeKeyTo, EK link)
 		throws GraphException {
 
 		if ((nodeKeyTo == null) || (link == null)) {
@@ -150,9 +147,9 @@ public class GraphAdapter implements AbstractGraph {
 		return graph.getPredecessorNodesKeys(nodeKeyTo, link);
 	}
 
-	/** @see graph.AbstractGraph#getIncomingLinks
+	/** @see graph.Graph#getIncomingLinks
 	 */
-	public Object[] getIncomingLinksKeys(Object nodeKeyTo)
+	public EK[] getIncomingLinksKeys(VK nodeKeyTo)
 		throws NodeNotFoundException {
 		if (nodeKeyTo == null) {
 			throw new NodeNotFoundException("Parameter 'nodeTo' is null");
@@ -160,9 +157,9 @@ public class GraphAdapter implements AbstractGraph {
 		return graph.getIncomingLinksKeys(nodeKeyTo);
 	}
 
-	/** @see graph.AbstractGraph#getIncomingLinks
+	/** @see graph.Graph#getIncomingLinks
 	 */
-	public Object[][] getIncomingLinksKeysAndNodesKeys(Object nodeKeyTo)
+	public Object[][] getIncomingLinksKeysAndNodesKeys(VK nodeKeyTo)
 		throws NodeNotFoundException {
 		if (nodeKeyTo == null) {
 			throw new NodeNotFoundException("Parameter 'nodeTo' is null");
@@ -170,22 +167,22 @@ public class GraphAdapter implements AbstractGraph {
 		return graph.getIncomingLinksKeysAndNodesKeys(nodeKeyTo);
 	}
 
-	/** @see graph.AbstractGraph#getType
+	/** @see graph.Graph#getType
 	 */
-	public final int getNodeType(Object nodeKey) throws GraphException {
+	public final int getNodeType(VK nodeKey) throws GraphException {
 
 		if (nodeKey == null)
 			throw new NodeNotFoundException("Parameter 'node' is null");
 		return graph.getNodeType(nodeKey);
 	}
 
-	/** @see graph.AbstractGraph#insertLink
+	/** @see graph.Graph#insertLink
 	 */
 	public void addLinkLast(
-		Object nodeKeyFrom,
-		Object nodeKeyTo,
-		Object linkKey,
-		Object linkValue)
+		VK nodeKeyFrom,
+		VK nodeKeyTo,
+		EK linkKey,
+		EV linkValue)
 		throws
 			NodeNotFoundException,
 			DuplicateLinkException,
@@ -201,12 +198,12 @@ public class GraphAdapter implements AbstractGraph {
 		graph.addLinkLast(nodeKeyFrom, nodeKeyTo, linkKey, linkValue);
 	}
 
-	/** @see graph.AbstractGraph#insertLink
+	/** @see graph.Graph#insertLink
 		 */
 		public void addLinkLast(
-			Object nodeKeyFrom,
-			Object nodeKeyTo,
-			Object linkKey)
+			VK nodeKeyFrom,
+			VK nodeKeyTo,
+			EK linkKey)
 			throws
 				NodeNotFoundException,
 				DuplicateLinkException,
@@ -223,10 +220,10 @@ public class GraphAdapter implements AbstractGraph {
 		}
 		
 	public void tryAddLinkLast(
-		Object nodeKeyFrom,
-		Object nodeKeyTo,
-		Object linkKey,
-		Object linkValue)
+		VK nodeKeyFrom,
+		VK nodeKeyTo,
+		EK linkKey,
+		EV linkValue)
 		throws NodeNotFoundException, GraphCorruptedException {
 
 		if (nodeKeyFrom == null)
@@ -239,13 +236,13 @@ public class GraphAdapter implements AbstractGraph {
 		graph.tryAddLinkLast(nodeKeyFrom, nodeKeyTo, linkKey, linkValue);
 	}
 
-	/** @see graph.AbstractGraph#insertLinkFirst
+	/** @see graph.Graph#insertLinkFirst
 	 */
 	public void addLinkFirst(
-		Object nodeKeyFrom,
-		Object nodeKeyTo,
-		Object linkKey,
-		Object linkValue)
+		VK nodeKeyFrom,
+		VK nodeKeyTo,
+		EK linkKey,
+		EV linkValue)
 		throws
 			NodeNotFoundException,
 			DuplicateLinkException,
@@ -261,12 +258,12 @@ public class GraphAdapter implements AbstractGraph {
 		graph.addLinkFirst(nodeKeyFrom, nodeKeyTo, linkKey, linkValue);
 	}
 
-	/** @see graph.AbstractGraph#insertLinkFirst
+	/** @see graph.Graph#insertLinkFirst
 		 */
 		public void addLinkFirst(
-			Object nodeKeyFrom,
-			Object nodeKeyTo,
-			Object linkKey)
+			VK nodeKeyFrom,
+			VK nodeKeyTo,
+			EK linkKey)
 			throws
 				NodeNotFoundException,
 				DuplicateLinkException,
@@ -283,10 +280,10 @@ public class GraphAdapter implements AbstractGraph {
 		}
 		
 	public void tryAddLinkFirst(
-		Object nodeKeyFrom,
-		Object nodeKeyTo,
-		Object linkKey,
-		Object linkValue)
+		VK nodeKeyFrom,
+		VK nodeKeyTo,
+		EK linkKey,
+		EV linkValue)
 		throws NodeNotFoundException, GraphCorruptedException {
 
 		if (nodeKeyFrom == null)
@@ -299,11 +296,11 @@ public class GraphAdapter implements AbstractGraph {
 		graph.tryAddLinkFirst(nodeKeyFrom, nodeKeyTo, linkKey, linkValue);
 	}
 
-	/** @see graph.AbstractGraph#insertNode
+	/** @see graph.Graph#insertNode
 	 * @exception DuplicateVertexException inherited from implementation
 	 * @exception NullPointerException if node parameter is null
 	 */
-	public void addNode(Object nodeKey, Object nodeValue)
+	public void addNode(VK nodeKey, VV nodeValue)
 		throws GraphException {
 
 		if (nodeValue == null) {
@@ -313,37 +310,37 @@ public class GraphAdapter implements AbstractGraph {
 		graph.addNode(nodeKey, nodeValue);
 	}
 
-	/** @see graph.AbstractGraph#isEmpty
+	/** @see graph.Graph#isEmpty
 	 */
 	public final boolean isEmpty() {
 
 		return graph.isEmpty();
 	}
 
-	/** @see graph.AbstractGraph#linksIterator
+	/** @see graph.Graph#linksIterator
 	 */
 	public LinksIterator linksKeysIterator() throws GraphException {
 
 		return graph.linksKeysIterator();
 	}
 
-	/** @see graph.AbstractGraph#nodesIterator
+	/** @see graph.Graph#nodesIterator
 	 */
-	public Collection nodesValues() {
+	public Collection<VV> nodesValues() {
 
 		return graph.nodesValues();
 	}
 
-	/** @see graph.AbstractGraph#nodesIterator
+	/** @see graph.Graph#nodesIterator
 	 */
-	public final Collection nodesKeySet() {
+	public final Collection<VK> nodesKeySet() {
 
 		return graph.nodesKeySet();
 	}
 
-	/** @see graph.AbstractGraph#removeLink
+	/** @see graph.Graph#removeLink
 	 */
-	public void removeLink(Object nodeKeyFrom, Object nodeKeyTo, Object link)
+	public void removeLink(VK nodeKeyFrom, VK nodeKeyTo, EK link)
 		throws GraphException {
 
 		if (nodeKeyFrom == null)
@@ -356,7 +353,7 @@ public class GraphAdapter implements AbstractGraph {
 		graph.removeLink(nodeKeyFrom, nodeKeyTo, link);
 	}
 
-	public void removeAllLinksBetween(Object nodeKeyFrom, Object nodeKeyTo)
+	public void removeAllLinksBetween(VK nodeKeyFrom, VK nodeKeyTo)
 		throws GraphException {
 		if (nodeKeyFrom == null)
 			throw new NodeNotFoundException("Parameter 'from' is null");
@@ -365,9 +362,9 @@ public class GraphAdapter implements AbstractGraph {
 		graph.removeAllLinksBetween(nodeKeyFrom, nodeKeyTo);
 	}
 
-	/** @see graph.AbstractGraph#removeNode
+	/** @see graph.Graph#removeNode
 	 */
-	public void removeNode(Object nodeKey) throws NodeNotFoundException {
+	public void removeNode(VK nodeKey) throws NodeNotFoundException {
 		if (nodeKey == null) {
 			throw new NodeNotFoundException("Parameter 'node' is null");
 		}
@@ -379,7 +376,7 @@ public class GraphAdapter implements AbstractGraph {
 		graph.setAllVisitCounts(count);
 	}
 
-	public void setVisitCount(Object nodeKey, int passage)
+	public void setVisitCount(VK nodeKey, int passage)
 		throws GraphException {
 
 		if (nodeKey == null)
@@ -387,35 +384,35 @@ public class GraphAdapter implements AbstractGraph {
 		graph.setVisitCount(nodeKey, passage);
 	}
 
-	public int getVisitCount(Object nodeKey) throws GraphException {
+	public int getVisitCount(VK nodeKey) throws GraphException {
 
 		if (nodeKey == null)
 			throw new NodeNotFoundException("Parameter 'node' is null");
 		return graph.getVisitCount(nodeKey);
 	}
 
-	public int incVisitCount(Object nodeKey) throws GraphException {
+	public int incVisitCount(VK nodeKey) throws GraphException {
 
 		if (nodeKey == null)
 			throw new NodeNotFoundException("Parameter 'node' is null");
 		return graph.incVisitCount(nodeKey);
 	}
 
-	/** @see graph.AbstractGraph#insertNode
+	/** @see graph.Graph#insertNode
 	 *  @exception NullPointerException if node parameter is null
 	 */
-	public Object tryAddNode(Object nodeKey, Object nodeValue) {
+	public Object tryAddNode(VK nodeKey, VV nodeValue) {
 
 		Object dummy = graph.tryAddNode(nodeKey, nodeValue);
 		return nodeValue;
 	}
 
-	public int getDepth(Object startingNodeKey) throws GraphException {
+	public int getDepth(VK startingNodeKey) throws GraphException {
 		return graph.getDepth(startingNodeKey);
 	}
 
 	public final BreadthFirstIterator breadthFirstIterator(
-		Object startingNodeKey,
+		VK startingNodeKey,
 		int maxCycling)
 		throws GraphException {
 		return graph.breadthFirstIterator(startingNodeKey, maxCycling);
@@ -429,11 +426,11 @@ public class GraphAdapter implements AbstractGraph {
 		return graph.clone();
 	}
 
-	public void deepCopy(AbstractGraph dest) throws GraphException {
+	public void deepCopy(Graph dest) throws GraphException {
 		graph.deepCopy(dest);
 	}
 
-	public final boolean existsNode(Object nodeKey) {
+	public final boolean existsNode(VK nodeKey) {
 		return graph.existsNode(nodeKey);
 	}
 
@@ -444,7 +441,7 @@ public class GraphAdapter implements AbstractGraph {
 	public String toString() {
 		StringBuffer result = new StringBuffer();
 		try {
-			Object[] nodes = graph.getNodesKeys();
+			VK[] nodes = graph.getNodesKeys();
 			for (int i = 0; i < nodes.length; i++) {
 				Object[][] el =
 					graph.getOutgoingLinksKeysAndNodesKeys(nodes[i]);
@@ -467,25 +464,25 @@ public class GraphAdapter implements AbstractGraph {
 		return result.toString();
 	}
 
-	public DepthFirstIterator depthFirstIterator(Object startingNodeKey, int maxCycling)
+	public DepthFirstIterator depthFirstIterator(VK startingNodeKey, int maxCycling)
 		throws GraphException {
 		return graph.depthFirstIterator(startingNodeKey, maxCycling);
 	}
 
-	public final Object[] getAllStartNodeKeys() {
+	public final Collection<VK> getAllStartNodeKeys() {
 		return graph.getAllStartNodeKeys();
 	}
 
-	public final boolean isStartNode(Object nodeKey) {
+	public final boolean isStartNode(VK nodeKey) {
 		return graph.isStartNode(nodeKey);
 	}
 
-	public Object getOutgoingLinkValue(Object nodeKeyFrom, Object linkKey)
+	public EV getOutgoingLinkValue(VK nodeKeyFrom, EK linkKey)
 		throws NodeNotFoundException {
 		return graph.getOutgoingLinkValue(nodeKeyFrom, linkKey);
 	}
 
-	public Collection linksValues() {
+	public Collection<EV> linksValues() {
 		return graph.linksValues();
 	}
 

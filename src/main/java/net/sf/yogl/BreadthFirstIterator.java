@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
-import net.sf.yogl.exceptions.*;
+import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.impl.ImplementationGraph;
 import net.sf.yogl.impl.Vertex;
 

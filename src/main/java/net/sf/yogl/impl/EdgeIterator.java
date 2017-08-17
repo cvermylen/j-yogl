@@ -17,6 +17,7 @@
    
 package net.sf.yogl.impl;
 
+import java.util.List;
 import java.util.Stack;
 
 import net.sf.yogl.exceptions.GraphCorruptedException;
@@ -31,24 +32,24 @@ import net.sf.yogl.types.VertexType;
  *  of this type can run concurrently. Items can be inserted into the graph while
  *  the iterator is being used, but, ideally, no item should be removed.
  */
-class EdgeIterator{
+class EdgeIterator<VK extends Comparable<VK>, VV,  EK extends Comparable<EK>, EV>{
     
     /** Current graph the iterator is pointing to
      */
-    private ImplementationGraph graph = null;
+    private ImplementationGraph<VK,VV,EK,EV> graph = null;
     
     /** 'top' contains the 'current' vertex
      */
-    private Stack path = null;
+    private Stack<Vertex<VK,VV,EK,EV>> path = null;
     
-    EdgeIterator(ImplementationGraph graph) throws NodeNotFoundException, GraphCorruptedException{
+    EdgeIterator(ImplementationGraph<VK,VV,EK,EV> graph) throws NodeNotFoundException, GraphCorruptedException{
         
-        path = new Stack();
+        path = new Stack<>();
         if(graph != null){
             //this.start = start;
-            Object[]startNodes = graph.getNodesKeys(VertexType.START);
-            if(startNodes.length > 1){
-                path.push(graph.findVertexByKey(startNodes[0]));
+            List<Vertex<VK, VV, EK, EV>>startNodes = graph.getVertices(VertexType.START);
+            if(startNodes.size() > 0){
+                path.push(startNodes.get(0));
             }
         }
     }
@@ -57,10 +58,10 @@ class EdgeIterator{
      *  When no starting vertex is given, traversal will start with
      *  the first entry in 'vertices'
      */
-    public EdgeIterator(ImplementationGraph graph, Object startingNodeKey)
+    public EdgeIterator(ImplementationGraph<VK,VV,EK,EV> graph, VK startingNodeKey)
     throws GraphException{
         
-        path = new Stack();
+        path = new Stack<>();
         if( (graph != null) && (startingNodeKey != null) ){
             this.graph = graph;
             if(graph.existsNode(startingNodeKey)){
@@ -73,7 +74,7 @@ class EdgeIterator{
     /** 'sVertex' will be considered as the new starting vertex for the
      *  next traversal.
      */
-    public void reset(Object startingNodeKey)throws GraphException{
+    public void reset(VK startingNodeKey)throws GraphException{
         
         if(graph.existsNode(startingNodeKey)){
             path.clear();
@@ -86,10 +87,10 @@ class EdgeIterator{
     /** perform a transition from the 'current' vertex to the 'next'
      *  vertex by following the connection labelled by 'edge'.
      */
-    public void transition(Object edge)throws GraphException{
+    public void transition(EK edgeKey)throws GraphException{
         
-        Vertex peek = (Vertex)path.peek();
-        Object nextKey = peek.getNextVertexKey(edge);
+        Vertex<VK,VV,EK,EV> peek = path.peek();
+        VK nextKey = peek.getNextVertexKey(edgeKey);
 		if(nextKey == null)
 			throw new GraphCorruptedException("Edge does not exists");
         path.push(graph.findVertexByKey(nextKey));
@@ -97,9 +98,9 @@ class EdgeIterator{
     
     /** Returns a (possibly empty) list with all possible transitions
      */
-    public Object[] getTransition()throws GraphException{
+    public EK[] getTransition()throws GraphException{
         
-        return graph.getOutgoingLinksKeys(path.peek());
+        return graph.getOutgoingLinksKeys(path.peek().getKey());
     }
     
     /** Returns the value of the 'current' vertex
@@ -127,11 +128,11 @@ class EdgeIterator{
     
     /** return non-null if the requested transition is possible.
      */
-    public Object testTransition(Object edgeValue)throws GraphException{
+    public EV testTransition(EK edgeValue)throws GraphException{
         
-        Object result = null;
-        Vertex peek = (Vertex)path.peek();
-        Edge candidate = peek.getEdge(edgeValue);
+        EV result = null;
+        Vertex<VK,VV,EK,EV> peek = path.peek();
+        Edge<VK,EK,EV> candidate = peek.getEdge(edgeValue);
         if(candidate != null){
         	result = candidate.getUserValue();
         }

@@ -18,9 +18,11 @@
 package net.sf.yogl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Stack;
 
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
@@ -28,6 +30,7 @@ import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.impl.Edge;
 import net.sf.yogl.impl.ImplementationGraph;
 import net.sf.yogl.impl.Path;
+import net.sf.yogl.impl.Vertex;
 import net.sf.yogl.types.VertexType;
 
 /** Given a specific graph, this iterator returns the next vertex in a
@@ -36,31 +39,31 @@ import net.sf.yogl.types.VertexType;
  * being modified during the traversal.
  */
 
-public final class DepthFirstIterator implements Iterator{
+public final class DepthFirstIterator<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> implements Iterator<Vertex<VK,VV,EK,EV>>{
     
     /** Current vertex 'pointed' by the iterator
      */
-    protected Object current = null;
+    protected Vertex<VK,VV,EK,EV> current = null;
     
     /** Last edge used to access current vertex
      */
-    private Edge lastUsedEdge =  null;
+    private Edge<VK,EK,EV> lastUsedEdge =  null;
     
     /** 'graph' refers to the graph currently being traversed.
      */
-    private ImplementationGraph graph = null;
+    private ImplementationGraph<VK, VV, EK, EV> graph = null;
     
     /** The vStack contains all nodes in the order they are visited.
      * This stack is used to simulate the recursivity.
      * The Objects contained in the stack will be of type 'Vertex'
      */
-    protected Stack vStack = new Stack();
+    protected LinkedList<Vertex<VK,VV,EK,EV>> vStack = new LinkedList<>();
     
     /** The 'pathStack' contains the path followed from the starting node
      * to the current node, this one excluded.
      * Objects on this stack are of type 'Path'
      */
-    private Stack pathStack = new Stack();
+    private LinkedList<Path<VK,VV,EK,EV>> pathStack = new LinkedList<>();
     
     /** Maximum number of times a node can be visited
      */
@@ -78,12 +81,12 @@ public final class DepthFirstIterator implements Iterator{
             throw new NullPointerException(
             "graph is null in init()");
         }
-        Object[]keys = graph.getNodesKeys(VertexType.START | VertexType.STARTEND);
-        if((keys == null) || (keys.length == 0)){
+        Collection<Vertex<VK,VV,EK,EV>> keys = graph.getVertices(VertexType.START | VertexType.STARTEND);
+        if(keys == null){
 			return;
 	    }
-	    for(int i=0; i < keys.length; i++){
-	    	vStack.push(keys[i]);
+	    for(Vertex<VK,VV,EK,EV> vertex: keys){
+	    	vStack.push(vertex);
 	    }
     }
     
@@ -121,19 +124,19 @@ public final class DepthFirstIterator implements Iterator{
         if (canTraverse()){
             //the next node to be visited is referenced
             // by 'vertex'
-            graph.findVertexByKey(current).incTraversals();
+            graph.findVertexByKey(current.getKey()).incTraversals();
             //put all adjacent neighbors on traversal stack
-            if(graph.findVertexByKey(current).getNeighbors().length > 0){
+            if(graph.findVertexByKey(current.getKey()).getNeighbors().length > 0){
                 // returned vertex has some successors
-                Edge[]eArray = graph.findVertexByKey(current).getNeighbors();
+                Edge<VK,EK,EV>[]eArray = graph.findVertexByKey(current.getKey()).getNeighbors();
                 // loop from end to begin
                 for (int i=eArray.length-1; i>= 0; i--){
                     //vStack.push(graph.getVertex(((Edge)eArray[i]).getVertex()));
-                    Object nextKey = eArray[i].getNextVertexKey();
+                    Vertex<VK,VV,EK,EV> nextKey = graph.findVertexByKey(eArray[i].getNextVertexKey());
                     vStack.push(nextKey);
                 }
                 
-                Path path = new Path(current, graph.findVertexByKey(current).getNeighbors());
+                Path<VK,VV,EK,EV> path = new Path<>(current.getKey(), graph.findVertexByKey(current.getKey()).getNeighbors());
                 pathStack.push(path);
                 leaf = false;
             }else{
@@ -158,7 +161,7 @@ public final class DepthFirstIterator implements Iterator{
         if(current == null){
             throw new GraphException("canTraverse: vertex is null");
         }
-		return (graph.findVertexByKey(current).getTraversals() <= maxCycling);
+		return (graph.findVertexByKey(current.getKey()).getTraversals() <= maxCycling);
     }
     
     /** The ctor builds the iterator on the graph given as parameter.
@@ -166,7 +169,7 @@ public final class DepthFirstIterator implements Iterator{
      * of it.
      * @param graph is a valid, possibly decorated, concrete graph.
      */
-    DepthFirstIterator(ImplementationGraph graph)
+    DepthFirstIterator(ImplementationGraph<VK,VV,EK,EV> graph)
     throws GraphException{
         
         if(graph == null){
@@ -181,7 +184,7 @@ public final class DepthFirstIterator implements Iterator{
      *  @param graph is a valid, possibly decorated, concrete graph.
      *  @param startNode user-defined node in this graph
      */
-    DepthFirstIterator(ImplementationGraph graph, Object startingNodeKey, int maxCycling)
+    DepthFirstIterator(ImplementationGraph<VK,VV,EK,EV> graph, VK startingNodeKey, int maxCycling)
     throws GraphException{
         
         if(graph == null){
@@ -193,7 +196,7 @@ public final class DepthFirstIterator implements Iterator{
             init();
         }else{
             graph.setAllVisitCounts(0);
-            vStack.push(startingNodeKey);
+            vStack.push(graph.findVertexByKey(startingNodeKey));
         }
     }
     
@@ -209,19 +212,19 @@ public final class DepthFirstIterator implements Iterator{
      * @return the path followed to access the current node
      * @throws NodeNotFoundException
      */
-    private Path pathPeek() throws NodeNotFoundException{
-    	return (Path)pathStack.peek();
+    private Path<VK,VV,EK,EV> pathPeek() throws NodeNotFoundException{
+    	return pathStack.peek();
     }
     
-    private Path pathPop() throws NodeNotFoundException{
-    	return (Path)pathStack.pop();
+    private Path<VK,VV,EK,EV> pathPop() throws NodeNotFoundException{
+    	return pathStack.pop();
     }
     
     /**
      *  @return the next user object in first order
      * @exception NoSuchElementException if the iterator is empty
      */
-    public Object next()
+    public Vertex<VK,VV,EK,EV> next()
     throws NoSuchElementException{
         
         try{
@@ -244,43 +247,44 @@ public final class DepthFirstIterator implements Iterator{
     
     /** @return the list of all nodes defining the path between the current vertex
      * and the graph root
+     * @throws NodeNotFoundException 
      */
-    public Object[]nodePath(){
+    public List<Vertex<VK,VV,EK,EV>>nodePath() throws NodeNotFoundException{
         
-        ArrayList pathList = new ArrayList();
-        Stack localStack = (Stack)pathStack.clone();
+        LinkedList<Vertex<VK,VV,EK,EV>> pathList = new LinkedList<>();
+        LinkedList<Path<VK,VV,EK,EV>> localStack = clonePath(pathStack);
         while(!localStack.isEmpty()){
-            Path path = (Path)localStack.pop();
+            Path<VK,VV,EK,EV> path = localStack.pop();
             if(path.getPopedValue() != null){
-                pathList.add(0, path.getNodeKey());
+                pathList.addFirst(graph.findVertexByKey(path.getNodeKey()));
             }
         }
-        return pathList.toArray();
+        return pathList;
     }
     
     /** @return the list of all links used to access the current vertex
      */
-    public Object[]linkPath(){
+    public List<EK>linkPath(){
         
-        ArrayList pathList = new ArrayList();
+        ArrayList<EK> pathList = new ArrayList<>();
         if(pathStack != null){
-            Stack localStack = (Stack)pathStack.clone();
+            LinkedList<Path<VK,VV,EK,EV>> localStack = clonePath(pathStack);
             if(!localStack.isEmpty()){
-                Path top = (Path)localStack.pop();
-                Edge topEdge = top.getPopedValue();
+                Path<VK, VV, EK, EV> top = localStack.pop();
+                Edge<VK, EK, EV> topEdge = top.getPopedValue();
                 if(topEdge != null){
                     pathList.add(0, topEdge.getEdgeKey());
                 }
                 while(!localStack.isEmpty()){
-                    Path path = (Path)localStack.pop();
-                    Edge edge = path.getPopedValue();
+                    Path<VK,VV,EK,EV> path = localStack.pop();
+                    Edge<VK, EK, EV> edge = path.getPopedValue();
                     if(edge != null){
                         pathList.add(0, edge.getEdgeKey());
                     }
                 }
             }
         }
-        return pathList.toArray();
+        return pathList;
     }
     
     /** @return the edge used to access the current node
@@ -301,15 +305,15 @@ public final class DepthFirstIterator implements Iterator{
      *  link one node to another. Two nodes are connected if there is
      *  such a connection path between these two nodes.
      */
-    public static final Object[]getConnectionPath(ImplementationGraph graph, 
-    Object nodeKeyFrom, Object nodeKeyTo)
+    public static final <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> List<Vertex<VK,VV,EK,EV>>getConnectionPath(ImplementationGraph<VK,VV,EK,EV> graph, 
+    VK nodeKeyFrom, VK nodeKeyTo)
     throws GraphException{
         
         if(nodeKeyFrom == null)
             throw new NodeNotFoundException("Parameter 'from' is null");
         if(nodeKeyTo == null)
             throw new NodeNotFoundException("Parameter 'to' is null");
-        DepthFirstIterator iter = new DepthFirstIterator(graph, nodeKeyFrom, 1);
+        DepthFirstIterator<VK,VV,EK,EV> iter = new DepthFirstIterator<>(graph, nodeKeyFrom, 1);
         while(iter.hasNext()){
             if(nodeKeyTo.equals(iter.next())){
                 return iter.nodePath();
@@ -318,18 +322,24 @@ public final class DepthFirstIterator implements Iterator{
         return null;
     }
     
-    public final Object[]getConnectionPath(Object nodeKeyFrom, Object nodeKeyTo)
+    public final List<Vertex<VK,VV,EK,EV>>getConnectionPath(VK nodeKeyFrom, VK nodeKeyTo)
     throws GraphException{
         if(nodeKeyFrom == null)
             throw new NodeNotFoundException("Parameter 'from' is null");
         if(nodeKeyTo == null)
             throw new NodeNotFoundException("Parameter 'to' is null");
-        DepthFirstIterator iter = new DepthFirstIterator(this.graph, nodeKeyFrom, 1);
+        DepthFirstIterator<VK,VV,EK,EV> iter = new DepthFirstIterator<>(this.graph, nodeKeyFrom, 1);
         while(iter.hasNext()){
             if(nodeKeyTo.equals(iter.next())){
                 return iter.nodePath();
             }
         }
         return null;
+    }
+    
+    private LinkedList<Path<VK,VV,EK,EV>> clonePath(LinkedList<Path<VK,VV,EK,EV>> path){
+    	LinkedList<Path<VK,VV,EK,EV>> result;
+    	result = path.stream().map(v -> v.clone()).collect(LinkedList::new, LinkedList::add, LinkedList::addAll);
+    	return result;
     }
 }

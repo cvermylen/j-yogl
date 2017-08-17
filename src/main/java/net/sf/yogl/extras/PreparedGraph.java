@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.yogl.AbstractGraph;
+import net.sf.yogl.Graph;
 import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.impl.DuplicateVertexException;
@@ -120,7 +120,7 @@ public class PreparedGraph extends java.lang.Object {
         tails.add(nodeKeyTo);
     }
     
-    public void populateGraph(AbstractGraph graph) throws GraphException {
+    public void populateGraph(Graph graph) throws GraphException {
         cleanUpHeadsAndTails();
         Iterator nodesIter = nodes.entrySet().iterator();
         while(nodesIter.hasNext()){

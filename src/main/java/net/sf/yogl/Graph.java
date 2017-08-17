@@ -18,11 +18,16 @@
 package net.sf.yogl;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
+import net.sf.yogl.impl.DuplicateEdgeException;
+import net.sf.yogl.impl.DuplicateVertexException;
+import net.sf.yogl.impl.Vertex;
 
 /** The interface described here is the top hierarchy of the decorator pattern.
  * Methods listed hereafter are common to all graph implementations.
@@ -46,7 +51,7 @@ import net.sf.yogl.exceptions.NodeNotFoundException;
  * responsibility to find the right combinations of decorators.
  */
 
-public interface AbstractGraph {
+public interface Graph <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> {
 
 	/** Insert a new link between 2 nodes. This new link will be placed 
 	 *  'before' any existing link between these 2 nodes.
@@ -56,10 +61,10 @@ public interface AbstractGraph {
 	 *  @param linkValue
 	 */
 	public void addLinkFirst(
-		Object nodeKeyFrom,
-		Object nodeKeyTo,
-		Object linkKey,
-		Object linkValue)
+		VK nodeKeyFrom,
+		VK nodeKeyTo,
+		EK linkKey,
+		EV linkValue)
 		throws NodeNotFoundException, DuplicateLinkException, GraphCorruptedException;
 
 	/** Insert a new link between 2 nodes. This new link will be placed 
@@ -69,9 +74,9 @@ public interface AbstractGraph {
 	 *  @param linkKey uniquely identify the link between 'from' and 'to'
 	 */
 	public void addLinkFirst(
-		Object nodeKeyFrom,
-		Object nodeKeyTo,
-		Object linkKey)
+		VK nodeKeyFrom,
+		VK nodeKeyTo,
+		EK linkKey)
 		throws NodeNotFoundException, DuplicateLinkException, GraphCorruptedException;
 
 	/** Insert a new directed edge from nodeFrom to nodeTo and
@@ -83,10 +88,10 @@ public interface AbstractGraph {
 	 *            between nodeFrom and nodeTo
 	 */
 	public void addLinkLast(
-		Object nodeKeyFrom,
-		Object nodeKeyTo,
-		Object linkKey,
-		Object linkValue)
+		VK nodeKeyFrom,
+		VK nodeKeyTo,
+		EK linkKey,
+		EV linkValue)
 		throws NodeNotFoundException, DuplicateLinkException, GraphCorruptedException;
 
 	/** Insert a new directed edge from nodeFrom to nodeTo and
@@ -98,9 +103,9 @@ public interface AbstractGraph {
 	 *            between nodeFrom and nodeTo
 	 */
 	public void addLinkLast(
-		Object nodeKeyFrom,
-		Object nodeKeyTo,
-		Object linkKey)
+		VK nodeKeyFrom,
+		VK nodeKeyTo,
+		EK linkKey)
 		throws NodeNotFoundException, DuplicateLinkException, GraphCorruptedException;
 
 	/** This method inserts a new node in the graph.
@@ -113,7 +118,7 @@ public interface AbstractGraph {
 	 * @exception DuplicateVertexException thrown if the node is
 	 *            already present in the graph.
 	 */
-	public void addNode(Object nodeKey, Object nodeValue)
+	public void addNode(VK nodeKey, VV nodeValue)
 		throws GraphException;
 
 	/** Return an iterator to browse ALL nodes in the graph that can
@@ -129,7 +134,7 @@ public interface AbstractGraph {
 	 *         an infinite value.
 	 */
 	public BreadthFirstIterator breadthFirstIterator(
-		Object startingNodeKey,
+		VK startingNodeKey,
 		int maxCycles)
 		throws GraphException;
 
@@ -140,7 +145,7 @@ public interface AbstractGraph {
 	/** Clones the structure of the graph. User values are cloned.
 	 *  Internal variables (traversal) are reset.
 	 */
-	public void deepCopy(AbstractGraph dest) throws GraphException;
+	public void deepCopy(Graph<VK, VV, EK, EV> dest) throws GraphException;
 
 	/** Return an iterator to browse ALL nodes in the graph that can
 	 *  be accessed from the startingNode. The method 'next()' in the
@@ -154,14 +159,14 @@ public interface AbstractGraph {
 	 *         Accepted values are: [1 .. n]. There is no way to express
 	 *         an infinite value.
 	 */
-	public DepthFirstIterator depthFirstIterator(Object startingNodeKey, int maxCycling)
+	public DepthFirstIterator depthFirstIterator(VK startingNodeKey, int maxCycling)
 		throws GraphException;
 
 	/** Test for the presence of a given node key.
 	 * @param nodeKey identify the node
 	 * @return true if the key is already present in the graph.
 	 */
-	public boolean existsNode(Object nodeKey);
+	public boolean existsNode(VK nodeKey);
 
 	/** Returns a matrix of boolean values, where each node is at the
 	 *  same position as in the array returned by the 'getNodes' method
@@ -170,7 +175,7 @@ public interface AbstractGraph {
 
 	/** Return the list of all entry points in the graph.
 	 */
-	public Object[] getAllStartNodeKeys();
+	public Collection<VK> getAllStartNodeKeys();
 
 	/** Return the depth of the graph. This method may perform a full 
 	 *  traversal of the graph (depend on the implementation). The result
@@ -178,20 +183,20 @@ public interface AbstractGraph {
 	 *  and any other accessible node.
 	 *  The root node is at level 0.
 	 */
-	public int getDepth(Object startingNodeKey) throws GraphException;
+	public int getDepth(VK startingNodeKey) throws GraphException;
 
 	/** Returns the links that have as destination the given node. This 
 	 *  method looks for 'predecessor' nodes and their relation to the
 	 *  given node.
 	 */
-	public Object[] getIncomingLinksKeys(Object nodeKeyTo)
+	public EK[] getIncomingLinksKeys(VK nodeKeyTo)
 		throws NodeNotFoundException;
 
 	/** Return the list of direct predecessors and their associated
 	 *  link
 	 *  x[0][i] = node; x[1][i] = link
 	 */
-	public Object[][] getIncomingLinksKeysAndNodesKeys(Object nodeKeyTo)
+	public Object[][] getIncomingLinksKeysAndNodesKeys(VK nodeKeyTo)
 		throws NodeNotFoundException;
 
 	/** Return the total number of edges contained in the graph.
@@ -214,7 +219,7 @@ public interface AbstractGraph {
 	 * @param nodeKeyFrom
 	 * @param nodeKeyTo
 	 */
-	public Object[] getLinksKeysBetween(Object nodeKeyFrom, Object nodeKeyTo)
+	public EK[] getLinksKeysBetween(VK nodeKeyFrom, VK nodeKeyTo)
 		throws NodeNotFoundException;
 
 	/** Return the number of node contained in the graph. This
@@ -228,36 +233,36 @@ public interface AbstractGraph {
 	 *  nodes.
 	 *  @return a list with all nodes
 	 */
-	public Object[] getNodesKeys() throws GraphCorruptedException;
+	public Set<VK> getNodesKeys() throws GraphCorruptedException;
 
 	/** Return the list of nodes that are of a particular type
 	 *  @param nodeType has a value described in VertexType
 	 */
-	public Object[] getNodesKeys(int nodeType) throws GraphCorruptedException;
+	public List<Vertex<VK,VV,EK,EV>> getVertices(int nodeType) throws GraphCorruptedException;
 
 	/** Returns the type associated to the node.
 	 *  The type is specified by a value defined in VertexType.
 	 *  @return a value from VertexType
 	 *  @exception GraphException if the node does not exists
 	 */
-	public int getNodeType(Object nodeKey) throws GraphException;
+	public int getNodeType(VK nodeKey) throws GraphException;
 
 	/** Returns the user-defined value associated with the given key.
 	 * @param nodeKey
 	 * @return
 	 */
-	public Object getNodeValue(Object nodeKey);
+	public VV getNodeValue(VK nodeKey);
 
 	/** Return the list of all outgoing links
 	 *  @param nodeFrom nodes from which we list the links
 	 */
-	public Object[] getOutgoingLinksKeys(Object nodeKeyFrom)
+	public EK[] getOutgoingLinksKeys(VK nodeKeyFrom)
 		throws GraphException;
 
 	/** Returns an array of all outgoing edges and the associated 
 	 *  destination node.
 	 */
-	public Object[][] getOutgoingLinksKeysAndNodesKeys(Object nodeKeyFrom)
+	public Object[][] getOutgoingLinksKeysAndNodesKeys(VK nodeKeyFrom)
 		throws GraphException;
 
 	/** Returns the value associated to the link identified by the two
@@ -266,7 +271,7 @@ public interface AbstractGraph {
 	 * @param linkKey identify the link
 	 * @throws NodeNotFoundException
 	 */
-	public Object getOutgoingLinkValue(Object nodeKeyFrom, Object linkKey)
+	public EV getOutgoingLinkValue(VK nodeKeyFrom, EK linkKey)
 		throws NodeNotFoundException;
 
 	/** Returns the nodes that have a 'predecessor' relationship with nodeTo.
@@ -274,12 +279,12 @@ public interface AbstractGraph {
 	 *  destination is indicated by the parameter.
 	 *  @param nodeTo destination node
 	 */
-	public Object[] getPredecessorNodesKeys(Object nodeKeyTo)
+	public VK[] getPredecessorNodesKeys(VK nodeKeyTo)
 		throws GraphException;
 
 	/** Ditto but for a given link
 	 */
-	public Object[] getPredecessorNodesKeys(Object nodeKeyTo, Object link)
+	public VK[] getPredecessorNodesKeys(VK nodeKeyTo, EK link)
 		throws GraphException;
 
 	/** Ask the graph to return the list of all nodes that are adjacent
@@ -292,7 +297,7 @@ public interface AbstractGraph {
 	     *        requested neighbors. The minimal distance is 1: returns the
 	     *        immediate neighbors.
 	 */
-	public Object[] getSuccessorNodesKeys(Object nodeKey, int steps)
+	public VK[] getSuccessorNodesKeys(VK nodeKey, int steps)
 		throws GraphException;
 
 	/** Ask the graph to return the list of all nodes that are adjacent
@@ -303,17 +308,17 @@ public interface AbstractGraph {
 	 * @param link this link connect the first node to the list of
 	 *        vertices returned by the method.
 	 */
-	public Object[] getSuccessorNodesKeys(Object nodeKey, Object link)
+	public VK[] getSuccessorNodesKeys(VK nodeKey, EK link)
 		throws GraphException;
 
 	/** Return the content of a local integer variable stored on each
 	 *  node. This variable is typically used to control graph traversals.
 	 */
-	public int getVisitCount(Object nodeKey) throws GraphException;
+	public int getVisitCount(VK nodeKey) throws GraphException;
 
 	/** Increment the passage variable by 1. The new value is returned.
 	 */
-	public int incVisitCount(Object nodeKey) throws GraphException;
+	public int incVisitCount(VK nodeKey) throws GraphException;
 
 	/** Check if the graph is empty or not. That is, if the graph contains
 	 * at least one node.
@@ -324,7 +329,7 @@ public interface AbstractGraph {
 	 * @param nodeKey node identifier
 	 * @return true if is an entry point
 	 */
-	public boolean isStartNode(Object nodeKey);
+	public boolean isStartNode(VK nodeKey);
 
 	/** Returns an iterator on all existing links.
 	 *  Links returned by this iterator are not garanteed to be
@@ -335,20 +340,20 @@ public interface AbstractGraph {
 	/** The iterator returned by the nodeIterator method is useful
 	 * to retrieve all nodes contained in the graph.
 	 */
-	public Collection nodesKeySet();
+	public Collection<VK> nodesKeySet();
 
 	/** The iterator returned by the nodeIterator method is useful
 	 * to retrieve all nodes contained in the graph.
 	 */
-	public Collection nodesValues();
+	public Collection<VV> nodesValues();
 
 	/** return an non ordered set with all link values.
 	 */
-	public Collection linksValues();
+	public Collection<EV> linksValues();
 	
 	/** Removes all links between the given nodes.
 	 */
-	public void removeAllLinksBetween(Object nodeKeyFrom, Object nodeKeyTo)
+	public void removeAllLinksBetween(VK nodeKeyFrom, VK nodeKeyTo)
 		throws GraphException;
 
 	/** Method to remove an edge between two vertices.
@@ -356,7 +361,7 @@ public interface AbstractGraph {
 	 * @param nodeTo destination node
 	 * @param link to be removed
 	 */
-	public void removeLink(Object nodeKeyFrom, Object nodeKeyTo, Object link)
+	public void removeLink(VK nodeKeyFrom, VK nodeKeyTo, EK link)
 		throws GraphException;
 
 	/** This method will mark the node as unused. The list of neighbors
@@ -366,7 +371,7 @@ public interface AbstractGraph {
 	 * removed node are not removed.
 	 * @param node node to be removed
 	 */
-	public void removeNode(Object nodeKey) throws NodeNotFoundException;
+	public void removeNode(VK nodeKey) throws NodeNotFoundException;
 
 	/** Initialize the content of the variable to a given value.
 		 */
@@ -374,7 +379,7 @@ public interface AbstractGraph {
 
 	/** Initialize the content of the variable to a given value.
 	 */
-	public void setVisitCount(Object nodeKey, int count) throws GraphException;
+	public void setVisitCount(VK nodeKey, int count) throws GraphException;
 
 	/** This method does not throw an exception if the link already exists
 	 *  between the two nodes.
@@ -384,20 +389,20 @@ public interface AbstractGraph {
 	 * @throws GraphException
 	 */
 	public void tryAddLinkFirst(
-		Object nodeKeyFrom,
-		Object nodeKeyTo,
-		Object linkKey,
-		Object linkValue)
+		VK nodeKeyFrom,
+		VK nodeKeyTo,
+		EK linkKey,
+		EV linkValue)
 		throws NodeNotFoundException, GraphCorruptedException;
 
 	/** This method does not throw an exception if the link already exists
 	 *  between the two nodes.
 	 */
 	public void tryAddLinkLast(
-		Object nodeKeyFrom,
-		Object nodeKeyTo,
-		Object linkKey,
-		Object linkValue)
+		VK nodeKeyFrom,
+		VK nodeKeyTo,
+		EK linkKey,
+		EV linkValue)
 		throws NodeNotFoundException, GraphCorruptedException;
 
 	/** This method is exactly the same as 'addNode' but does not throw an
@@ -407,6 +412,6 @@ public interface AbstractGraph {
 	 * @param type
 	 * @return
 	 */
-	public Object tryAddNode(Object nodeKey, Object nodeValue);
+	public Object tryAddNode(VK nodeKey, VV nodeValue);
 
 }

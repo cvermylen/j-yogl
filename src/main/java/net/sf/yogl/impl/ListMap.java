@@ -21,26 +21,27 @@ import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
-public class ListMap extends AbstractMap {
+public class ListMap<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends AbstractMap<EK, Edge<VK, EK, EV>> {
 
-	private LinkedList list = new LinkedList();
-	private HashMap map = new HashMap();
+	private LinkedList<EK> list = new LinkedList<EK>();
+	private HashMap<EK, Edge<VK, EK, EV>> map = new HashMap<>();
 	  
 	/* (non-Javadoc)
 	 * @see java.util.AbstractMap#entrySet()
 	 */
-	public Set entrySet() {
+	public Set<Map.Entry<EK, Edge<VK, EK, EV>>> entrySet() {
 		return map.entrySet();
 	}
 
-	public void addFirst(Object key, Object value){
+	public void addFirst(EK key, Edge<VK, EK, EV> value){
 		map.put(key, value);
 		list.addFirst(key);
 	}
 	
-	public void addLast(Object key, Object value){
+	public void addLast(EK key, Edge<VK, EK, EV> value){
 		map.put(key, value);
 		list.addLast(key);
 	}
@@ -50,25 +51,25 @@ public class ListMap extends AbstractMap {
 		map.clear();
 	}
 	
-	public Object get(Object key){
+	public Edge<VK, EK, EV> get(EK key){
 		return map.get(key);
 	}
 	
-	public Object getFirst(){
+	public EK getFirst(){
 		return list.getFirst();
 	}
 	
-	public Object getLast(){
+	public EK getLast(){
 		return list.getLast();
 	}
 	
-	public Object put(Object key, Object value){
+	public Edge<VK, EK, EV> put(EK key, Edge<VK, EK, EV> value){
 		addLast(key, value);
 		return value;
 	}
 	
-	public Object remove(Object key){
-		Object result = map.get(key);
+	public Edge<VK, EK, EV> remove(EK key){
+		Edge<VK, EK, EV> result = map.get(key);
 		list.remove(key);
 		map.remove(key);
 		return result;
@@ -78,13 +79,13 @@ public class ListMap extends AbstractMap {
 		return list.size();
 	}
 	
-	public Collection values(){
+	public Collection<Edge<VK, EK, EV>> values(){
 		return map.values();
 	}
 	
 	public Object clone(){
-		ListMap result = new ListMap();
-		result.list = (LinkedList)this.list.clone();
+		ListMap<VK, VV, EK, EV> result = new ListMap<VK, VV, EK, EV>();
+		result.list = (LinkedList<EK>)this.list.clone();
 		result.map = (HashMap)this.map.clone();
 		return result;
 	}

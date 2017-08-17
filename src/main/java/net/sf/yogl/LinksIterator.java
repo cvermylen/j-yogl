@@ -17,8 +17,8 @@
    
 package net.sf.yogl;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
 
 import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.impl.Edge;
@@ -29,30 +29,30 @@ import net.sf.yogl.impl.Vertex;
  *  When pointing to a specific link, the iterator gives also
  *  which nodes the link connect.
  */
-public class LinksIterator implements Iterator {
+public class LinksIterator<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> implements Iterator<EV> {
 
-	private Vector predNodes = null;
-	private Vector links = null;
-	private Vector succNodes = null;
+	private ArrayList<VK> predNodes = null;
+	private ArrayList<EV> links = null;
+	private ArrayList<VK> succNodes = null;
 	private int counter = 0;
 
-	public LinksIterator(ImplementationGraph graph) throws NodeNotFoundException {
+	public LinksIterator(ImplementationGraph<VK, VV, EK, EV> graph) throws NodeNotFoundException {
 
 		int count = graph.getLinkCount();
 		int index = 0;
-		predNodes = new Vector(count);
-		links = new Vector(count);
-		succNodes = new Vector(count);
+		predNodes = new ArrayList<VK>(count);
+		links = new ArrayList<EV>(count);
+		succNodes = new ArrayList<VK>(count);
 
-		Iterator nodesIter = graph.nodesKeySet().iterator();
+		Iterator<VK> nodesIter = graph.nodesKeySet().iterator();
 		while (nodesIter.hasNext()) {
-			Object key = nodesIter.next();
-			Vertex vertex = graph.findVertexByKey(key);
-			Edge[]neighbors = vertex.getNeighbors();
+			VK key = nodesIter.next();
+			Vertex<VK, VV, EK, EV> vertex = graph.findVertexByKey(key);
+			Edge<VK, EK, EV>[]neighbors = vertex.getNeighbors();
 			for(int i=0; i < neighbors.length; i++) {
 				predNodes.add(index, key);
 				links.add(index, neighbors[i].getUserValue());
-				Object destKey = neighbors[i].getNextVertexKey();
+				VK destKey = neighbors[i].getNextVertexKey();
 				succNodes.add(index++, destKey);
 			}
 		}
@@ -67,11 +67,11 @@ public class LinksIterator implements Iterator {
 
 	/** Read the next link from the iterator
 	 */
-	public Object next() {
+	public EV next() {
 
-		Object result = null;
+		EV result = null;
 		if (hasNext()) {
-			result = links.elementAt(counter);
+			result = links.get(counter);
 			counter++;
 		}
 		return result;
@@ -79,22 +79,22 @@ public class LinksIterator implements Iterator {
 
 	/** Returns the source node of the last 'read' link
 	 */
-	public Object getOriginator() {
+	public VK getOriginator() {
 
-		Object result = null;
+		VK result = null;
 		if ((counter <= links.size()) && (counter > 0)) {
-			result = predNodes.elementAt(counter - 1);
+			result = predNodes.get(counter - 1);
 		}
 		return result;
 	}
 
 	/** Returns the sink node of the last 'read' node
 	 */
-	public Object getDestination() {
+	public VK getDestination() {
 
-		Object result = null;
+		VK result = null;
 		if ((counter <= links.size()) && (counter > 0)) {
-			result = succNodes.elementAt(counter - 1);
+			result = succNodes.get(counter - 1);
 		}
 		return result;
 	}
