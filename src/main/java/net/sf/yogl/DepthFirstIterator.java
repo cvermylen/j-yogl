@@ -24,13 +24,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import net.sf.yogl.adjacent.list.AdjListEdge;
+import net.sf.yogl.adjacent.list.AdjListVertex;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
-import net.sf.yogl.impl.Edge;
 import net.sf.yogl.impl.ImplementationGraph;
 import net.sf.yogl.impl.Path;
-import net.sf.yogl.impl.Vertex;
 import net.sf.yogl.types.VertexType;
 
 /** Given a specific graph, this iterator returns the next vertex in a
@@ -39,15 +39,15 @@ import net.sf.yogl.types.VertexType;
  * being modified during the traversal.
  */
 
-public final class DepthFirstIterator<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> implements Iterator<Vertex<VK,VV,EK,EV>>{
+public final class DepthFirstIterator<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> implements Iterator<AdjListVertex<VK,VV,EK,EV>>{
     
     /** Current vertex 'pointed' by the iterator
      */
-    protected Vertex<VK,VV,EK,EV> current = null;
+    protected AdjListVertex<VK,VV,EK,EV> current = null;
     
     /** Last edge used to access current vertex
      */
-    private Edge<VK,EK,EV> lastUsedEdge =  null;
+    private AdjListEdge<VK,EK,EV> lastUsedEdge =  null;
     
     /** 'graph' refers to the graph currently being traversed.
      */
@@ -57,7 +57,7 @@ public final class DepthFirstIterator<VK extends Comparable<VK>, VV, EK extends 
      * This stack is used to simulate the recursivity.
      * The Objects contained in the stack will be of type 'Vertex'
      */
-    protected LinkedList<Vertex<VK,VV,EK,EV>> vStack = new LinkedList<>();
+    protected LinkedList<AdjListVertex<VK,VV,EK,EV>> vStack = new LinkedList<>();
     
     /** The 'pathStack' contains the path followed from the starting node
      * to the current node, this one excluded.
@@ -81,11 +81,11 @@ public final class DepthFirstIterator<VK extends Comparable<VK>, VV, EK extends 
             throw new NullPointerException(
             "graph is null in init()");
         }
-        Collection<Vertex<VK,VV,EK,EV>> keys = graph.getVertices(VertexType.START | VertexType.STARTEND);
+        Collection<AdjListVertex<VK,VV,EK,EV>> keys = graph.getVertices(VertexType.START | VertexType.STARTEND);
         if(keys == null){
 			return;
 	    }
-	    for(Vertex<VK,VV,EK,EV> vertex: keys){
+	    for(AdjListVertex<VK,VV,EK,EV> vertex: keys){
 	    	vStack.push(vertex);
 	    }
     }
@@ -128,11 +128,11 @@ public final class DepthFirstIterator<VK extends Comparable<VK>, VV, EK extends 
             //put all adjacent neighbors on traversal stack
             if(graph.findVertexByKey(current.getKey()).getNeighbors().length > 0){
                 // returned vertex has some successors
-                Edge<VK,EK,EV>[]eArray = graph.findVertexByKey(current.getKey()).getNeighbors();
+                AdjListEdge<VK,EK,EV>[]eArray = graph.findVertexByKey(current.getKey()).getNeighbors();
                 // loop from end to begin
                 for (int i=eArray.length-1; i>= 0; i--){
                     //vStack.push(graph.getVertex(((Edge)eArray[i]).getVertex()));
-                    Vertex<VK,VV,EK,EV> nextKey = graph.findVertexByKey(eArray[i].getNextVertexKey());
+                    AdjListVertex<VK,VV,EK,EV> nextKey = graph.findVertexByKey(eArray[i].getNextVertexKey());
                     vStack.push(nextKey);
                 }
                 
@@ -184,7 +184,7 @@ public final class DepthFirstIterator<VK extends Comparable<VK>, VV, EK extends 
      *  @param graph is a valid, possibly decorated, concrete graph.
      *  @param startNode user-defined node in this graph
      */
-    DepthFirstIterator(ImplementationGraph<VK,VV,EK,EV> graph, VK startingNodeKey, int maxCycling)
+    public DepthFirstIterator(ImplementationGraph<VK,VV,EK,EV> graph, VK startingNodeKey, int maxCycling)
     throws GraphException{
         
         if(graph == null){
@@ -224,7 +224,7 @@ public final class DepthFirstIterator<VK extends Comparable<VK>, VV, EK extends 
      *  @return the next user object in first order
      * @exception NoSuchElementException if the iterator is empty
      */
-    public Vertex<VK,VV,EK,EV> next()
+    public AdjListVertex<VK,VV,EK,EV> next()
     throws NoSuchElementException{
         
         try{
@@ -249,9 +249,9 @@ public final class DepthFirstIterator<VK extends Comparable<VK>, VV, EK extends 
      * and the graph root
      * @throws NodeNotFoundException 
      */
-    public List<Vertex<VK,VV,EK,EV>>nodePath() throws NodeNotFoundException{
+    public List<AdjListVertex<VK,VV,EK,EV>>nodePath() throws NodeNotFoundException{
         
-        LinkedList<Vertex<VK,VV,EK,EV>> pathList = new LinkedList<>();
+        LinkedList<AdjListVertex<VK,VV,EK,EV>> pathList = new LinkedList<>();
         LinkedList<Path<VK,VV,EK,EV>> localStack = clonePath(pathStack);
         while(!localStack.isEmpty()){
             Path<VK,VV,EK,EV> path = localStack.pop();
@@ -271,13 +271,13 @@ public final class DepthFirstIterator<VK extends Comparable<VK>, VV, EK extends 
             LinkedList<Path<VK,VV,EK,EV>> localStack = clonePath(pathStack);
             if(!localStack.isEmpty()){
                 Path<VK, VV, EK, EV> top = localStack.pop();
-                Edge<VK, EK, EV> topEdge = top.getPopedValue();
+                AdjListEdge<VK, EK, EV> topEdge = top.getPopedValue();
                 if(topEdge != null){
                     pathList.add(0, topEdge.getEdgeKey());
                 }
                 while(!localStack.isEmpty()){
                     Path<VK,VV,EK,EV> path = localStack.pop();
-                    Edge<VK, EK, EV> edge = path.getPopedValue();
+                    AdjListEdge<VK, EK, EV> edge = path.getPopedValue();
                     if(edge != null){
                         pathList.add(0, edge.getEdgeKey());
                     }
@@ -305,7 +305,7 @@ public final class DepthFirstIterator<VK extends Comparable<VK>, VV, EK extends 
      *  link one node to another. Two nodes are connected if there is
      *  such a connection path between these two nodes.
      */
-    public static final <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> List<Vertex<VK,VV,EK,EV>>getConnectionPath(ImplementationGraph<VK,VV,EK,EV> graph, 
+    public static final <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> List<AdjListVertex<VK,VV,EK,EV>>getConnectionPath(ImplementationGraph<VK,VV,EK,EV> graph, 
     VK nodeKeyFrom, VK nodeKeyTo)
     throws GraphException{
         
@@ -322,7 +322,7 @@ public final class DepthFirstIterator<VK extends Comparable<VK>, VV, EK extends 
         return null;
     }
     
-    public final List<Vertex<VK,VV,EK,EV>>getConnectionPath(VK nodeKeyFrom, VK nodeKeyTo)
+    public final List<AdjListVertex<VK,VV,EK,EV>>getConnectionPath(VK nodeKeyFrom, VK nodeKeyTo)
     throws GraphException{
         if(nodeKeyFrom == null)
             throw new NodeNotFoundException("Parameter 'from' is null");

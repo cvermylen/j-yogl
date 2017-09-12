@@ -19,9 +19,9 @@ package net.sf.yogl.samples;
 
 import java.util.HashMap;
 
-import net.sf.yogl.AdjListGraph;
 import net.sf.yogl.GraphAdapter;
 import net.sf.yogl.StateTransitionDiagram;
+import net.sf.yogl.adjacent.list.AdjListGraph;
 import net.sf.yogl.exceptions.StdExecutionException;
 import net.sf.yogl.std.State;
 import net.sf.yogl.std.Transition;
@@ -89,7 +89,7 @@ public class Std {
 			{"3", "2", "key32"},
 			{"2", "4", "key24"}
 		};
-		GraphAdapter ga = new GraphAdapter(new AdjListGraph(new HashMap()));
+		GraphAdapter ga = new GraphAdapter(/*new AdjListGraph(new HashMap())*/);
 		Std std = new Std();
 		for(int i=0; i < stdDes.length; i++){
 			if(stdDes[i].length == 2){

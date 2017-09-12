@@ -19,6 +19,8 @@ package net.sf.yogl.impl;
 
 import java.util.LinkedList;
 
+import net.sf.yogl.adjacent.list.AdjListEdge;
+
 /** Class used to manage the path of vertices followed during
  * the traversal. Object are pushed on a stack with the number of adjacent
  * neighbors. Each time an object is poped from the traversal stack, the
@@ -32,19 +34,19 @@ public class Path<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV>{
 	 */
 	private VK nodeKey = null;
 	
-	private Edge<VK,EK,EV> popedValue = null;
+	private AdjListEdge<VK,EK,EV> popedValue = null;
 	
 	/** Reference to links exiting from this vertex
 	 *  Order in this stack is extremely important.
 	 *  It MUST follow the same order as the one in the
 	 *  vStack.
 	 */
-	private LinkedList<Edge<VK,EK,EV>> outgoingEdges = null;
+	private LinkedList<AdjListEdge<VK,EK,EV>> outgoingEdges = null;
 	
-	public Path(VK nodeKey, Edge<VK,EK,EV>[]eArray){
+	public Path(VK nodeKey, AdjListEdge<VK,EK,EV>[]eArray){
 		this.nodeKey = nodeKey;
 		this.outgoingEdges = new LinkedList<>();
-		outgoingEdges.push(new Edge<>(null, null, null));
+		outgoingEdges.push(new AdjListEdge<>(null, null, null));
 			for (int i=eArray.length-1; i>= 0; i--){
 				outgoingEdges.push(eArray[i]);
 			}
@@ -55,9 +57,9 @@ public class Path<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV>{
 	 *  @return the edge used to access to the next
 	 *  node
 	 */
-	public Edge<VK,EK,EV> dec(){
+	public AdjListEdge<VK,EK,EV> dec(){
 		
-		Edge<VK,EK,EV> usedEdge = outgoingEdges.pop();
+		AdjListEdge<VK,EK,EV> usedEdge = outgoingEdges.pop();
 		popedValue = usedEdge;
 		return usedEdge;
 	}
@@ -79,8 +81,8 @@ public class Path<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV>{
 	/** getter method
 	 *  @return the current edge
 	 */
-	public Edge<VK,EK,EV> getEdge(){
-		Edge<VK,EK,EV> edge = null;
+	public AdjListEdge<VK,EK,EV> getEdge(){
+		AdjListEdge<VK,EK,EV> edge = null;
 		
 		if(!outgoingEdges.isEmpty()){
 			if(outgoingEdges.size() > 1){ //last element is empty string
@@ -90,7 +92,7 @@ public class Path<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV>{
 		return edge;
 	}
 	
-	public Edge<VK,EK,EV> getPopedValue(){
+	public AdjListEdge<VK,EK,EV> getPopedValue(){
 		
 		return popedValue;
 	}

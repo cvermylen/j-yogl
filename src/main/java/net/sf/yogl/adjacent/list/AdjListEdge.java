@@ -15,7 +15,7 @@
    Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
    MA 02111-1307, USA */
    
-package net.sf.yogl.impl;
+package net.sf.yogl.adjacent.list;
 
 /** Edge is the container for user-defined edges. There is one list per vertex
  * (see vertex). The Edge object must be unique within this list.
@@ -29,7 +29,7 @@ package net.sf.yogl.impl;
  *  - the interger 'vertex' value points to the destination vertex.
  */
 
-public class Edge <VK extends Comparable<VK>, EK extends Comparable<EK>, EV>{
+public class AdjListEdge <VK extends Comparable<VK>, EK extends Comparable<EK>, EV>{
 	/** used by traversal algorithms to indicate the number
 	 * of times the edge has been visited.
 	 */
@@ -52,7 +52,7 @@ public class Edge <VK extends Comparable<VK>, EK extends Comparable<EK>, EV>{
 	 * @param rValue refers to an object that is of the type used
 	 * to define all edges in the graph.
 	 */
-	public Edge(EK edgeKey, VK nextVertexKey, EV userValue) {
+	public AdjListEdge(EK edgeKey, VK nextVertexKey, EV userValue) {
 		this.edgeKey = edgeKey;
 		this.nextVertexKey = nextVertexKey;
 		this.userValue = userValue;
@@ -61,8 +61,8 @@ public class Edge <VK extends Comparable<VK>, EK extends Comparable<EK>, EV>{
 	/** duplicate referenced edge
 	 * @return a copy of this Edge
 	 */
-	public Edge<VK, EK, EV> clone() {
-		Edge<VK, EK, EV> dup = new Edge<VK, EK, EV>(this.edgeKey, this.nextVertexKey, this.userValue);
+	public AdjListEdge<VK, EK, EV> clone() {
+		AdjListEdge<VK, EK, EV> dup = new AdjListEdge<VK, EK, EV>(this.edgeKey, this.nextVertexKey, this.userValue);
 		return dup;
 	}
 
@@ -77,8 +77,8 @@ public class Edge <VK extends Comparable<VK>, EK extends Comparable<EK>, EV>{
 	public boolean equals(Object rhs) {
 		boolean result = false;
 
-		if (rhs instanceof Edge) {
-			result = edgeKey.equals(((Edge<VK, EK, EV>) rhs).edgeKey);
+		if (rhs instanceof AdjListEdge) {
+			result = edgeKey.equals(((AdjListEdge<VK, EK, EV>) rhs).edgeKey);
 		}
 		return result;
 	}

@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.yogl.Graph;
+import net.sf.yogl.ComparableKeysGraph;
 import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.impl.DuplicateVertexException;
@@ -120,18 +120,18 @@ public class PreparedGraph extends java.lang.Object {
         tails.add(nodeKeyTo);
     }
     
-    public void populateGraph(Graph graph) throws GraphException {
+    public void populateGraph(ComparableKeysGraph graph) throws GraphException {
         cleanUpHeadsAndTails();
         Iterator nodesIter = nodes.entrySet().iterator();
         while(nodesIter.hasNext()){
             Map.Entry node = (Map.Entry)nodesIter.next();
-            graph.addNode(node.getKey(), node.getValue());
+            graph.addNode((Comparable)node.getKey(), node.getValue());
         }
         
         Iterator linksIter = links.iterator();
         while(linksIter.hasNext()){
             Rel rel = (Rel)linksIter.next();
-            graph.addLinkLast(rel.from, rel.to, rel.link, null);
+            graph.addLinkLast((Comparable)rel.from, (Comparable)rel.to, (Comparable)rel.link, null);
         }
     }
     

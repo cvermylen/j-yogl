@@ -21,9 +21,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
+import net.sf.yogl.adjacent.list.AdjListVertex;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.impl.ImplementationGraph;
-import net.sf.yogl.impl.Vertex;
 
 public final class BreadthFirstIterator implements Iterator {
 
@@ -42,7 +42,7 @@ public final class BreadthFirstIterator implements Iterator {
 	 *  Precondition: graph & node must contain valid values. All node
 	 *  counters (used to count the number of visits) must be reset.
 	 */
-	BreadthFirstIterator(
+	public BreadthFirstIterator(
 		ImplementationGraph graph,
 		Object startingNodeKey,
 		int maxCycling)
@@ -61,10 +61,10 @@ public final class BreadthFirstIterator implements Iterator {
 				throw new NoSuchElementException("Empty iterator");
 			Object key = queue.removeFirst();
 			if(key != null){
-				Vertex current = graph.findVertexByKey(key);
-				Object[]nextKeys = graph.getSuccessorNodesKeys(key, 1);
+				AdjListVertex current = graph.findVertexByKey((Comparable)key);
+				Object[]nextKeys = graph.getSuccessorNodesKeys((Comparable)key, 1);
 				for (int i = 0; i < nextKeys.length; i++) {
-					Vertex next = graph.findVertexByKey(nextKeys[i]);
+					AdjListVertex next = graph.findVertexByKey((Comparable)nextKeys[i]);
 					if(next.getTraversals() < maxCycling){
 						queue.addLast(nextKeys[i]);
 						next.incTraversals();

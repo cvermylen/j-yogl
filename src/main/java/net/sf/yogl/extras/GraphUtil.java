@@ -20,9 +20,10 @@ package net.sf.yogl.extras;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import net.sf.yogl.DepthFirstIterator;
-import net.sf.yogl.Graph;
+import net.sf.yogl.ComparableKeysGraph;
 import net.sf.yogl.GraphAdapter;
 import net.sf.yogl.LinksIterator;
 import net.sf.yogl.exceptions.GraphCorruptedException;
@@ -61,37 +62,36 @@ public final class GraphUtil {
 		DepthFirstIterator iter = graph.depthFirstIterator(startNodeKey, degree);
 		while (iter.hasNext()) {
 			if (endNodeKey.equals(iter.next())) {
-				Object[]nodes = iter.nodePath();
+				List nodes = iter.nodePath();
 				ArrayList nodesArray = new ArrayList(Arrays.asList(nodes));
 				nodesArray.add(endNodeKey);
 				Iterator nodesIter = nodesArray.iterator();
-				Object[]links = iter.linkPath();
+				 List links = iter.linkPath();
 				//links.removeFirst();
 				//Check the validity of link & node lists.
 				//The node list must contain 1 more element than the link list.
 				//Otherwise there is a mismatch
-				if (nodesArray.size() - links.length - 1 != 0) {
+				if (nodesArray.size() - links.size() - 1 != 0) {
 					throw new GraphCorruptedException(
 						"mismatch between link & node lists " ); }
-				VK leftNodeKey = nodesIter.next();
+				VK leftNodeKey = (VK)nodesIter.next();
 				Object leftNodeValue = graph.getNodeValue(leftNodeKey);
 				Object rightNodeKey = null;
 				Object rightNodeValue = null;
-				Object link = null;
-				result.tryAddNode(leftNodeKey, leftNodeValue);
-				for(int i=0; i < links.length; i++){
+//				Object link = null;
+				result.tryAddNode(leftNodeKey, (VV)leftNodeValue);
+				for(Object link: links){
 
 					rightNodeKey = nodesIter.next();
-					link = links[i];
 					if (rightNodeKey.equals(endNodeKey)) {
-						rightNodeValue = graph.getNodeValue(rightNodeKey);
-						result.tryAddNode(rightNodeKey, rightNodeValue);
+						rightNodeValue = graph.getNodeValue((VK)rightNodeKey);
+						result.tryAddNode((VK)rightNodeKey, (VV)rightNodeValue);
 
 					} else {
-						result.tryAddNode(rightNodeKey, rightNodeValue);
+						result.tryAddNode((VK)rightNodeKey, (VV)rightNodeValue);
 					}
-					result.tryAddLinkLast(leftNodeKey, rightNodeKey, link, null);
-					leftNodeKey = rightNodeKey;
+					result.tryAddLinkLast((VK)leftNodeKey, (VK)rightNodeKey, (EK)link, null);
+					leftNodeKey = (VK)rightNodeKey;
 				}
 			}
 		}
@@ -108,19 +108,18 @@ public final class GraphUtil {
 
 		if (endNodeKey == null)
 			return;
-		switch (source.getNodeType(endNodeKey)) {
+		switch (source.getNodeType((Comparable)endNodeKey)) {
 			case VertexType.START :
 			case VertexType.STARTEND :
-				Object endNodeValue = source.getNodeValue(endNodeKey);
-				destination.tryAddNode(endNodeKey, endNodeValue);
+				Object endNodeValue = source.getNodeValue((Comparable)endNodeKey);
+				destination.tryAddNode((Comparable)endNodeKey, endNodeValue);
 				return;
 		}
-		Object[] startList = (Object[]) source.getVertices(VertexType.START);
+		List startList = source.getVertices(VertexType.START);
 		//Iterator iter = startList.iterator();
-		for (int i = 0; i < startList.length; i++) {
+		for (Object startKey: startList) {
 			//while(iter.hasNext()){
-			Object startKey = startList[i];
-			subgraph(source, destination, startKey, endNodeKey);
+			subgraph(source, destination, (Comparable)startKey, (Comparable)endNodeKey);
 		}
 	}
 
@@ -135,33 +134,33 @@ public final class GraphUtil {
 
 		if (startNodeKey == null)
 			return;
-		switch (source.getNodeType(startNodeKey)) {
+		switch (source.getNodeType((Comparable)startNodeKey)) {
 			case VertexType.END :
 			case VertexType.STARTEND :
-				Object startNodeValue = source.getNodeValue(startNodeKey);
-				destination.tryAddNode(startNodeKey, startNodeValue);
+				Object startNodeValue = source.getNodeValue((Comparable)startNodeKey);
+				destination.tryAddNode((Comparable)startNodeKey, startNodeValue);
 				return;
 		}
 		int degree = source.getMaxOutDegree();
-		DepthFirstIterator iter = source.depthFirstIterator(startNodeKey, degree);
+		DepthFirstIterator iter = source.depthFirstIterator((Comparable)startNodeKey, degree);
 		Object firstKey = iter.next();
-		Object firstValue = source.getNodeValue(firstKey);
+		Object firstValue = source.getNodeValue((Comparable)firstKey);
 		int type;
 		if (iter.hasNext()) {
 			type = VertexType.START;
 		} else {
 			type = VertexType.STARTEND;
 		}
-		destination.tryAddNode(firstKey, firstValue);
+		destination.tryAddNode((Comparable)firstKey, firstValue);
 
 		while (iter.hasNext()) {
 			Object refKey = iter.next();
-			Object refValue = source.getNodeValue(refKey);
-			Object[]path = iter.nodePath();
-			Object predKey = path[path.length -1];
-			Object predValue = source.getNodeValue(predKey);
-			destination.tryAddNode(refKey, refValue);
-			destination.tryAddLinkLast(predKey, refKey, iter.usedLink(), null);
+			Object refValue = source.getNodeValue((Comparable)refKey);
+			List path = iter.nodePath();
+			Object predKey = path.get(path.size() -1);
+			Object predValue = source.getNodeValue((Comparable)predKey);
+			destination.tryAddNode((Comparable)refKey, refValue);
+			destination.tryAddLinkLast((Comparable)predKey, (Comparable)refKey, (Comparable)iter.usedLink(), null);
 		}
 	}
 
@@ -170,7 +169,7 @@ public final class GraphUtil {
 	 *  @param graph the whole graph to be stringified
 	     *  @param indent justify some tabs from the left
 	 */
-	public static String depthFirstToString(Graph graph, int indent)
+	public static String depthFirstToString(ComparableKeysGraph graph, int indent)
 		throws GraphException {
 
 		StringBuffer result = new StringBuffer();
@@ -189,14 +188,14 @@ public final class GraphUtil {
 		DepthFirstIterator iter = graph.depthFirstIterator(null, 1);
 		while (iter.hasNext()) {
 			String temp = new String((iter.next()).toString());
-			Object[]path = iter.nodePath();
-			Object[]links = iter.linkPath();
+			List path = iter.nodePath();
+			List links = iter.linkPath();
 			result.append(tabs);
-			for(int i=0; i < path.length; i++) {
+			for(int i=0; i < path.size(); i++) {
 				result.append("[");
-				result.append(path[i]);
+				result.append(path.get(i));
 				result.append("]");
-				result.append(links[i]);
+				result.append(links.get(i));
 			}
 			result.append("[" + temp + "]");
 			result.append("\n//--------------------------------\n");
@@ -248,38 +247,38 @@ public final class GraphUtil {
 			throw new NullPointerException("parameter subgraph is null");
 
 		//Insert all nodes from subgraph into the dest graph
-		Object[] intermediateNodes = subgraph.getVertices(VertexType.NONE);
+		List intermediateNodes = subgraph.getVertices(VertexType.NONE);
 		//Iterator intermediateIter = intermediateNodes.iterator();
 		//while(intermediateIter.hasNext()){
-		for (int i = 0; i < intermediateNodes.length; i++) {
-			Object nodeKey = intermediateNodes[i];
-			Object nodeValue = subgraph.getNodeValue(nodeKey);
-			dest.addNode(nodeKey, nodeValue);
+		for (int i = 0; i < intermediateNodes.size(); i++) {
+			Object nodeKey = intermediateNodes.get(i);
+			Object nodeValue = subgraph.getNodeValue((Comparable)nodeKey);
+			dest.addNode((Comparable)nodeKey, nodeValue);
 		}
 		//extract the start & end nodes from the subgraph
 		//extract the start nodes from the subgraph. Should be max 1.
-		Object[] startList = null;
+		List startList = null;
 		startList = subgraph.getVertices(VertexType.START);
-		if (startList.length != 1) {
+		if (startList.size() != 1) {
 			throw new GraphException(
 				"parameter subgraph should "
 					+ "contain 1 and only 1 'start' node");
 		}
-		Object startNodeKey = startList[0];
-		Object startNodeValue = subgraph.getNodeValue(startNodeKey);
+		Object startNodeKey = startList.get(0);
+		Object startNodeValue = subgraph.getNodeValue((Comparable)startNodeKey);
 		
 		//extract the end node from the subgraph. Should be max 1.
-		Object[] endList = null;
+		List endList = null;
 		endList = subgraph.getVertices(VertexType.END);
-		if (endList.length != 1) {
+		if (endList.size() != 1) {
 			throw new GraphException(
 				"parameter graph should " + "contain 1 and only 1 'end' node");
 		}
-		Object endNodeKey = endList[0];
-		Object endNodeValue = subgraph.getNodeValue(endNodeKey);
+		Object endNodeKey = endList.get(0);
+		Object endNodeValue = subgraph.getNodeValue((Comparable)endNodeKey);
 		
-		dest.addNode(startNodeKey, startNodeValue);
-		dest.addNode(startNodeKey, endNodeValue);
+		dest.addNode((Comparable)startNodeKey, startNodeValue);
+		dest.addNode((Comparable)startNodeKey, endNodeValue);
 
 		//Insert all links from subgraph into dest graph
 		LinksIterator allLinks = subgraph.linksKeysIterator();
@@ -288,32 +287,32 @@ public final class GraphUtil {
 			dest.addLinkLast(
 				allLinks.getOriginator(),
 				allLinks.getDestination(),
-				link, null);
+				(Comparable)link, null);
 		}
 
 		//Connect subgraph to dest graph
 
 		Object[] predecessorsKeys = null;
-		predecessorsKeys = dest.getPredecessorNodesKeys(insertionPointKey);
+		predecessorsKeys = dest.getPredecessorNodesKeys((Comparable)insertionPointKey);
 		for(int j=0; j < predecessorsKeys.length; j++) { //for each predecessor
 			Object[] links = null;
-			links = dest.getLinksKeysBetween(predecessorsKeys[j], insertionPointKey);
+			links = dest.getLinksKeysBetween((Comparable)predecessorsKeys[j], (Comparable)insertionPointKey);
 			for(int i=0; i < links.length; i++) {
 				//remove existing link
-				dest.removeLink(predecessorsKeys[j], insertionPointKey, links[i]);
+				dest.removeLink((Comparable)predecessorsKeys[j], (Comparable)insertionPointKey, (Comparable)links[i]);
 				//and connect new subgraph
-				dest.addLinkLast(predecessorsKeys[j], startNodeKey, links[i], null);
+				dest.addLinkLast((Comparable)predecessorsKeys[j], (Comparable)startNodeKey, (Comparable)links[i], null);
 			}
 		}
 
 		Object[] successorsKeys = null;
-		successorsKeys = dest.getSuccessorNodesKeys(insertionPointKey, 1);
+		successorsKeys = dest.getSuccessorNodesKeys((Comparable)insertionPointKey, 1);
 		for(int i=0; i < successorsKeys.length; i++) {
 			Object[] links = null;
-			links = dest.getLinksKeysBetween(insertionPointKey, successorsKeys[i]);
+			links = dest.getLinksKeysBetween((Comparable)insertionPointKey, (Comparable)successorsKeys[i]);
 			for(int j=0; j < links.length; j++) {
-				dest.removeLink(insertionPointKey, successorsKeys[i], links[j]);
-				dest.addLinkLast(endNodeKey, successorsKeys[i], links[j], null);
+				dest.removeLink((Comparable)insertionPointKey, (Comparable)successorsKeys[i], (Comparable)links[j]);
+				dest.addLinkLast((Comparable)endNodeKey, (Comparable)successorsKeys[i], (Comparable)links[j], null);
 			}
 		}
 	}

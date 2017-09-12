@@ -17,6 +17,8 @@
    
 package net.sf.yogl.impl;
 
+import net.sf.yogl.adjacent.list.AdjListEdge;
+import net.sf.yogl.adjacent.list.AdjListVertex;
 import net.sf.yogl.exceptions.GraphException;
 
 /**
@@ -25,13 +27,13 @@ import net.sf.yogl.exceptions.GraphException;
  */
 public class DuplicateEdgeException extends GraphException{
 	
-	private Vertex pred;
-	private Edge edge;
+	private AdjListVertex pred;
+	private AdjListEdge edge;
 	
 	/**
 	 * Constructor for DuplicateLinkException.
 	 */
-	public DuplicateEdgeException(Vertex pred, Edge edge) {
+	public DuplicateEdgeException(AdjListVertex pred, AdjListEdge edge) {
 		super();
 		this.pred = pred;
 		this.edge = edge;
@@ -73,7 +75,7 @@ public class DuplicateEdgeException extends GraphException{
 	 * Constructor for DuplicateLinkException.
 	 * @param arg0
 	 */
-	public DuplicateEdgeException(Vertex pred, Edge edge, Throwable arg0) {
+	public DuplicateEdgeException(AdjListVertex pred, AdjListEdge edge, Throwable arg0) {
 		super(arg0);
 		this.pred = pred;
 		this.edge = edge;

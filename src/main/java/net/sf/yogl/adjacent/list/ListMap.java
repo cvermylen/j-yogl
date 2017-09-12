@@ -15,7 +15,7 @@
    Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
    MA 02111-1307, USA */
 
-package net.sf.yogl.impl;
+package net.sf.yogl.adjacent.list;
 
 import java.util.AbstractMap;
 import java.util.Collection;
@@ -24,24 +24,26 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-public class ListMap<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends AbstractMap<EK, Edge<VK, EK, EV>> {
+import net.sf.yogl.adjacent.list.AdjListEdge;
+
+public class ListMap<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends AbstractMap<EK, AdjListEdge<VK, EK, EV>> {
 
 	private LinkedList<EK> list = new LinkedList<EK>();
-	private HashMap<EK, Edge<VK, EK, EV>> map = new HashMap<>();
+	private HashMap<EK, AdjListEdge<VK, EK, EV>> map = new HashMap<>();
 	  
 	/* (non-Javadoc)
 	 * @see java.util.AbstractMap#entrySet()
 	 */
-	public Set<Map.Entry<EK, Edge<VK, EK, EV>>> entrySet() {
+	public Set<Map.Entry<EK, AdjListEdge<VK, EK, EV>>> entrySet() {
 		return map.entrySet();
 	}
 
-	public void addFirst(EK key, Edge<VK, EK, EV> value){
+	public void addFirst(EK key, AdjListEdge<VK, EK, EV> value){
 		map.put(key, value);
 		list.addFirst(key);
 	}
 	
-	public void addLast(EK key, Edge<VK, EK, EV> value){
+	public void addLast(EK key, AdjListEdge<VK, EK, EV> value){
 		map.put(key, value);
 		list.addLast(key);
 	}
@@ -51,7 +53,7 @@ public class ListMap<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, E
 		map.clear();
 	}
 	
-	public Edge<VK, EK, EV> get(EK key){
+	public AdjListEdge<VK, EK, EV> get(EK key){
 		return map.get(key);
 	}
 	
@@ -63,13 +65,13 @@ public class ListMap<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, E
 		return list.getLast();
 	}
 	
-	public Edge<VK, EK, EV> put(EK key, Edge<VK, EK, EV> value){
+	public AdjListEdge<VK, EK, EV> put(EK key, AdjListEdge<VK, EK, EV> value){
 		addLast(key, value);
 		return value;
 	}
 	
-	public Edge<VK, EK, EV> remove(EK key){
-		Edge<VK, EK, EV> result = map.get(key);
+	public AdjListEdge<VK, EK, EV> remove(EK key){
+		AdjListEdge<VK, EK, EV> result = map.get(key);
 		list.remove(key);
 		map.remove(key);
 		return result;
@@ -79,7 +81,7 @@ public class ListMap<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, E
 		return list.size();
 	}
 	
-	public Collection<Edge<VK, EK, EV>> values(){
+	public Collection<AdjListEdge<VK, EK, EV>> values(){
 		return map.values();
 	}
 	

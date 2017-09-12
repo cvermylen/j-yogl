@@ -17,6 +17,7 @@
    
 package net.sf.yogl.impl;
 
+import net.sf.yogl.adjacent.list.AdjListVertex;
 import net.sf.yogl.exceptions.GraphException;
 
 /**
@@ -25,7 +26,7 @@ import net.sf.yogl.exceptions.GraphException;
  * the same value.
  */
 public class DuplicateVertexException extends GraphException{
-	private Vertex vertex;
+	private AdjListVertex vertex;
 	
 	/**
 	 * Constructor for DuplicateVertexException.
@@ -59,7 +60,7 @@ public class DuplicateVertexException extends GraphException{
 		super(s);
 	}
 
-	public DuplicateVertexException(Vertex vertex){
+	public DuplicateVertexException(AdjListVertex vertex){
 		this.vertex = vertex;
 	}
 }

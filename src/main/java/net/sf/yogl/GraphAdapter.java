@@ -18,19 +18,21 @@
 package net.sf.yogl;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
+import net.sf.yogl.adjacent.list.AdjListVertex;
 import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.impl.DuplicateVertexException;
 import net.sf.yogl.impl.ImplementationGraph;
-import net.sf.yogl.impl.Vertex;
 
 /** The Adapter defines 3 methods that can't be overloaded, and 6 that can
  * be overloaded.
  */
-public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> implements Graph<VK, VV, EK, EV> {
+public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> implements ComparableKeysGraph<VK, VV, EK, EV> {
 
 	//refer to the actual implementation of the graph
 	protected ImplementationGraph<VK, VV, EK, EV> graph = null;
@@ -39,21 +41,21 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		return graph;
 	}
 	
-	/** @see graph.Graph#getCountNodes
+	/** @see graph.ComparableKeysGraph#getCountNodes
 	 */
 	public final int getNodeCount() {
 
 		return graph.getNodeCount();
 	}
 
-	/** @see graph.Graph#getCountLinks
+	/** @see graph.ComparableKeysGraph#getCountLinks
 	 */
 	public final int getLinkCount() {
 
 		return graph.getLinkCount();
 	}
 
-	/** @see graph.Graph#getLinks
+	/** @see graph.ComparableKeysGraph#getLinks
 	 */
 	public EK[] getOutgoingLinksKeys(VK nodeKeyFrom)
 		throws GraphException {
@@ -64,7 +66,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		return graph.getOutgoingLinksKeys(nodeKeyFrom);
 	}
 
-	/** @see graph.Graph#getLinks
+	/** @see graph.ComparableKeysGraph#getLinks
 	 */
 	public EK[] getLinksKeysBetween(VK nodeKeyFrom, VK nodeKeyTo)
 		throws NodeNotFoundException {
@@ -82,7 +84,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		return graph.getOutgoingLinksKeysAndNodesKeys(nodeKeyTo);
 	}
 
-	/** @see graph.Graph#getNeighbors
+	/** @see graph.ComparableKeysGraph#getNeighbors
 	 */
 	public VK[] getSuccessorNodesKeys(VK nodeKeyFrom, int steps)
 		throws GraphException {
@@ -93,7 +95,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		return graph.getSuccessorNodesKeys(nodeKeyFrom, steps);
 	}
 
-	/** @see graph.Graph#getNeighbors
+	/** @see graph.ComparableKeysGraph#getNeighbors
 	 */
 	public VK[] getSuccessorNodesKeys(VK nodeKeyFrom, EK link)
 		throws GraphException {
@@ -106,16 +108,16 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		return graph.getSuccessorNodesKeys(nodeKeyFrom, link);
 	}
 
-	/** @see graph.Graph#getNodes
+	/** @see graph.ComparableKeysGraph#getNodes
 	 */
-	public final VK[] getNodesKeys() throws GraphCorruptedException {
+	public final Set<VK> getNodesKeys() throws GraphCorruptedException {
 
 		return graph.getNodesKeys();
 	}
 
-	/** @see graph.Graph#getNodes
+	/** @see graph.ComparableKeysGraph#getNodes
 	 */
-	public final Collection<Vertex<VK,VV,EK,EV>> getVertices(int nodeType)
+	public final List<AdjListVertex<VK,VV,EK,EV>> getVertices(int nodeType)
 		throws GraphCorruptedException {
 
 		return graph.getVertices(nodeType);
@@ -125,7 +127,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		return graph.getNodeValue(nodeKey);
 	}
 
-	/** @see graph.Graph#getPredecessors
+	/** @see graph.ComparableKeysGraph#getPredecessors
 	 */
 	public VK[] getPredecessorNodesKeys(VK nodeKeyTo)
 		throws GraphException {
@@ -136,7 +138,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		return graph.getPredecessorNodesKeys(nodeKeyTo);
 	}
 
-	/** @see graph.Graph#getPredecessors
+	/** @see graph.ComparableKeysGraph#getPredecessors
 	 */
 	public VK[] getPredecessorNodesKeys(VK nodeKeyTo, EK link)
 		throws GraphException {
@@ -147,7 +149,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		return graph.getPredecessorNodesKeys(nodeKeyTo, link);
 	}
 
-	/** @see graph.Graph#getIncomingLinks
+	/** @see graph.ComparableKeysGraph#getIncomingLinks
 	 */
 	public EK[] getIncomingLinksKeys(VK nodeKeyTo)
 		throws NodeNotFoundException {
@@ -157,7 +159,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		return graph.getIncomingLinksKeys(nodeKeyTo);
 	}
 
-	/** @see graph.Graph#getIncomingLinks
+	/** @see graph.ComparableKeysGraph#getIncomingLinks
 	 */
 	public Object[][] getIncomingLinksKeysAndNodesKeys(VK nodeKeyTo)
 		throws NodeNotFoundException {
@@ -167,7 +169,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		return graph.getIncomingLinksKeysAndNodesKeys(nodeKeyTo);
 	}
 
-	/** @see graph.Graph#getType
+	/** @see graph.ComparableKeysGraph#getType
 	 */
 	public final int getNodeType(VK nodeKey) throws GraphException {
 
@@ -176,7 +178,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		return graph.getNodeType(nodeKey);
 	}
 
-	/** @see graph.Graph#insertLink
+	/** @see graph.ComparableKeysGraph#insertLink
 	 */
 	public void addLinkLast(
 		VK nodeKeyFrom,
@@ -198,7 +200,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		graph.addLinkLast(nodeKeyFrom, nodeKeyTo, linkKey, linkValue);
 	}
 
-	/** @see graph.Graph#insertLink
+	/** @see graph.ComparableKeysGraph#insertLink
 		 */
 		public void addLinkLast(
 			VK nodeKeyFrom,
@@ -236,7 +238,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		graph.tryAddLinkLast(nodeKeyFrom, nodeKeyTo, linkKey, linkValue);
 	}
 
-	/** @see graph.Graph#insertLinkFirst
+	/** @see graph.ComparableKeysGraph#insertLinkFirst
 	 */
 	public void addLinkFirst(
 		VK nodeKeyFrom,
@@ -258,7 +260,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		graph.addLinkFirst(nodeKeyFrom, nodeKeyTo, linkKey, linkValue);
 	}
 
-	/** @see graph.Graph#insertLinkFirst
+	/** @see graph.ComparableKeysGraph#insertLinkFirst
 		 */
 		public void addLinkFirst(
 			VK nodeKeyFrom,
@@ -296,7 +298,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		graph.tryAddLinkFirst(nodeKeyFrom, nodeKeyTo, linkKey, linkValue);
 	}
 
-	/** @see graph.Graph#insertNode
+	/** @see graph.ComparableKeysGraph#insertNode
 	 * @exception DuplicateVertexException inherited from implementation
 	 * @exception NullPointerException if node parameter is null
 	 */
@@ -310,35 +312,35 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		graph.addNode(nodeKey, nodeValue);
 	}
 
-	/** @see graph.Graph#isEmpty
+	/** @see graph.ComparableKeysGraph#isEmpty
 	 */
 	public final boolean isEmpty() {
 
 		return graph.isEmpty();
 	}
 
-	/** @see graph.Graph#linksIterator
+	/** @see graph.ComparableKeysGraph#linksIterator
 	 */
 	public LinksIterator linksKeysIterator() throws GraphException {
 
 		return graph.linksKeysIterator();
 	}
 
-	/** @see graph.Graph#nodesIterator
+	/** @see graph.ComparableKeysGraph#nodesIterator
 	 */
 	public Collection<VV> nodesValues() {
 
 		return graph.nodesValues();
 	}
 
-	/** @see graph.Graph#nodesIterator
+	/** @see graph.ComparableKeysGraph#nodesIterator
 	 */
 	public final Collection<VK> nodesKeySet() {
 
 		return graph.nodesKeySet();
 	}
 
-	/** @see graph.Graph#removeLink
+	/** @see graph.ComparableKeysGraph#removeLink
 	 */
 	public void removeLink(VK nodeKeyFrom, VK nodeKeyTo, EK link)
 		throws GraphException {
@@ -362,7 +364,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		graph.removeAllLinksBetween(nodeKeyFrom, nodeKeyTo);
 	}
 
-	/** @see graph.Graph#removeNode
+	/** @see graph.ComparableKeysGraph#removeNode
 	 */
 	public void removeNode(VK nodeKey) throws NodeNotFoundException {
 		if (nodeKey == null) {
@@ -398,7 +400,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		return graph.incVisitCount(nodeKey);
 	}
 
-	/** @see graph.Graph#insertNode
+	/** @see graph.ComparableKeysGraph#insertNode
 	 *  @exception NullPointerException if node parameter is null
 	 */
 	public Object tryAddNode(VK nodeKey, VV nodeValue) {
@@ -426,7 +428,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		return graph.clone();
 	}
 
-	public void deepCopy(Graph dest) throws GraphException {
+	public void deepCopy(ComparableKeysGraph dest) throws GraphException {
 		graph.deepCopy(dest);
 	}
 
@@ -441,20 +443,20 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 	public String toString() {
 		StringBuffer result = new StringBuffer();
 		try {
-			VK[] nodes = graph.getNodesKeys();
-			for (int i = 0; i < nodes.length; i++) {
+			Set<VK> nodes = graph.getNodesKeys();
+			for (VK nodeKey: nodes) {
 				Object[][] el =
-					graph.getOutgoingLinksKeysAndNodesKeys(nodes[i]);
+					graph.getOutgoingLinksKeysAndNodesKeys(nodeKey);
 				if ((el != null) && (el.length > 0)) {
 					for (int j = 0; j < el.length; j++) {
-						result.append(nodes[i].toString()).append(" -> ");
+						result.append(nodeKey.toString()).append(" -> ");
 						result.append(el[j][0].toString()).append(" -> ");
 						result.append(el[j][1].toString()).append("\n");
 					}
 				} else {
-					Object[]inc = graph.getIncomingLinksKeys(nodes[i]);
+					Object[]inc = graph.getIncomingLinksKeys(nodeKey);
 					if((inc == null) || (inc.length < 1)){
-						result.append(nodes[i].toString()).append("- no incoming links -\n");
+						result.append(nodeKey.toString()).append("- no incoming links -\n");
 					}
 				}
 			}

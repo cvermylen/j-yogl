@@ -15,7 +15,7 @@
    Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
    MA 02111-1307, USA */
    
-package net.sf.yogl;
+package net.sf.yogl.adjacent.keyMap;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +27,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.yogl.BreadthFirstIterator;
+import net.sf.yogl.DepthFirstIterator;
+import net.sf.yogl.ComparableKeysGraph;
+import net.sf.yogl.LinksIterator;
 import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.DuplicateNodeException;
 import net.sf.yogl.exceptions.GraphCorruptedException;
@@ -34,10 +38,7 @@ import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.impl.DuplicateEdgeException;
 import net.sf.yogl.impl.DuplicateVertexException;
-import net.sf.yogl.impl.Edge;
 import net.sf.yogl.impl.ImplementationGraph;
-import net.sf.yogl.impl.NodeContainer;
-import net.sf.yogl.impl.Vertex;
 import net.sf.yogl.types.VertexType;
 
 /**
@@ -60,7 +61,7 @@ import net.sf.yogl.types.VertexType;
  * @version 1.0
  */
 
-public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> implements ImplementationGraph <VK, VV, EK, EV> {
+public final class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> implements ImplementationGraph <VK, VV, EK, EV> {
 
 	/** Since it should be too tedious to traverse the whole graph
 	 * just to count the number of edges, this data is stored here.
@@ -70,7 +71,7 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 	/** 'vertices' contains all vertices of the graph. This vector
 	 * is automatically resized when all entries are occupied.
 	 */
-	Map<VK, Vertex<VK, VV, EK, EV>> vertices = null;
+	Map<VK, AdjKeyVertex<VK, VV, EK, EV>> vertices = null;
 
 	/** Contains the list of all entry points in the graph.
 	 *  When a new node is created, it is by default inserted into the set.
@@ -79,7 +80,7 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 
 	/** basic ctor, no default value
 	 */
-	public AdjListGraph(Map<VK, Vertex<VK, VV, EK, EV>> prototype) throws GraphCorruptedException {
+	public AdjKeyGraph(Map<VK, AdjKeyVertex<VK, VV, EK, EV>> prototype) throws GraphCorruptedException {
 		if (!prototype.isEmpty()) {
 			throw new GraphCorruptedException("The map must be empty");
 		}
@@ -98,7 +99,7 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 		throws DuplicateNodeException {
 
 		if (!existsNode(nodeKey)) {
-			Vertex<VK, VV, EK, EV> rVertex = new Vertex<>(nodeKey, nodeValue);
+			AdjKeyVertex<VK, VV, EK, EV> rVertex = new AdjKeyVertex<>(nodeKey, nodeValue);
 			this.vertices.put(nodeKey, rVertex);
 			this.allStartNodeKeys.add(nodeKey);
 		} else {
@@ -118,44 +119,45 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 	 * @param startingNodeKey is the entry point used for the traversal. 
 	 * 		If null, the algorithm will use all nodes marked as 'START'.
 	 */
+	@Override
 	public BreadthFirstIterator breadthFirstIterator(
-		Object startingNodeKey,
+		VK startingNodeKey,
 		int maxCycles)
 		throws GraphException {
 		return new BreadthFirstIterator(this, startingNodeKey, maxCycles);
 	}
 
-	/** @see Graph#clone
+	/** @see ComparableKeysGraph#clone
 	 */
 	public Object clone() {
 		throw new UnsupportedOperationException();
 	}
 
-	/** @see Graph#deepCopy
+	/** @see ComparableKeysGraph#deepCopy
 	 */
-	public void deepCopy(Graph<VK, VV, EK, EV> dest) throws GraphException {
+	public void deepCopy(ComparableKeysGraph<VK, VV, EK, EV> dest) throws GraphException {
 
-		for(Vertex<VK, VV, EK, EV> v : this.getVertices(0xFFFFFFFF)){
+		for(AdjKeyVertex<VK, VV, EK, EV> v : this.getVertices(0xFFFFFFFF)){
 			dest.addNode(v.getKey(), v.getUserValue());
 		}
 
 		LinksIterator<VK, VV, EK, EV> iter = this.linksKeysIterator();
 		while (iter.hasNext()) {
-			EV linkValue = iter.next();
+			EK linkValue = (EK)iter.next(); //REFACTOR: iterator should return keys in this case, not values
 			VK fromKey = iter.getOriginator();
 			VK toKey = iter.getDestination();
-			dest.addLinkLast(fromKey, toKey, , linkValue);
+			dest.addLinkLast(fromKey, toKey, linkValue);
 		}
 	}
 
-	/** @see Graph#depthFirstIterator
+	/** @see ComparableKeysGraph#depthFirstIterator
 	 */
 	public DepthFirstIterator depthFirstIterator(VK node, int maxCycling)
 		throws GraphException {
 		return new DepthFirstIterator(this, node, maxCycling);
 	}
 
-	/** @see Graph#existsNode
+	/** @see ComparableKeysGraph#existsNode
 	 */
 	public boolean existsNode(VK nodeKey) {
 		return vertices.containsKey(nodeKey);
@@ -170,7 +172,7 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 	 */
 	private VV findNodeByKey(VK nodeKey) throws NodeNotFoundException {
 
-		Vertex<VK, VV, EK, EV> v = findVertexByKey(nodeKey);
+		AdjKeyVertex<VK, VV, EK, EV> v = findVertexByKey(nodeKey);
 		return v.getUserValue();
 	}
 
@@ -181,7 +183,7 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 	 * @exception VertexNotFoundException  thrown if rhs was not
 	 *            found in the graph.
 	 */
-	public Vertex<VK,VV, EK, EV> findVertexByKey(VK nodeKey)
+	public AdjKeyVertex<VK,VV, EK, EV> findVertexByKey(VK nodeKey)
 		throws NodeNotFoundException {
 		if (!vertices.containsKey(nodeKey))
 			throw new NodeNotFoundException(nodeKey.toString());
@@ -202,26 +204,23 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 	 * @exception VertexNotFoundException if 1 of the 2 nodes does not
 	 *            exists.
 	 */
-	public EV[] getLinksKeysBetween(VK nodeFromKey, VK nodeToKey)
+	public EK[] getLinksKeysBetween(VK nodeFromKey, VK nodeToKey)
 		throws NodeNotFoundException {
 
-		ArrayList<EV> result = new ArrayList<>();
-		Vertex<VK,VV, EK, EV> p = findVertexByKey(nodeFromKey);
+		ArrayList<EK> result = new ArrayList<>();
+		AdjKeyVertex<VK,VV, EK, EV> p = findVertexByKey(nodeFromKey);
 		//retrieve all edges
-		Edge<VK, EK, EV>[] eList = p.getNeighbors();
+		AdjKeyEdge<VK, EK, EV>[] eList = p.getNeighbors();
 		for (int i = 0; i < eList.length; i++) {
 			// compare references, not the values
 			if (eList[i]
 				.getNextVertexKey()
 				.equals(findVertexByKey(nodeToKey))) {
-				EV o = eList[i].getUserValue();
-				if (o instanceof NodeContainer) {
-					o = ((NodeContainer) o).getValue();
-				}
+				EK o = eList[i].getEdgeKey();
 				result.add(o);
 			}
 		}
-		return result.toArray();
+		return (EK[])result.toArray();
 	}
 
 	/** Build the list of all entry points in the graph.
@@ -232,8 +231,8 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 		Iterator entriesIter = vertices.entrySet().iterator();
 		while (entriesIter.hasNext()) {
 			Map.Entry entry = (Map.Entry) entriesIter.next();
-			Vertex v = (Vertex) entry.getValue();
-			Edge[] successors = v.getNeighbors();
+			AdjKeyVertex v = (AdjKeyVertex) entry.getValue();
+			AdjKeyEdge[] successors = v.getNeighbors();
 			for (int i = 0; i < successors.length; i++) {
 				Object next = successors[i].getNextVertexKey();
 				if (result.contains(next)) {
@@ -255,7 +254,8 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 	/** @return true if the node is an entry point in the graph.
 	 * @param nodeKey identify the node.
 	 */
-	public boolean isStartNode(Object nodeKey) {
+	@Override
+	public boolean isStartNode(VK nodeKey) {
 		return allStartNodeKeys.contains(nodeKey);
 	}
 
@@ -276,11 +276,11 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 	public EK[] getIncomingLinksKeys(VK nodeToKey)
 		throws NodeNotFoundException {
 		ArrayList<EK> result = new ArrayList<>();
-		Vertex<VK,VV,EK,EV> to = findVertexByKey(nodeToKey);
-		Iterator<Vertex<VK,VV,EK,EV>> iter = vertices.values().iterator();
+		AdjKeyVertex<VK,VV,EK,EV> to = findVertexByKey(nodeToKey);
+		Iterator<AdjKeyVertex<VK,VV,EK,EV>> iter = vertices.values().iterator();
 		while (iter.hasNext()) {
-			Vertex<VK,VV,EK,EV> vertex = iter.next();
-			Edge<VK,EK,EV>[] edge = vertex.getEdgeTo(nodeToKey);
+			AdjKeyVertex<VK,VV,EK,EV> vertex = iter.next();
+			AdjKeyEdge<VK,EK,EV>[] edge = vertex.getEdgeTo(nodeToKey);
 			if (null != edge) {
 				for (int i = 0; i < edge.length; i++) {
 					result.add(edge[i].getEdgeKey());
@@ -298,11 +298,11 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 	public Object[][] getIncomingLinksKeysAndNodesKeys(VK nodeToKey)
 		throws NodeNotFoundException {
 		ArrayList result = new ArrayList();
-		Iterator<Map.Entry<VK, Vertex<VK,VV,EK,EV>>> nodesIter = this.vertices.entrySet().iterator();
+		Iterator<Map.Entry<VK, AdjKeyVertex<VK,VV,EK,EV>>> nodesIter = this.vertices.entrySet().iterator();
 		while (nodesIter.hasNext()) {
-			Map.Entry<VK, Vertex<VK,VV,EK,EV>> entry = nodesIter.next();
-			Vertex<VK,VV,EK,EV> vertex = entry.getValue();
-			Edge<VK,EK,EV>[] edges = vertex.getEdgeTo(nodeToKey);
+			Map.Entry<VK, AdjKeyVertex<VK,VV,EK,EV>> entry = nodesIter.next();
+			AdjKeyVertex<VK,VV,EK,EV> vertex = entry.getValue();
+			AdjKeyEdge<VK,EK,EV>[] edges = vertex.getEdgeTo(nodeToKey);
 			for (int i = 0; i < edges.length; i++) {
 				if (edges[i].getNextVertexKey().equals(nodeToKey)) {
 					Object[] r = new Object[2];
@@ -329,23 +329,23 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 		return this.vertices.size();
 	}
 
-	/** @see Graph#getNodeKeys
+	/** @see ComparableKeysGraph#getNodeKeys
 	 */
 	public Set<VK> getNodesKeys() throws GraphCorruptedException {
 		return vertices.keySet();
 	}
 
-	/** @see Graph#getNodes
+	/** @see ComparableKeysGraph#getNodes
 	 */
-	public List<Vertex<VK,VV,EK,EV>> getVertices(int nodeType) throws GraphCorruptedException {
+	public List<AdjKeyVertex<VK,VV,EK,EV>> getVertices(int nodeType) throws GraphCorruptedException {
 
-		ArrayList<Vertex<VK,VV,EK,EV>> list = new ArrayList<>();
+		ArrayList<AdjKeyVertex<VK,VV,EK,EV>> list = new ArrayList<>();
 		try {
-			Iterator<Map.Entry<VK, Vertex<VK,VV,EK,EV>>> iter = vertices.entrySet().iterator();
+			Iterator<Map.Entry<VK, AdjKeyVertex<VK,VV,EK,EV>>> iter = vertices.entrySet().iterator();
 			while (iter.hasNext()) {
-				Map.Entry<VK, Vertex<VK,VV,EK,EV>> entry = iter.next();
+				Map.Entry<VK, AdjKeyVertex<VK,VV,EK,EV>> entry = iter.next();
 				VK key = entry.getKey();
-				Vertex<VK,VV,EK,EV> vertex = entry.getValue();
+				AdjKeyVertex<VK,VV,EK,EV> vertex = entry.getValue();
 				if ((getNodeType(key) & nodeType) != 0) {
 					if ((getNodeType(key) == VertexType.START)
 						|| (getNodeType(key) == VertexType.STARTEND)) {
@@ -361,11 +361,11 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 		}
 	}
 
-	/** @see Graph#getType
+	/** @see ComparableKeysGraph#getType
 	 */
 	public int getNodeType(VK nodeKey) throws NodeNotFoundException {
 		if (this.allStartNodeKeys.contains(nodeKey)) {
-			Vertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
+			AdjKeyVertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
 			if ((vertex.getNeighbors() == null)
 				|| (vertex.getNeighbors().length == 0)) {
 				return VertexType.STARTEND;
@@ -373,7 +373,7 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 				return VertexType.START;
 			}
 		} else {
-			Vertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
+			AdjKeyVertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
 			if ((vertex.getNeighbors() == null)
 				|| (vertex.getNeighbors().length == 0)) {
 				return VertexType.END;
@@ -383,24 +383,24 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 		}
 	}
 
-	/** @see Graph#getNodeValue
+	/** @see ComparableKeysGraph#getNodeValue
 	 */
 	public VV getNodeValue(VK nodeKey) {
-		Vertex<VK, VV, EK, EV> v = this.vertices.get(nodeKey);
+		AdjKeyVertex<VK, VV, EK, EV> v = this.vertices.get(nodeKey);
 		if (v == null)
 			return null;
 		return v.getUserValue();
 	}
 
-	/** @see Graph#getOutgoingLinksKeys
+	/** @see ComparableKeysGraph#getOutgoingLinksKeys
 	 */
 	public EK[] getOutgoingLinksKeys(VK nodeFromKey)
 		throws GraphException {
 
 		ArrayList<EK> result = new ArrayList<>();
-		Vertex<VK, VV, EK, EV> p = findVertexByKey(nodeFromKey);
+		AdjKeyVertex<VK, VV, EK, EV> p = findVertexByKey(nodeFromKey);
 		//retrieve all edges
-		Edge<VK, EK, EV>[] eList = p.getNeighbors();
+		AdjKeyEdge<VK, EK, EV>[] eList = p.getNeighbors();
 		if (eList != null) {
 			for (int i = 0; i < eList.length; i++) {
 				// compare references, not the values
@@ -416,8 +416,8 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 	 */
 	public Object[][] getOutgoingLinksKeysAndNodesKeys(VK nodeKeyFrom)
 		throws GraphException {
-		Vertex<VK,VV,EK,EV> v = this.findVertexByKey(nodeKeyFrom);
-		Edge<VK,EK,EV>[] edges = v.getNeighbors();
+		AdjKeyVertex<VK,VV,EK,EV> v = this.findVertexByKey(nodeKeyFrom);
+		AdjKeyEdge<VK,EK,EV>[] edges = v.getNeighbors();
 		Object[][] result = new Object[edges.length][2];
 		for (int i = 0; i < edges.length; i++) {
 			result[i][0] = edges[i].getEdgeKey();
@@ -432,11 +432,11 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 		throws GraphException {
 
 		ArrayList<VK> result = new ArrayList<>();
-		Vertex<VK,VV,EK,EV> to = findVertexByKey(nodeToKey);
-		Iterator<Map.Entry<VK, Vertex<VK,VV,EK,EV>>>iter = vertices.entrySet().iterator();
+		AdjKeyVertex<VK,VV,EK,EV> to = findVertexByKey(nodeToKey);
+		Iterator<Map.Entry<VK, AdjKeyVertex<VK,VV,EK,EV>>>iter = vertices.entrySet().iterator();
 		while (iter.hasNext()) {
-			Map.Entry<VK, Vertex<VK,VV,EK,EV>> entry = iter.next();
-			Vertex<VK,VV,EK,EV> vertex = entry.getValue();
+			Map.Entry<VK, AdjKeyVertex<VK,VV,EK,EV>> entry = iter.next();
+			AdjKeyVertex<VK,VV,EK,EV> vertex = entry.getValue();
 			if (null != (vertex.getEdgeTo(to.getKey()))) {
 				result.add(entry.getKey());
 			}
@@ -448,11 +448,11 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 	 */
 	public VK[] getPredecessorNodesKeys(VK nodeToKey, EK link) {
 		ArrayList<VK> result = new ArrayList<>();
-		Iterator<Map.Entry<VK, Vertex<VK, VV, EK, EV>>> iter = vertices.entrySet().iterator();
+		Iterator<Map.Entry<VK, AdjKeyVertex<VK, VV, EK, EV>>> iter = vertices.entrySet().iterator();
 		while (iter.hasNext()) {
-			Map.Entry<VK, Vertex<VK, VV, EK, EV>> entry = iter.next();
-			Vertex<VK, VV, EK, EV> vertex = entry.getValue();
-			Edge<VK, EK, EV>[] edges = vertex.getEdgeTo(nodeToKey);
+			Map.Entry<VK, AdjKeyVertex<VK, VV, EK, EV>> entry = iter.next();
+			AdjKeyVertex<VK, VV, EK, EV> vertex = entry.getValue();
+			AdjKeyEdge<VK, EK, EV>[] edges = vertex.getEdgeTo(nodeToKey);
 			if ((null != edges) && (edges.length > 0)) {
 				if (edges[0].getUserValue().equals(link)) {
 					result.add(entry.getKey());
@@ -476,8 +476,8 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 		throws GraphException {
 		ArrayList<VK> result = new ArrayList<>();
 		if (steps == 1) {
-			Vertex<VK, VV, EK, EV> p = findVertexByKey(nodeFromKey);
-			Edge<VK, EK, EV>[] eList = p.getNeighbors();
+			AdjKeyVertex<VK, VV, EK, EV> p = findVertexByKey(nodeFromKey);
+			AdjKeyEdge<VK, EK, EV>[] eList = p.getNeighbors();
 			if (eList != null) {
 				for (int i = 0; i < eList.length; i++) {
 					result.add(eList[i].getNextVertexKey());
@@ -501,8 +501,8 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 	public VK[] getSuccessorNodesKeys(VK nodeFromKey, EK link)
 		throws GraphException {
 		ArrayList<VK> result = new ArrayList<>();
-		Vertex<VK, VV, EK, EV> p = findVertexByKey(nodeFromKey);
-		Edge<VK, EK, EV>[] eList = p.getNeighbors();
+		AdjKeyVertex<VK, VV, EK, EV> p = findVertexByKey(nodeFromKey);
+		AdjKeyEdge<VK, EK, EV>[] eList = p.getNeighbors();
 		if (eList != null) {
 			for (int i = 0; i < eList.length; i++) {
 				result.add(eList[i].getNextVertexKey());
@@ -513,10 +513,10 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 
 	/** Returns a list of Vertex which are directly adjacent to the node.
 	 */
-	public List<Vertex<VK, VV, EK, EV>> getSuccessorVertices(Vertex<VK, VV, EK, EV> node)
+	public List<AdjKeyVertex<VK, VV, EK, EV>> getSuccessorVertices(AdjKeyVertex<VK, VV, EK, EV> node)
 		throws NodeNotFoundException {
-		Edge<VK, EK, EV>[] edges = node.getNeighbors();
-		List<Vertex<VK, VV, EK, EV>>result = new ArrayList<>();
+		AdjKeyEdge<VK, EK, EV>[] edges = node.getNeighbors();
+		List<AdjKeyVertex<VK, VV, EK, EV>>result = new ArrayList<>();
 		for (int i = 0; i < edges.length; i++) {
 			result.add(i, findVertexByKey(edges[i].getNextVertexKey()));
 		}
@@ -526,46 +526,43 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 	/** Return a list of Vertex which are immediately adjacent to the given
 	 *  Vertex
 	 */
-	public Vertex<VK,VV,EK,EV>[] getSuccessorVertices(Vertex<VK,VV,EK,EV> vertex, EV link)
+	public AdjKeyVertex<VK,VV,EK,EV>[] getSuccessorVertices(AdjKeyVertex<VK,VV,EK,EV> vertex, AdjKeyEdge<VK, EK, EV> link)
 		throws NodeNotFoundException {
-		ArrayList<Vertex<VK,VV,EK,EV>> result = new ArrayList<>();
-		Edge<VK,EK,EV>[] eList = vertex.getNeighbors();
+		ArrayList<AdjKeyVertex<VK,VV,EK,EV>> result = new ArrayList<>();
+		AdjKeyEdge<VK,EK,EV>[] eList = vertex.getNeighbors();
 		if (eList != null) {
 			result = new ArrayList<>();
 			//loop for each edge connected to the vertex
 
 			for (int i = 0; i < eList.length; i++) {
 				EV edgeValue = eList[i].getUserValue();
-				if (edgeValue instanceof NodeContainer) {
-					edgeValue = ((NodeContainer) edgeValue).getValue();
-				}
 				if ((link == null)
 					|| ((edgeValue != null) && (edgeValue.equals(link)))) {
-					Vertex<VK,VV,EK,EV> v1 = findVertexByKey(eList[i].getNextVertexKey());
+					AdjKeyVertex<VK,VV,EK,EV> v1 = findVertexByKey(eList[i].getNextVertexKey());
 					result.add(v1);
 				}
 			}
 		}
-		return result.toArray(new Vertex[result.size()]);
+		return result.toArray(new AdjKeyVertex[result.size()]);
 	}
 
-	/** @see Graph#getPassage
+	/** @see ComparableKeysGraph#getPassage
 	 */
 	public int getVisitCount(VK nodeKey) throws GraphException {
 
-		Vertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
+		AdjKeyVertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
 		return vertex.getTraversals();
 	}
 
-	/** @see Graph#incPassage
+	/** @see ComparableKeysGraph#incPassage
 	 */
 	public int incVisitCount(VK nodeKey) throws GraphException {
 
-		Vertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
+		AdjKeyVertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
 		return vertex.incTraversals();
 	}
 
-	/** @see Graph#addLinkFirst
+	/** @see ComparableKeysGraph#addLinkFirst
 	 */
 	public void addLinkFirst(
 		VK nodeKeyFrom,
@@ -585,10 +582,10 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 		}
 		try {
 			//create the new edge
-			Edge<VK, EK, EV> newEdge = new Edge<>(linkKey, nodeKeyTo, linkValue);
+			AdjKeyEdge<VK, EK, EV> newEdge = new AdjKeyEdge<>(linkKey, nodeKeyTo, linkValue);
 			//retrieve all edges connected to node1
-			Vertex<VK, VV, EK, EV> vertexFrom = findVertexByKey(nodeKeyFrom);
-			Edge<VK, EK, EV>[] eList1 = vertexFrom.getNeighbors();
+			AdjKeyVertex<VK, VV, EK, EV> vertexFrom = findVertexByKey(nodeKeyFrom);
+			AdjKeyEdge<VK, EK, EV>[] eList1 = vertexFrom.getNeighbors();
 			//check that edge does not exists
 			for (int i = 0; i < eList1.length; i++) {
 				if (newEdge.equals(eList1[i])) {
@@ -611,7 +608,7 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 		}
 	}
 
-	/** @see Graph#addLinkFirst
+	/** @see ComparableKeysGraph#addLinkFirst
 	 */
 	public void addLinkFirst(
 		VK nodeKeyFrom,
@@ -652,10 +649,10 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 			throw new NodeNotFoundException(nodeKeyTo.toString());
 		try {
 			//create the new edge
-			Edge<VK, EK, EV> newEdge = new Edge<>(linkKey, nodeKeyTo, linkValue);
+			AdjKeyEdge<VK, EK, EV> newEdge = new AdjKeyEdge<>(linkKey, nodeKeyTo, linkValue);
 			//retrieve all edges connected to node1
-			Vertex<VK, VV, EK, EV> vertexFrom = findVertexByKey(nodeKeyFrom);
-			Edge<VK, EK, EV>[] eList1 = vertexFrom.getNeighbors();
+			AdjKeyVertex<VK, VV, EK, EV> vertexFrom = findVertexByKey(nodeKeyFrom);
+			AdjKeyEdge<VK, EK, EV>[] eList1 = vertexFrom.getNeighbors();
 			//check that edge does not exists
 			for (int i = 0; i < eList1.length; i++) {
 				if (newEdge.equals(eList1[i])) {
@@ -681,7 +678,7 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 		}
 	}
 
-	/** @see Graph#addLinkLast
+	/** @see ComparableKeysGraph#addLinkLast
 	 */
 	public void addLinkLast(
 		VK nodeKeyFrom,
@@ -702,7 +699,7 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 		return this.vertices.isEmpty();
 	}
 
-	/** @see graph.Graph#linksIterator
+	/** @see graph.ComparableKeysGraph#linksIterator
 	 */
 	public LinksIterator<VK, VV, EK, EV> linksKeysIterator() throws GraphException {
 
@@ -727,22 +724,22 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 	public Collection<VV> nodesValues() {
 
 		LinkedList<VV> nodes = new LinkedList<>();
-		Iterator<Vertex<VK, VV, EK, EV>> vertexIter = vertices.values().iterator();
+		Iterator<AdjKeyVertex<VK, VV, EK, EV>> vertexIter = vertices.values().iterator();
 		while (vertexIter.hasNext()) {
-			Vertex<VK, VV, EK, EV> vertex = vertexIter.next();
+			AdjKeyVertex<VK, VV, EK, EV> vertex = vertexIter.next();
 			nodes.addLast(vertex.getUserValue());
 		}
 		return nodes;
 	}
 
-	/** @see Graph#linksValues()
+	/** @see ComparableKeysGraph#linksValues()
 	 */
 	public Collection<EV> linksValues() {
 		LinkedList<EV> v = new LinkedList<>();
-		Iterator<Vertex<VK, VV, EK, EV>> verticesIter = vertices.values().iterator();
+		Iterator<AdjKeyVertex<VK, VV, EK, EV>> verticesIter = vertices.values().iterator();
 		while (verticesIter.hasNext()) {
-			Vertex<VK, VV, EK, EV> vertex = verticesIter.next();
-			Edge<VK, EK, EV>[] edges = vertex.getNeighbors();
+			AdjKeyVertex<VK, VV, EK, EV> vertex = verticesIter.next();
+			AdjKeyEdge<VK, EK, EV>[] edges = vertex.getNeighbors();
 			for (int i = 0; i < edges.length; i++) {
 				v.add(edges[i].getUserValue());
 			}
@@ -754,8 +751,8 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 	 */
 	public void removeAllLinksBetween(VK nodeKeyFrom, VK nodeKeyTo)
 		throws GraphException {
-		Vertex<VK, VV, EK, EV> from = this.findVertexByKey(nodeKeyFrom);
-		Edge<VK, EK, EV>[] edges = from.getEdgeTo(nodeKeyTo);
+		AdjKeyVertex<VK, VV, EK, EV> from = this.findVertexByKey(nodeKeyFrom);
+		AdjKeyEdge<VK, EK, EV>[] edges = from.getEdgeTo(nodeKeyTo);
 		if (edges != null) {
 			for (int i = 0; i < edges.length; i++) {
 				from.removeEdge(edges[i]);
@@ -777,7 +774,7 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 		EK linkKey)
 		throws GraphException {
 
-		Vertex<VK, VV, EK, EV> vertexFrom = findVertexByKey(nodeFromKey);
+		AdjKeyVertex<VK, VV, EK, EV> vertexFrom = findVertexByKey(nodeFromKey);
 		vertexFrom.removeEdgeByKey(linkKey);
 
 		numberOfEdges--;
@@ -793,13 +790,13 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 	 */
 	public void removeNode(VK nodeKey) throws NodeNotFoundException {
 
-		Vertex<VK, VV, EK, EV> v = this.findVertexByKey(nodeKey);
+		AdjKeyVertex<VK, VV, EK, EV> v = this.findVertexByKey(nodeKey);
 		this.numberOfEdges -= v.getCountEdges();
 		//remove all links to the node
-		Iterator<Vertex<VK, VV, EK, EV>> vertexIter = vertices.values().iterator();
+		Iterator<AdjKeyVertex<VK, VV, EK, EV>> vertexIter = vertices.values().iterator();
 		while (vertexIter.hasNext()) {
-			Vertex<VK, VV, EK, EV> vertex = vertexIter.next();
-			Edge<VK, EK, EV>[] edges = vertex.getEdgeTo(nodeKey);
+			AdjKeyVertex<VK, VV, EK, EV> vertex = vertexIter.next();
+			AdjKeyEdge<VK, EK, EV>[] edges = vertex.getEdgeTo(nodeKey);
 			if (edges != null) {
 				for (int i = 0; i < edges.length; i++) {
 					vertex.removeEdge(edges[i]);
@@ -811,25 +808,25 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 		buildAllStartNodeKeys();
 	}
 
-	/** @see Graph#setPassage
+	/** @see ComparableKeysGraph#setPassage
 	 */
 	public void setAllVisitCounts(int count) throws GraphException {
-		Iterator<Vertex<VK, VV, EK, EV>> nodeValuesIter = this.vertices.values().iterator();
+		Iterator<AdjKeyVertex<VK, VV, EK, EV>> nodeValuesIter = this.vertices.values().iterator();
 		while (nodeValuesIter.hasNext()) {
-			Vertex<VK, VV, EK, EV> vertex = nodeValuesIter.next();
+			AdjKeyVertex<VK, VV, EK, EV> vertex = nodeValuesIter.next();
 			vertex.setTraversals(count);
 		}
 	}
 
-	/** @see Graph#setPassage
+	/** @see ComparableKeysGraph#setPassage
 	 */
 	public void setVisitCount(VK nodeKey, int count)
 		throws GraphException {
-		Vertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
+		AdjKeyVertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
 		vertex.setTraversals(count);
 	}
 
-	/** @see Graph#tryAddNode
+	/** @see ComparableKeysGraph#tryAddNode
 	 */
 	public Object tryAddNode(VK nodeKey, VV nodeValue) {
 
@@ -840,7 +837,7 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 		return null;
 	}
 
-	/** @see Graph#tryAddLinkFirst
+	/** @see ComparableKeysGraph#tryAddLinkFirst
 	 */
 	public void tryAddLinkFirst(
 		VK nodeFrom,
@@ -856,7 +853,7 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 		}
 	}
 
-	/** @see Graph#tryAddLinkLast
+	/** @see ComparableKeysGraph#tryAddLinkLast
 	 */
 	public void tryAddLinkLast(
 		VK nodeFromKey,
@@ -871,13 +868,13 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 		}
 	}
 
-	/** @see Graph#getOutgoingLinkValue(java.lang.Object, java.lang.Object)
+	/** @see ComparableKeysGraph#getOutgoingLinkValue(java.lang.Object, java.lang.Object)
 	 */
 	public EV getOutgoingLinkValue(VK nodeKeyFrom, EK linkKey)
 		throws NodeNotFoundException {
 		EV result = null;
-		Vertex<VK, VV, EK, EV> vertex = this.findVertexByKey(nodeKeyFrom);
-		Edge<VK, EK, EV> edge = vertex.getEdge(linkKey);
+		AdjKeyVertex<VK, VV, EK, EV> vertex = this.findVertexByKey(nodeKeyFrom);
+		AdjKeyEdge<VK, EK, EV> edge = vertex.getEdge(linkKey);
 		if (edge != null)
 			result = edge.getUserValue();
 		return result;
@@ -886,10 +883,10 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 	public int getMaxInDegree() {
 		int max = 0;
 		HashMap<VK, Integer> counts = new HashMap<>();
-		Iterator<Vertex<VK, VV, EK, EV>> verticesIter = vertices.values().iterator();
+		Iterator<AdjKeyVertex<VK, VV, EK, EV>> verticesIter = vertices.values().iterator();
 		while(verticesIter.hasNext()){
-			Vertex<VK, VV, EK, EV> vertex = verticesIter.next();
-			Edge<VK, EK, EV>[]edges = vertex.getNeighbors();
+			AdjKeyVertex<VK, VV, EK, EV> vertex = verticesIter.next();
+			AdjKeyEdge<VK, EK, EV>[]edges = vertex.getNeighbors();
 			for(int i=0; i < edges.length; i++){
 				VK vertexKey = edges[i].getNextVertexKey();
 				if(!counts.containsKey(vertexKey)){
@@ -908,9 +905,9 @@ public final class AdjListGraph <VK extends Comparable<VK>, VV, EK extends Compa
 
 	public int getMaxOutDegree() {
 		int max = 0;
-		Iterator<Vertex<VK, VV, EK, EV>> verticesIter = vertices.values().iterator();
+		Iterator<AdjKeyVertex<VK, VV, EK, EV>> verticesIter = vertices.values().iterator();
 		while(verticesIter.hasNext()){
-			Vertex<VK, VV, EK, EV> vertex = verticesIter.next();
+			AdjKeyVertex<VK, VV, EK, EV> vertex = verticesIter.next();
 			max = Math.max(max, vertex.getCountEdges());
 		}
 		return max;

@@ -19,18 +19,19 @@ package net.sf.yogl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Stack;
 
+import net.sf.yogl.adjacent.list.AdjListEdge;
+import net.sf.yogl.adjacent.list.AdjListVertex;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.LinkNotFoundException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.exceptions.StdDefinitionException;
 import net.sf.yogl.exceptions.StdExecutionException;
-import net.sf.yogl.impl.Edge;
 import net.sf.yogl.impl.ImplementationGraph;
-import net.sf.yogl.impl.Vertex;
 import net.sf.yogl.std.State;
 import net.sf.yogl.std.Transition;
 
@@ -85,11 +86,11 @@ public final class StateTransitionDiagram {
 				throw new StdDefinitionException("Each link value must be a Transition");
 		}
 		this.graph = graph.getImplementation();
-		Object[] startNodeKeys = graph.getAllStartNodeKeys();
-		if (startNodeKeys.length != 1) {
+		Collection startNodeKeys = graph.getAllStartNodeKeys();
+		if (startNodeKeys.isEmpty()) {
 			throw new StdDefinitionException("graph must have 1 unique entry");
 		}
-		vertexKeysPath.push(startNodeKeys[0]);
+		vertexKeysPath.push(startNodeKeys);
 	}
 
 	/** The init method is used to initialize the Std.
@@ -156,7 +157,7 @@ public final class StateTransitionDiagram {
 		throws StdExecutionException, NodeNotFoundException, LinkNotFoundException {
 
 		State currentState = findStateByVertexKey(vertexKeysPath.peek());
-		Edge edge = findEdgeByKey(vertexKeysPath.peek(), transitionKey);
+		AdjListEdge edge = findEdgeByKey(vertexKeysPath.peek(), transitionKey);
 		if (edge == null) {
 			LinkNotFoundException e =
 				new LinkNotFoundException(
@@ -232,8 +233,8 @@ public final class StateTransitionDiagram {
 
 		if (vertexKeysPath.size() > 0) {
 			ArrayList list = new ArrayList();
-			Vertex peek = graph.findVertexByKey(vertexKeysPath.peek());
-			Edge[] eList = peek.getNeighbors();
+			AdjListVertex peek = graph.findVertexByKey((Comparable)vertexKeysPath.peek());
+			AdjListEdge[] eList = peek.getNeighbors();
 			for (int i = 0; i < eList.length; i++) {
 				list.add(eList[i].getUserValue());
 			}
@@ -247,7 +248,7 @@ public final class StateTransitionDiagram {
 	 *  identified by the given key.
 	 */
 	public Transition getTransition(Object transitionKey) throws NodeNotFoundException {
-		Edge edge = findEdgeByKey(vertexKeysPath.peek(), transitionKey);
+		AdjListEdge edge = findEdgeByKey(vertexKeysPath.peek(), transitionKey);
 		if (edge == null)
 			return null;
 		return (Transition) edge.getUserValue();
@@ -258,7 +259,7 @@ public final class StateTransitionDiagram {
 	 * @throws GraphCorruptedException
 	 */
 	public boolean isTransition(Object transitionKey) throws NodeNotFoundException{
-		Edge edge = findEdgeByKey(vertexKeysPath.peek(), transitionKey);
+		AdjListEdge edge = findEdgeByKey(vertexKeysPath.peek(), transitionKey);
 		return (edge != null);
 	}
 	
@@ -266,7 +267,7 @@ public final class StateTransitionDiagram {
 	 */
 	public Object[] getTransitionKeys() throws GraphCorruptedException {
 		try {
-			return graph.getSuccessorNodesKeys(vertexKeysPath.peek(), 1);
+			return graph.getSuccessorNodesKeys((Comparable)vertexKeysPath.peek(), 1);
 		} catch (GraphException e) {
 			throw new GraphCorruptedException(e);
 		}
@@ -278,10 +279,10 @@ public final class StateTransitionDiagram {
 	public State[] getNextStates() throws GraphCorruptedException {
 		try {
 			Object[] keys =
-				graph.getSuccessorNodesKeys(vertexKeysPath.peek(), 1);
+				graph.getSuccessorNodesKeys((Comparable)vertexKeysPath.peek(), 1);
 			State[] result = new State[keys.length];
 			for (int i = 0; i < result.length; i++) {
-				result[i] = (State) graph.getNodeValue(keys[i]);
+				result[i] = (State) graph.getNodeValue((Comparable)keys[i]);
 			}
 			return result;
 		} catch (GraphException e) {
@@ -367,7 +368,7 @@ public final class StateTransitionDiagram {
 
 		boolean found = false;
 		State currentState = findStateByVertexKey(vertexKeysPath.peek());
-		Edge edge = findEdgeByKey(vertexKeysPath.peek(), transitionKey);
+		AdjListEdge edge = findEdgeByKey(vertexKeysPath.peek(), transitionKey);
 		if (edge == null) {
 			LinkNotFoundException e =
 				new LinkNotFoundException(
@@ -396,7 +397,7 @@ public final class StateTransitionDiagram {
 			NodeNotFoundException,
 			LinkNotFoundException,
 			GraphCorruptedException {
-		Vertex peek = graph.findVertexByKey(vertexKeysPath.peek());
+		AdjListVertex peek = graph.findVertexByKey((Comparable)vertexKeysPath.peek());
 		State currentState = (State) peek.getUserValue();
 		Object[] keys = getTransitionKeys();
 		if (keys == null)
@@ -435,8 +436,8 @@ public final class StateTransitionDiagram {
 		int result = -1;
 		//retrieve 'link' in the edge list of the
 		//current vertex.
-		Vertex peek = graph.findVertexByKey(vertexKeysPath.peek());
-		Edge edge = peek.getEdge(transitionKey);
+		AdjListVertex peek = graph.findVertexByKey((Comparable)vertexKeysPath.peek());
+		AdjListEdge edge = peek.getEdge((Comparable)transitionKey);
 		if (edge == null) {
 			throw new LinkNotFoundException(
 				transitionKey.toString() + "not found from" + vertexKeysPath.peek());
@@ -447,18 +448,18 @@ public final class StateTransitionDiagram {
 	private State findStateByVertexKey(Object key)
 		throws NodeNotFoundException {
 		State result = null;
-		Vertex vertex = graph.findVertexByKey(key);
+		AdjListVertex vertex = graph.findVertexByKey((Comparable)key);
 		if (vertex != null)
 			result = (State) vertex.getUserValue();
 		return result;
 	}
 
-	private Edge findEdgeByKey(Object vertexKey, Object edgeKey)
+	private AdjListEdge findEdgeByKey(Object vertexKey, Object edgeKey)
 		throws NodeNotFoundException {
-		Edge result = null;
-		Vertex vertex = graph.findVertexByKey(vertexKey);
+		AdjListEdge result = null;
+		AdjListVertex vertex = graph.findVertexByKey((Comparable)vertexKey);
 		if (vertex != null)
-			result = vertex.getEdge(edgeKey);
+			result = vertex.getEdge((Comparable)edgeKey);
 		return result;
 	}
 }

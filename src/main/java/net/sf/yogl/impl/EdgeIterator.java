@@ -20,6 +20,8 @@ package net.sf.yogl.impl;
 import java.util.List;
 import java.util.Stack;
 
+import net.sf.yogl.adjacent.list.AdjListEdge;
+import net.sf.yogl.adjacent.list.AdjListVertex;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
@@ -40,14 +42,14 @@ class EdgeIterator<VK extends Comparable<VK>, VV,  EK extends Comparable<EK>, EV
     
     /** 'top' contains the 'current' vertex
      */
-    private Stack<Vertex<VK,VV,EK,EV>> path = null;
+    private Stack<AdjListVertex<VK,VV,EK,EV>> path = null;
     
     EdgeIterator(ImplementationGraph<VK,VV,EK,EV> graph) throws NodeNotFoundException, GraphCorruptedException{
         
         path = new Stack<>();
         if(graph != null){
             //this.start = start;
-            List<Vertex<VK, VV, EK, EV>>startNodes = graph.getVertices(VertexType.START);
+            List<AdjListVertex<VK, VV, EK, EV>>startNodes = graph.getVertices(VertexType.START);
             if(startNodes.size() > 0){
                 path.push(startNodes.get(0));
             }
@@ -89,7 +91,7 @@ class EdgeIterator<VK extends Comparable<VK>, VV,  EK extends Comparable<EK>, EV
      */
     public void transition(EK edgeKey)throws GraphException{
         
-        Vertex<VK,VV,EK,EV> peek = path.peek();
+        AdjListVertex<VK,VV,EK,EV> peek = path.peek();
         VK nextKey = peek.getNextVertexKey(edgeKey);
 		if(nextKey == null)
 			throw new GraphCorruptedException("Edge does not exists");
@@ -131,8 +133,8 @@ class EdgeIterator<VK extends Comparable<VK>, VV,  EK extends Comparable<EK>, EV
     public EV testTransition(EK edgeValue)throws GraphException{
         
         EV result = null;
-        Vertex<VK,VV,EK,EV> peek = path.peek();
-        Edge<VK,EK,EV> candidate = peek.getEdge(edgeValue);
+        AdjListVertex<VK,VV,EK,EV> peek = path.peek();
+        AdjListEdge<VK,EK,EV> candidate = peek.getEdge(edgeValue);
         if(candidate != null){
         	result = candidate.getUserValue();
         }

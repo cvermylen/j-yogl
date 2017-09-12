@@ -20,6 +20,7 @@ package net.sf.yogl.impl;
 /** This class is used by AllowDupNodes to allow the user to introduce nodes
  * having the same contents. The basic idea is that a unique key is generated
  * inside the proxy class.
+ * REFACTOR: thsi should extends a Vertex
  */
 
 final public class NodeContainer{

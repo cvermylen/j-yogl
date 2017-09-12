@@ -19,7 +19,7 @@ package net.sf.yogl.samples;
 
 import java.util.HashMap;
 
-import net.sf.yogl.AdjListGraph;
+import net.sf.yogl.adjacent.list.AdjListGraph;
 import net.sf.yogl.extras.GraphUtil;
 import net.sf.yogl.types.NoDataGraph;
 
@@ -27,7 +27,7 @@ import net.sf.yogl.types.NoDataGraph;
 public class DepthFirst {
 
 	public static void main(String[] args) throws Exception {
-		NoDataGraph ndg = new NoDataGraph(new AdjListGraph(new HashMap()));
+		NoDataGraph ndg = new NoDataGraph(/*new AdjListGraph(new HashMap())*/);
 		ndg.addNode("1");
 		ndg.addNode("2");
 		ndg.addNode("3");

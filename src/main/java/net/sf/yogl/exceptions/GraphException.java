@@ -17,17 +17,17 @@
    
 package net.sf.yogl.exceptions;
 
-import net.sf.yogl.Graph;
+import net.sf.yogl.ComparableKeysGraph;
 
 /**
  * 'GraphException' is the root class for all exceptions thrown by graph methods. The purpose of this class
  * is just to make more easy the handling of exceptions by the graph user.
  */
-public class GraphException extends Exception {
+public class GraphException extends RuntimeException {
 
 	private static final long serialVersionUID = 8963356757643065040L;
 
-	private Graph graph;
+	private ComparableKeysGraph graph;
 	
 	/**
 	 * Constructor for GraphException.
@@ -59,14 +59,14 @@ public class GraphException extends Exception {
 	/**
 	 * @return
 	 */
-	public Graph getGraph() {
+	public ComparableKeysGraph getGraph() {
 		return graph;
 	}
 
 	/**
 	 * @param graph
 	 */
-	public void setGraph(Graph graph) {
+	public void setGraph(ComparableKeysGraph graph) {
 		this.graph = graph;
 	}
 

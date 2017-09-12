@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-import net.sf.yogl.AdjListGraph;
+import net.sf.yogl.adjacent.list.AdjListGraph;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.impl.ImplementationGraph;
 
@@ -150,7 +150,7 @@ public class SimpleGraphSpecifier {
 
 			graph.tryAddNode(fromNodeId, from);
 			graph.tryAddNode(toNodeId, to);
-			graph.addLinkLast(fromNodeId, toNodeId, link, null);
+			graph.addLinkLast((Comparable)fromNodeId, (Comparable)toNodeId, (Comparable)link, null);
 		}
 		return graph;
 	}
@@ -177,7 +177,7 @@ public class SimpleGraphSpecifier {
 
 			graph.tryAddNode(fromNodeId, from);
 			graph.tryAddNode(toNodeId, to);
-			graph.addLinkLast(fromNodeId, toNodeId, link, null);
+			graph.addLinkLast((Comparable)fromNodeId, (Comparable)toNodeId, (Comparable)link, null);
 		}
 		return graph;
 	}

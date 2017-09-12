@@ -19,8 +19,8 @@ package net.sf.yogl.samples;
 
 import java.util.HashMap;
 
-import net.sf.yogl.AdjListGraph;
 import net.sf.yogl.GraphAdapter;
+import net.sf.yogl.adjacent.list.AdjListGraph;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.extras.GraphBuilderArray;
 import net.sf.yogl.types.NoDataGraph;
@@ -28,7 +28,7 @@ import net.sf.yogl.types.NoDataGraph;
 public class SimpleGraphBuilder {
 
 	public static void main(String[] args) throws GraphException {
-		NoDataGraph ndg = new NoDataGraph(new AdjListGraph(new HashMap()));
+		NoDataGraph ndg = new NoDataGraph(/*new AdjListGraph(new HashMap())*/);
 		String[][]data = {
 			{"1", "2", "A"},
 			{"1", "3", "B"},
@@ -38,7 +38,7 @@ public class SimpleGraphBuilder {
 		System.out.println(ndg);
 		
 		System.out.println("\nSecond graph\n-----------");
-		GraphAdapter alg = new GraphAdapter(new AdjListGraph(new HashMap()));
+		GraphAdapter alg = new GraphAdapter(/*new AdjListGraph(new HashMap())*/);
 		String[][]data2 = {
 			{"1", "as the root node"},
 			{"2", "intermediate node"},

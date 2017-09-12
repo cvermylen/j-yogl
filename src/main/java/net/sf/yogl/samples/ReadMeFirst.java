@@ -19,14 +19,14 @@ package net.sf.yogl.samples;
 
 import java.util.HashMap;
 
-import net.sf.yogl.AdjListGraph;
+import net.sf.yogl.adjacent.list.AdjListGraph;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.types.NoDataGraph;
 
 public class ReadMeFirst {
 
 	public static void main(String[] args) throws GraphException {
-		NoDataGraph ndg = new NoDataGraph(new AdjListGraph(new HashMap()));
+		NoDataGraph ndg = new NoDataGraph(/*new AdjListGraph(new HashMap())*/);
 		ndg.addNode("1");
 		ndg.addNode("2");
 		ndg.addNode("3");
