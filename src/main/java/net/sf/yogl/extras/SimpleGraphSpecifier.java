@@ -24,7 +24,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-import net.sf.yogl.adjacent.list.AdjListGraph;
+import net.sf.yogl.Graph;
+import net.sf.yogl.adjacent.list.AdjListGraphTest;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.impl.ImplementationGraph;
 
@@ -45,6 +46,7 @@ import net.sf.yogl.impl.ImplementationGraph;
  *  <LI>s.defineLink("isConnectedTo", new SomeClassLink(...));
  *  <LI>AbstractGraph graph = s.map2Graph("d:\toto");
  */
+//TODO FIXME
 public class SimpleGraphSpecifier {
 
 	/** The 2 hashtables maintains a mapping between the string used
@@ -119,7 +121,7 @@ public class SimpleGraphSpecifier {
 	 *             definition file has not been previously set up using the
 	 *             'defineLink' method
 	 */
-	public ImplementationGraph map2Graph(String definitionFile)
+	public Graph map2Graph(String definitionFile)
 		throws IOException, GraphException {
 
 		if (definitionFile == null) {
@@ -128,7 +130,7 @@ public class SimpleGraphSpecifier {
 					+ "parameter 'definitionFile' is null");
 		}
 		File file = new File(definitionFile);
-		ImplementationGraph graph = new AdjListGraph(new HashMap());
+		Graph graph = new AdjListGraphTest();
 		BufferedReader reader = new BufferedReader(new FileReader(file));
 		while (reader.ready()) {
 			String s = reader.readLine();
@@ -148,17 +150,17 @@ public class SimpleGraphSpecifier {
 			Object from = nodesDefinition.get(fromNodeId);
 			Object to = nodesDefinition.get(toNodeId);
 
-			graph.tryAddNode(fromNodeId, from);
-			graph.tryAddNode(toNodeId, to);
-			graph.addLinkLast((Comparable)fromNodeId, (Comparable)toNodeId, (Comparable)link, null);
+//			graph.addNode(fromNodeId, from);
+//			graph.tryAddNode(toNodeId, to);
+//			graph.addLinkLast((Comparable)fromNodeId, (Comparable)toNodeId, (Comparable)link, null);
 		}
 		return graph;
 	}
 
-	public ImplementationGraph map2GraphArray(String[][] definitions)
+	public Graph map2GraphArray(String[][] definitions)
 		throws GraphException {
 
-		ImplementationGraph graph = new AdjListGraph(new HashMap());
+		Graph graph = new AdjListGraphTest();
 		for (int i = 0; i < definitions.length; i++) {
 			String type = definitions[i][0];
 			String fromNodeId = definitions[i][1];
@@ -175,9 +177,9 @@ public class SimpleGraphSpecifier {
 			Object from = nodesDefinition.get(fromNodeId);
 			Object to = nodesDefinition.get(toNodeId);
 
-			graph.tryAddNode(fromNodeId, from);
-			graph.tryAddNode(toNodeId, to);
-			graph.addLinkLast((Comparable)fromNodeId, (Comparable)toNodeId, (Comparable)link, null);
+//			graph.tryAddNode(fromNodeId, from);
+//			graph.tryAddNode(toNodeId, to);
+//			graph.addLinkLast((Comparable)fromNodeId, (Comparable)toNodeId, (Comparable)link, null);
 		}
 		return graph;
 	}

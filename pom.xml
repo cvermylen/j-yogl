@@ -15,4 +15,12 @@
 			</plugin>
 		</plugins>
 	</build>
+	<dependencies>
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito2</artifactId>
+			<version>1.7.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>

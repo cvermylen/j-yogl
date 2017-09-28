@@ -1,5 +1,7 @@
 package net.sf.yogl;
 
+import java.util.List;
+
 public abstract class Vertex {
 
 	/** Depending on the graph implementation, entries may not be deleted. They are
@@ -11,7 +13,7 @@ public abstract class Vertex {
      * of times the vertex has been visited. This is used for
      * loop detection
      */
-    private int traversals = 0;
+    private int visitCounts = 0;
 
     /** setter method
      * @param freeEntry true means that vertex is in a free pool
@@ -28,25 +30,43 @@ public abstract class Vertex {
     }
     
     /** setter method
-     * @param traversals new userValue indicating the number of times
+     * @param visitCounts new userValue indicating the number of times
      *                   has been traversed.
      */
-    public void setTraversals(int traversals){
-        this.traversals = traversals;
+    public void setVisitCounts(int visitCounts){
+        this.visitCounts = visitCounts;
     }
     
     /** getter method
      * @return the number of times the vertex has been visited.
      */
-    public int getTraversals(){
-        return traversals;
+    public int getVisitsCount(){
+        return visitCounts;
     }
     
     /** modifier method.
      * postcondition the vertex has been traversed once more.
      */
-    public int incTraversals(){
-        return ++traversals;
+    public int incVisitCounts(){
+        return ++visitCounts;
     }
     
+    public void clearVisitsCount(){
+    	this.visitCounts = 0;
+    }
+    
+    public abstract List<? extends Edge> getOutgoingEdges();
+    
+    public Vertex deepCopy(){
+    	throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public abstract Object clone();
+    
+    public void copyTo(Vertex target){
+    	target.freeEntry = this.freeEntry;
+    	target.visitCounts = this.visitCounts;
+    }
+ 
 }

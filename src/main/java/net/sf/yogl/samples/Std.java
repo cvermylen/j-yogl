@@ -19,11 +19,11 @@ package net.sf.yogl.samples;
 
 import java.util.HashMap;
 
-import net.sf.yogl.GraphAdapter;
-import net.sf.yogl.StateTransitionDiagram;
-import net.sf.yogl.adjacent.list.AdjListGraph;
+import net.sf.yogl.adjacent.keyMap.GraphAdapter;
+import net.sf.yogl.adjacent.list.AdjListGraphTest;
 import net.sf.yogl.exceptions.StdExecutionException;
 import net.sf.yogl.std.State;
+import net.sf.yogl.std.StateTransitionDiagram;
 import net.sf.yogl.std.Transition;
 
 public class Std {

@@ -17,7 +17,7 @@
    
 package net.sf.yogl.types;
 
-import net.sf.yogl.GraphAdapter;
+import net.sf.yogl.adjacent.keyMap.GraphAdapter;
 import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;

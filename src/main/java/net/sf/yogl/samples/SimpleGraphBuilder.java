@@ -19,8 +19,8 @@ package net.sf.yogl.samples;
 
 import java.util.HashMap;
 
-import net.sf.yogl.GraphAdapter;
-import net.sf.yogl.adjacent.list.AdjListGraph;
+import net.sf.yogl.adjacent.keyMap.GraphAdapter;
+import net.sf.yogl.adjacent.list.AdjListGraphTest;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.extras.GraphBuilderArray;
 import net.sf.yogl.types.NoDataGraph;

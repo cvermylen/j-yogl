@@ -18,10 +18,10 @@
 package net.sf.yogl.adjacent.list;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
+import java.util.function.Predicate;
 
 import net.sf.yogl.Vertex;
-import net.sf.yogl.adjacent.keyMap.KeyMap;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 /**
  * The Vertex describes the node of the graph. It is a container for a
@@ -35,191 +35,79 @@ import net.sf.yogl.exceptions.GraphCorruptedException;
  *  V = user value Object
  */
 
-public class AdjListVertex <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Vertex implements Comparable<AdjListVertex<VK, VV, EK, EV>>{
+public class AdjListVertex <VV, EV> extends Vertex {
         
-    /** contains the list of all adjacent vertices.
-     */
-    private ListMap<VK, VV, EK, EV> outgoingEdges = new ListMap<VK, VV, EK, EV>();
+    private ArrayList<AdjListEdge<VV, EV>> outgoingEdges = new ArrayList<>();
     
-    /** Key must be comparable
-     * 
-     */
-    VK key;
-    
-    /** Application class data. Refers to an object having the
-     * 'equals' method defined.
-     */
     VV userValue = null;
     
-    /** ctor with initialisation
-     * @param type associates a type to the contents ofthe vertex
-     * @param userValue refers to the node object
-     */
-    public AdjListVertex(VK key, VV userValue){
+    public AdjListVertex(VV userValue){
     	super();
-    	this.key = key;
+    	if(userValue == null) throw new IllegalArgumentException("Null paramter not allowed");
         this.userValue = userValue;
     }
     
-    public AdjListVertex<VK, VV, EK, EV> clone(){
+    public AdjListVertex<VV, EV> clone(){
         
-        AdjListVertex<VK, VV, EK, EV> cloned = new AdjListVertex<VK, VV, EK, EV>(key, userValue);
+        AdjListVertex<VV, EV> cloned = new AdjListVertex<VV, EV>(userValue);
         cloned.setFreeEntry(isFreeEntry());
-        cloned.setTraversals(getTraversals());
+        cloned.setVisitCounts(getVisitsCount());
         cloned.outgoingEdges = outgoingEdges;
         return cloned;
     }
-    /** compares the userValue objects of 'this' and 'v' if both
-     * references are non-null. If either 'this' or 'v' is null
-     * the function return 'false'
-     * @param vertex the contents of the user defined node to
-     *        be compared with
-     * @return a boolean userValue indicating if the user defined node
-     * matches or not.
-     */
-    public boolean equals(AdjListVertex<VK, VV, EK, EV> vertex){
-        
-        return this.compareTo(vertex) == 0;
-    }
     
-    public int compareTo(AdjListVertex<VK, VV, EK, EV> v){
-    	return this.key.compareTo(v.getKey());
-    }
-    
-    
-    /** getter method
-     * @return the object userValue associated to the vertex.
-     */
     public VV getUserValue(){
         return userValue;
     }
     
-    /** Return the edge used to access the given vertex.
-     *  @param to points to a vertex
-     *  @return an edge or null if both vertex (this & to)
-     *          are not connected.
-     */
-    public AdjListEdge<VK, EK, EV>[]getEdgeTo(VK key){
+    public List<AdjListEdge<VV, EV>> getOutgoingEdges(){
         
-        ArrayList<AdjListEdge<VK, EK, EV>> result = new ArrayList<>();
-        Iterator<AdjListEdge<VK, EK, EV>> iter = outgoingEdges.values().iterator();
-        while(iter.hasNext()){
-            AdjListEdge<VK, EK, EV> edge = iter.next();
-            if(edge.getNextVertexKey().equals(key)){
-                result.add(edge);
-                break;
-            }
-        }
-        if(result.size() == 0){
-        	return null;
-        }else{
-        	return (AdjListEdge<VK, EK, EV>[])result.toArray(new AdjListEdge[result.size()]);
-        }
+    	return this.outgoingEdges;
     }
     
-    /** get a stringified version of the vertex
-     *  @return string representaiotn
-     */
-    public String toString(){
-        
-        return "traversals("+getTraversals()+")userValue("+userValue.toString()+")"+
-        " freeEntry("+isFreeEntry()+")";
+    public AdjListEdge<VV, EV> addLinkLast(EV value) {
+    	return this.addEdgeLast(new AdjListEdge<>(value));
     }
     
-    /** returns the number of edges going out from 'this'
-     * @return the number of edges going out of this vertex
-     */
-    public int getCountEdges(){
-        int num = 0;
-        if(outgoingEdges != null){
-            num = outgoingEdges.size();
-        }
-        return num;
-    }
-    
-    /** getter method
-     * Be careful to the following:
-     *  - do not use this method if there is any kind
-     *    of concurrent access to the list
-     *  - do not modify directly this list (by adding or
-     *    removing elements
-     * @return the list of outgoing edges
-     */
-    public AdjListEdge<VK, EK, EV>[]getNeighbors(){
-    	ArrayList<AdjListEdge<VK, EK, EV>> result = new ArrayList<>(outgoingEdges.values());
-        return (AdjListEdge<VK, EK, EV>[])result.toArray(new AdjListEdge[outgoingEdges.size()]);
-    }
-    
-    public VK getNextVertexKey(EK edgeKey){
-    	AdjListEdge<VK, EK, EV> edge = getEdge(edgeKey);
-    	return edge.getNextVertexKey();
-    }
-    
-    public AdjListEdge<VK, EK, EV> getEdge(EK edgeKey){
-    	return (AdjListEdge<VK, EK, EV>)outgoingEdges.get(edgeKey);
-    }
-    
-    /** This method insert a new edge between 'this' vertex
-     * and the vertex pointed to by the edge.
-     * @param edge contains the destination vertex
-     * @exception GraphCorruptedException if 'edge' cannot
-     *            be inserted in the neighbors list.
-     */
-    public void addEdgeLast(AdjListEdge<VK, EK, EV> newEdge)throws GraphCorruptedException{
+    public AdjListEdge<VV, EV> addEdgeLast(AdjListEdge<VV, EV> newEdge)throws GraphCorruptedException{
         if (newEdge != null){
-            if (outgoingEdges != null){
-                outgoingEdges.addLast(newEdge.getEdgeKey(), newEdge);
-            }else{
-                throw new GraphCorruptedException(
-                "Vertex identified by "+userValue.toString()+
-                " has a null neighbors list");
-            }
+        	outgoingEdges.add(newEdge);
         }
+        return newEdge;
     }
     
-    /** This method insert a new edge between 'this' vertex
-     * and the vertex pointed to by the edge.
-     *  The edge is placed at the head of the list
-     * @param edge contains the destination vertex
-     * @exception InvalidVertexException if 'edge' cannot
-     *            be inserted in the neighbors list.
-     */
-    public void addEdgeFirst(AdjListEdge<VK, EK, EV> newEdge)throws GraphCorruptedException{
-        if (newEdge != null){
-            if (outgoingEdges != null){
-                outgoingEdges.addFirst(newEdge.getEdgeKey(), newEdge);
-            }else{
-                throw new GraphCorruptedException(
-                "Vertex identified by "+userValue.toString()+
-                " has a null neighbors list");
-            }
-        }
+    public AdjListEdge<VV, EV> addLinkFirst(EV value){
+    	return this.addEdgeFirst(new AdjListEdge<>(value));
     }
-    /** Removes from the neighbors list the edge given as parameter
-     * @param edge to be removed
-     */
-    public void removeEdge(AdjListEdge<VK, EK, EV> edge){
+    
+    public AdjListEdge<VV, EV> addEdgeFirst(AdjListEdge<VV, EV> newEdge)throws GraphCorruptedException{
+        if (newEdge != null){
+        	outgoingEdges.add(0, newEdge);
+        }
+        return newEdge;
+    }
+
+    public void removeEdge(AdjListEdge<VV, EV> edge){
         if (edge != null){
-            outgoingEdges.remove(edge.getEdgeKey());
+            outgoingEdges.remove(edge);
         }
     }
     
-    public void removeEdgeByKey(EK edgeKey){
-    	if (edgeKey != null){
-            outgoingEdges.remove(edgeKey);
-        }
+    public void removeEdgeAt(int pos) {
+    	outgoingEdges.remove(pos);
     }
     
-    /** Removes all outgoing edges from the vertex. No successor will
-     * be accessible after this operation.
-     * Precondition: vertex exists
-     * Postcondition: edges list is empty
-     */
+    public void removeIf(Predicate<AdjListEdge<VV, EV>> p){
+    	outgoingEdges.removeIf(p);
+    }
+    
     public void clearEdges(){
         outgoingEdges.clear();
     }
     
-    public VK getKey(){
-    	return key;
+    public AdjListVertex<VV, EV> deepCopy() {
+    	AdjListVertex<VV, EV>result = this.clone();
+    	
+    	return result;
     }
 }

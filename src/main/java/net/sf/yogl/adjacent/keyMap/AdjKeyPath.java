@@ -15,7 +15,7 @@
    Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
    MA 02111-1307, USA */
    
-package net.sf.yogl.impl;
+package net.sf.yogl.adjacent.keyMap;
 
 import java.util.LinkedList;
 
@@ -28,7 +28,7 @@ import net.sf.yogl.adjacent.list.AdjListEdge;
  * object reaches 0, the top object is removed.
  */
 
-public class Path<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV>{
+public class AdjKeyPath<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV>{
 	
 	/** Reference to the vertex' node
 	 */
@@ -43,7 +43,7 @@ public class Path<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV>{
 	 */
 	private LinkedList<AdjListEdge<VK,EK,EV>> outgoingEdges = null;
 	
-	public Path(VK nodeKey, AdjListEdge<VK,EK,EV>[]eArray){
+	public AdjKeyPath(VK nodeKey, AdjListEdge<VK,EK,EV>[]eArray){
 		this.nodeKey = nodeKey;
 		this.outgoingEdges = new LinkedList<>();
 		outgoingEdges.push(new AdjListEdge<>(null, null, null));
@@ -57,7 +57,7 @@ public class Path<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV>{
 	 *  @return the edge used to access to the next
 	 *  node
 	 */
-	public AdjListEdge<VK,EK,EV> dec(){
+	public AdjListEdge<VK,EK,EV> old_dec(){
 		
 		AdjListEdge<VK,EK,EV> usedEdge = outgoingEdges.pop();
 		popedValue = usedEdge;
@@ -81,7 +81,7 @@ public class Path<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV>{
 	/** getter method
 	 *  @return the current edge
 	 */
-	public AdjListEdge<VK,EK,EV> getEdge(){
+	public AdjListEdge<VK,EK,EV> old_getEdge(){
 		AdjListEdge<VK,EK,EV> edge = null;
 		
 		if(!outgoingEdges.isEmpty()){
@@ -92,7 +92,7 @@ public class Path<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV>{
 		return edge;
 	}
 	
-	public AdjListEdge<VK,EK,EV> getPopedValue(){
+	public AdjListEdge<VK,EK,EV> old_getPopedValue(){
 		
 		return popedValue;
 	}
@@ -103,8 +103,8 @@ public class Path<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV>{
 		return result;
 	}
 	
-	public Path<VK, VV, EK, EV> clone(){
-		Path<VK, VV, EK, EV>result = this.clone();
+	public AdjKeyPath<VK, VV, EK, EV> clone(){
+		AdjKeyPath<VK, VV, EK, EV>result = this.clone();
 		result.nodeKey = this.nodeKey;
 		result.popedValue = this.popedValue;
 		result.outgoingEdges = this.outgoingEdges.stream().map(e -> e.clone()).collect(LinkedList::new, LinkedList::add, LinkedList::addAll);

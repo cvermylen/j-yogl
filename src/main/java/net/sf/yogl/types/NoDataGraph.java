@@ -19,7 +19,7 @@ package net.sf.yogl.types;
 
 import java.util.Collection;
 
-import net.sf.yogl.GraphAdapter;
+import net.sf.yogl.adjacent.keyMap.GraphAdapter;
 import net.sf.yogl.exceptions.GraphException;
 
 /** Simple graph which does not contains any data. Nodes and links

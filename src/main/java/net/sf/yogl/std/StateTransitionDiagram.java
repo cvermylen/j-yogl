@@ -15,7 +15,7 @@
    Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
    MA 02111-1307, USA */
    
-package net.sf.yogl;
+package net.sf.yogl.std;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +25,8 @@ import java.util.Stack;
 
 import net.sf.yogl.adjacent.list.AdjListEdge;
 import net.sf.yogl.adjacent.list.AdjListVertex;
+import net.sf.yogl.adjacent.keyMap.GraphAdapter;
+import net.sf.yogl.adjacent.list.AdjListDepthFirstIterator;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.LinkNotFoundException;
@@ -32,8 +34,6 @@ import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.exceptions.StdDefinitionException;
 import net.sf.yogl.exceptions.StdExecutionException;
 import net.sf.yogl.impl.ImplementationGraph;
-import net.sf.yogl.std.State;
-import net.sf.yogl.std.Transition;
 
 /** The STD implementation is based on a directed graph with the following
  *  restrictions:
@@ -114,7 +114,7 @@ public final class StateTransitionDiagram {
 
 		boolean result = false;
 		try {
-			DepthFirstIterator df = graph.depthFirstIterator(null, 1);
+			AdjListDepthFirstIterator df = graph.depthFirstIterator(null, 1);
 			while (df.hasNext()) {
 				Object o = df.next();
 				if (nodeKey.equals(o)) {
@@ -192,7 +192,7 @@ public final class StateTransitionDiagram {
 			if (nextState.onEntry(k, currentState, t, parameter)) {
 				vertexKeysPath.push(edge.getNextVertexKey());
 				transitionPath.push(t);
-				edge.incVisitCount();
+				edge.incVisitCounts();
 			} else {
 				t.actionAfterBacktrack(transitionKey, null, parameter, currentState, null);
 				currentState.entryAfterBacktrack(vertexKeysPath.peek(), null, t, parameter, null);

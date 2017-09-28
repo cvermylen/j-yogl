@@ -17,7 +17,7 @@
    
 package net.sf.yogl.exceptions;
 
-import net.sf.yogl.ComparableKeysGraph;
+import net.sf.yogl.adjacent.keyMap.ComparableKeysGraph;
 
 /**
  * 'GraphException' is the root class for all exceptions thrown by graph methods. The purpose of this class

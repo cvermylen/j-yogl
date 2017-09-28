@@ -1,37 +1,20 @@
-/* Copyright (C) 2003 Symphonic
-   
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
-   
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-   
-   You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
-   MA 02111-1307, USA */
+/* Default implementation. No assumption about the implementation of the graph */
    
 package net.sf.yogl;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
-import net.sf.yogl.adjacent.list.AdjListVertex;
 import net.sf.yogl.exceptions.GraphException;
-import net.sf.yogl.impl.ImplementationGraph;
 
-public final class BreadthFirstIterator implements Iterator {
+public class BreadthFirstIterator implements Iterator<Vertex> {
 
 	/** breadth first working structure
 	 */
-	private LinkedList queue = new LinkedList();
-
-	private ImplementationGraph graph = null;
+	private Deque<Vertex> queue = new ArrayDeque<>();
 
 	/** Maximum number of times a node can be visited.
 	 */
@@ -43,35 +26,33 @@ public final class BreadthFirstIterator implements Iterator {
 	 *  counters (used to count the number of visits) must be reset.
 	 */
 	public BreadthFirstIterator(
-		ImplementationGraph graph,
-		Object startingNodeKey,
+		Graph graph,
 		int maxCycling)
 		throws GraphException {
-		this.graph = graph;
-		queue.add(startingNodeKey);
+		queue.addAll(graph.getRoots());
 		this.maxCycling = maxCycling;
-		graph.setAllVisitCounts(0);
+		graph.clearAllVisitCounts();
 	}
 
 	/** Returns the next node key in breadth first order
 	 */
-	public Object next() throws NoSuchElementException {
+	public Vertex next() throws NoSuchElementException {
 		try {
 			if (queue.isEmpty())
 				throw new NoSuchElementException("Empty iterator");
-			Object key = queue.removeFirst();
-			if(key != null){
-				AdjListVertex current = graph.findVertexByKey((Comparable)key);
-				Object[]nextKeys = graph.getSuccessorNodesKeys((Comparable)key, 1);
-				for (int i = 0; i < nextKeys.length; i++) {
-					AdjListVertex next = graph.findVertexByKey((Comparable)nextKeys[i]);
-					if(next.getTraversals() < maxCycling){
-						queue.addLast(nextKeys[i]);
-						next.incTraversals();
+			Vertex current = queue.poll();
+			if(current != null){
+				List<? extends Edge>nextEdges = current.getOutgoingEdges();
+				
+				for (Edge edge: nextEdges) {
+					Vertex v = edge.getOutgoingVertex();
+					if(v.getVisitsCount() < maxCycling){
+						queue.addLast(v);
+						v.incVisitCounts();
 					}
 				}
 			}
-			return key;
+			return current;
 		} catch (GraphException e1) {
 			throw new NoSuchElementException(e1.getMessage());
 		}

@@ -17,7 +17,7 @@
    
 package net.sf.yogl.extras;
 
-import net.sf.yogl.ComparableKeysGraph;
+import net.sf.yogl.adjacent.keyMap.ComparableKeysGraph;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.types.NoDataGraph;
@@ -70,9 +70,6 @@ public class GraphBuilderArray {
 	 * @throws GraphException
 	 */
 	public static void buildGraph(Object[][] srcData, ComparableKeysGraph destGraph) throws GraphException {
-		if (destGraph.getNodeCount() > 0) {
-			throw new GraphCorruptedException("The graph must be empty");
-		}
 		PreparedGraph pg = new PreparedGraph();
 		for (int i = 0; i < srcData.length; i++) {
 			if(srcData[i].length == 2){

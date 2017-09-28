@@ -15,13 +15,15 @@
    Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
    MA 02111-1307, USA */
    
-package net.sf.yogl;
+package net.sf.yogl.adjacent.keyMap;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.yogl.adjacent.list.AdjListVertex;
+import net.sf.yogl.BreadthFirstIterator;
+import net.sf.yogl.Graph;
+import net.sf.yogl.adjacent.list.AdjListDepthFirstIterator;
 import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
@@ -159,7 +161,7 @@ public interface ComparableKeysGraph <VK extends Comparable<VK>, VV, EK extends 
 	 *         Accepted values are: [1 .. n]. There is no way to express
 	 *         an infinite value.
 	 */
-	public DepthFirstIterator depthFirstIterator(VK startingNodeKey, int maxCycling)
+	public AdjListDepthFirstIterator depthFirstIterator(VK startingNodeKey, int maxCycling)
 		throws GraphException;
 
 	/** Test for the presence of a given node key.
@@ -221,7 +223,7 @@ public interface ComparableKeysGraph <VK extends Comparable<VK>, VV, EK extends 
 	/** Return the list of nodes that are of a particular type
 	 *  @param nodeType has a value described in VertexType
 	 */
-	public List<AdjListVertex<VK,VV,EK,EV>> getVertices(int nodeType) throws GraphCorruptedException;
+	public List<AdjKeyVertex<VK,VV,EK,EV>> getVertices(int nodeType) throws GraphCorruptedException;
 
 	/** Returns the type associated to the node.
 	 *  The type is specified by a value defined in VertexType.

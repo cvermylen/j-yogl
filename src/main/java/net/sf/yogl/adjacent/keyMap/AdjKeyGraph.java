@@ -28,9 +28,8 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.yogl.BreadthFirstIterator;
-import net.sf.yogl.DepthFirstIterator;
-import net.sf.yogl.ComparableKeysGraph;
 import net.sf.yogl.LinksIterator;
+import net.sf.yogl.adjacent.list.AdjListDepthFirstIterator;
 import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.DuplicateNodeException;
 import net.sf.yogl.exceptions.GraphCorruptedException;
@@ -152,9 +151,9 @@ public final class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Compar
 
 	/** @see ComparableKeysGraph#depthFirstIterator
 	 */
-	public DepthFirstIterator depthFirstIterator(VK node, int maxCycling)
+	public AdjListDepthFirstIterator depthFirstIterator(VK node, int maxCycling)
 		throws GraphException {
-		return new DepthFirstIterator(this, node, maxCycling);
+		return new AdjListDepthFirstIterator(this, node, maxCycling);
 	}
 
 	/** @see ComparableKeysGraph#existsNode
@@ -551,7 +550,7 @@ public final class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Compar
 	public int getVisitCount(VK nodeKey) throws GraphException {
 
 		AdjKeyVertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
-		return vertex.getTraversals();
+		return vertex.getVisitsCount();
 	}
 
 	/** @see ComparableKeysGraph#incPassage
@@ -559,7 +558,7 @@ public final class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Compar
 	public int incVisitCount(VK nodeKey) throws GraphException {
 
 		AdjKeyVertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
-		return vertex.incTraversals();
+		return vertex.incVisitCounts();
 	}
 
 	/** @see ComparableKeysGraph#addLinkFirst
@@ -814,7 +813,7 @@ public final class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Compar
 		Iterator<AdjKeyVertex<VK, VV, EK, EV>> nodeValuesIter = this.vertices.values().iterator();
 		while (nodeValuesIter.hasNext()) {
 			AdjKeyVertex<VK, VV, EK, EV> vertex = nodeValuesIter.next();
-			vertex.setTraversals(count);
+			vertex.setVisitCounts(count);
 		}
 	}
 
@@ -823,7 +822,7 @@ public final class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Compar
 	public void setVisitCount(VK nodeKey, int count)
 		throws GraphException {
 		AdjKeyVertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
-		vertex.setTraversals(count);
+		vertex.setVisitCounts(count);
 	}
 
 	/** @see ComparableKeysGraph#tryAddNode

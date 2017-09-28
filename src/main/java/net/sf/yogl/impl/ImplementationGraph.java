@@ -19,9 +19,9 @@ package net.sf.yogl.impl;
 
 import java.util.List;
 
-import net.sf.yogl.ComparableKeysGraph;
-import net.sf.yogl.adjacent.list.AdjListEdge;
-import net.sf.yogl.adjacent.list.AdjListVertex;
+import net.sf.yogl.adjacent.keyMap.AdjKeyEdge;
+import net.sf.yogl.adjacent.keyMap.AdjKeyVertex;
+import net.sf.yogl.adjacent.keyMap.ComparableKeysGraph;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 
 /** Defines the methods that needs to be implemented by any graph 
@@ -41,12 +41,12 @@ public interface ImplementationGraph<VK extends Comparable<VK>, VV, EK extends C
 	 *  @exception NodeNotFoundException  thrown if rhs was not
 	 *            found in the graph.
 	 */
-	public AdjListVertex<VK, VV, EK, EV> findVertexByKey(VK key)throws NodeNotFoundException;
+	public AdjKeyVertex<VK, VV, EK, EV> findVertexByKey(VK key)throws NodeNotFoundException;
 	
 	/** Returns a list of Vertex which are directly adjacent to the node.
 	 */
-	public List<AdjListVertex<VK, VV, EK, EV>>getSuccessorVertices(AdjListVertex<VK, VV, EK, EV> node)throws NodeNotFoundException ;
+	public List<AdjKeyVertex<VK, VV, EK, EV>>getSuccessorVertices(AdjKeyVertex<VK, VV, EK, EV> node)throws NodeNotFoundException ;
 	
-	public AdjListVertex<VK, VV, EK, EV>[] getSuccessorVertices(AdjListVertex<VK, VV, EK, EV> vertex, AdjListEdge<VK, EK, EV> link)
+	public AdjKeyVertex<VK, VV, EK, EV>[] getSuccessorVertices(AdjKeyVertex<VK, VV, EK, EV> vertex, AdjKeyEdge<VK, EK, EV> link)
 		throws NodeNotFoundException;
 }

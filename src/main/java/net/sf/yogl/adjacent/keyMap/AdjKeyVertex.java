@@ -64,7 +64,7 @@ public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<
         
         AdjKeyVertex<VK, VV, EK, EV> cloned = new AdjKeyVertex<VK, VV, EK, EV>(key, userValue);
         cloned.setFreeEntry(isFreeEntry());
-        cloned.setTraversals(getTraversals());
+        cloned.setVisitCounts(getVisitsCount());
         cloned.outgoingEdges = outgoingEdges;
         return cloned;
     }
@@ -121,7 +121,7 @@ public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<
      */
     public String toString(){
         
-        return "traversals("+getTraversals()+")userValue("+userValue.toString()+")"+
+        return "traversals("+getVisitsCount()+")userValue("+userValue.toString()+")"+
         " freeEntry("+isFreeEntry()+")";
     }
     

@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.yogl.ComparableKeysGraph;
+import net.sf.yogl.adjacent.keyMap.ComparableKeysGraph;
 import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.impl.DuplicateVertexException;

@@ -2,24 +2,17 @@ package net.sf.yogl;
 
 import java.util.Collection;
 
-public interface Graph {
+public interface Graph<V extends Vertex> {
 
 	/** Returns the max degree by only taking into account the incoming
 	 *  edges
 	 */
-	public int getMaxInDegree();
+//	public int getMaxInDegree();
 
 	/** Returns the max degree by only taking into account the outgoing
 	 *  edges
 	 */
 	public int getMaxOutDegree();
-
-	/** Return the number of node contained in the graph. This
-	 * number will include all types of nodes: entry nodes, as well as
-	 * end nodes and 'regular' nodes
-	 * @return number of nodes
-	 */
-	public int getNodeCount();
 
 	/** Check if the graph is empty or not. That is, if the graph contains
 	 * at least one node.
@@ -29,7 +22,11 @@ public interface Graph {
 	/** By default, a new node added to a graph is a root
 	 * 
 	 */
-	public void addNode(Vertex v);
+	public V addRootVertex(V v);
 	
-	public Collection<Vertex>getRoots();
+	public Collection<V>getRoots();
+	
+	public void clearAllVisitCounts();
+	
+	public BreadthFirstIterator breadthFirstIterator(int maxCycle);
 }

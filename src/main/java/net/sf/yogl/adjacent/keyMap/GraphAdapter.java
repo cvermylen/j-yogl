@@ -15,13 +15,16 @@
    Software Foundation, Inc., 59 Temple Place - Suite 330, Boston,
    MA 02111-1307, USA */
    
-package net.sf.yogl;
+package net.sf.yogl.adjacent.keyMap;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import net.sf.yogl.adjacent.list.AdjListVertex;
+import net.sf.yogl.BreadthFirstIterator;
+import net.sf.yogl.Vertex;
+import net.sf.yogl.adjacent.list.AdjListDepthFirstIterator;
 import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
@@ -466,7 +469,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		return result.toString();
 	}
 
-	public DepthFirstIterator depthFirstIterator(VK startingNodeKey, int maxCycling)
+	public AdjListDepthFirstIterator depthFirstIterator(VK startingNodeKey, int maxCycling)
 		throws GraphException {
 		return graph.depthFirstIterator(startingNodeKey, maxCycling);
 	}
@@ -475,6 +478,10 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		return graph.getAllStartNodeKeys();
 	}
 
+	public final Collection<Vertex>getRoots(){
+		return graph.getRoots();
+	}
+	
 	public final boolean isStartNode(VK nodeKey) {
 		return graph.isStartNode(nodeKey);
 	}
@@ -494,6 +501,12 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 
 	public int getMaxOutDegree() {
 		return graph.getMaxOutDegree();
+	}
+
+	@Override
+	public void addNode(Vertex v) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

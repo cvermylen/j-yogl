@@ -19,7 +19,7 @@ package net.sf.yogl.samples;
 
 import java.util.HashMap;
 
-import net.sf.yogl.adjacent.list.AdjListGraph;
+import net.sf.yogl.adjacent.list.AdjListGraphTest;
 import net.sf.yogl.extras.GraphUtil;
 import net.sf.yogl.types.NoDataGraph;
 
