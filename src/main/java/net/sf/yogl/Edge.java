@@ -1,12 +1,10 @@
 package net.sf.yogl;
 
-public abstract class Edge {
+public abstract class Edge<V extends Vertex> {
 
 	private int visitCounts = 0;
 	
-	public abstract Vertex getOutgoingVertex();
-	
-	public abstract Edge clone();
+	public abstract V getOutgoingVertex();
 	
 	public void incVisitCounts() {
 		visitCounts++;

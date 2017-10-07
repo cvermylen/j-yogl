@@ -35,7 +35,7 @@ import net.sf.yogl.exceptions.GraphCorruptedException;
  *  V = user value Object
  */
 
-public class AdjListVertex <VV, EV> extends Vertex {
+public class AdjListVertex <VV, EV> extends Vertex<AdjListEdge<VV, EV>> {
         
     private ArrayList<AdjListEdge<VV, EV>> outgoingEdges = new ArrayList<>();
     

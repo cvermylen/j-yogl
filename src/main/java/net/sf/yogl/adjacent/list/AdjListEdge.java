@@ -31,7 +31,7 @@ import net.sf.yogl.Edge;
  *  - the interger 'vertex' value points to the destination vertex.
  */
 
-public class AdjListEdge <VV, EV> extends Edge{
+public class AdjListEdge <VV, EV> extends Edge<AdjListVertex<VV, EV>>{
 	
 	// index in the vertices vector. Is used as a pointer
 	// to the 'next' vertex.

@@ -2,7 +2,7 @@ package net.sf.yogl;
 
 import java.util.List;
 
-public abstract class Vertex {
+public abstract class Vertex<E extends Edge> {
 
 	/** Depending on the graph implementation, entries may not be deleted. They are
      * just market as 'free'.
@@ -55,18 +55,7 @@ public abstract class Vertex {
     	this.visitCounts = 0;
     }
     
-    public abstract List<? extends Edge> getOutgoingEdges();
+    public abstract List<E> getOutgoingEdges();
     
-    public Vertex deepCopy(){
-    	throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    public abstract Object clone();
-    
-    public void copyTo(Vertex target){
-    	target.freeEntry = this.freeEntry;
-    	target.visitCounts = this.visitCounts;
-    }
  
 }

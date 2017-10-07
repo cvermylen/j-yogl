@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import net.sf.yogl.BreadthFirstIterator;
-import net.sf.yogl.DepthFirstIterator;
 import net.sf.yogl.Graph;
 import net.sf.yogl.adjacent.keyMap.ComparableKeysGraph;
 import net.sf.yogl.exceptions.GraphCorruptedException;
@@ -105,7 +104,7 @@ public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>> {
 
 	/** @see ComparableKeysGraph#depthFirstIterator
 	 */
-	public DepthFirstIterator<V, AdjListVertex<V, E>, E, AdjListEdge<V, E>> depthFirstIterator(int maxCycling)
+	public AdjListDepthFirstIterator<V, E> depthFirstIterator(int maxCycling)
 		throws GraphException {
 		return new AdjListDepthFirstIterator<>(this);
 	}

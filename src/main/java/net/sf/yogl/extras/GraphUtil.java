@@ -92,7 +92,8 @@ public final class GraphUtil {
 			Object predKey = path.get(path.size() -1);
 			Object predValue = source.getNodeValue((Comparable)predKey);
 			destination.tryAddNode((Comparable)refKey, refValue);
-			destination.tryAddLinkLast((Comparable)predKey, (Comparable)refKey, (Comparable)iter.usedLink(), null);
+			//TODO next line commented to suppress compile eror on usedLink
+//			destination.tryAddLinkLast((Comparable)predKey, (Comparable)refKey, (Comparable)iter.usedLink(), null);
 		}
 	}
 

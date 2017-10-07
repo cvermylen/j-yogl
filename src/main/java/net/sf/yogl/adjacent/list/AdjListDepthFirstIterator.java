@@ -17,13 +17,11 @@
    
 package net.sf.yogl.adjacent.list;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import net.sf.yogl.DepthFirstIterator;
 import net.sf.yogl.exceptions.GraphException;
-import net.sf.yogl.exceptions.NodeNotFoundException;
 
 /** Given a specific graph, this iterator returns the next vertex in a
  * depth first order. Iterators cannot be concurrent on the same graph.
@@ -31,21 +29,7 @@ import net.sf.yogl.exceptions.NodeNotFoundException;
  * being modified during the traversal.
  */
 
-public final class AdjListDepthFirstIterator<VV, EV> extends DepthFirstIterator<VV, AdjListVertex<VV, EV>, EV, AdjListEdge<VV, EV>>{
-    
-    /** Last edge used to access current vertex
-     */
-    private AdjListEdge<VV, EV> lastUsedEdge =  null;
-    
-    /** The 'pathStack' contains the path followed from the starting node
-     * to the current node, this one excluded.
-     * Objects on this stack are of type 'Path'
-     */
-    private LinkedList<LinearEdgesIterator> pathStack = new LinkedList<>();
-    
-    /** 'leaf' indicates if the pointed vertex is a leaf or not.
-     */
-    private boolean leaf;
+public final class AdjListDepthFirstIterator<VV, EV> extends DepthFirstIterator<AdjListVertex<VV, EV>, AdjListEdge<VV, EV>> implements Iterator<VV>{
     
     /**
      *  @return the next user object in first order
@@ -54,25 +38,9 @@ public final class AdjListDepthFirstIterator<VV, EV> extends DepthFirstIterator<
     public VV next()
     throws NoSuchElementException{
         if(currentVertex == null) throw new NoSuchElementException();
+        moveToNextVertex();
         VV result = currentVertex.getUserValue();
-        getNext();
         return result;
-    }
-    
-    /** This method determines if the current vertex can be or not traversed.
-     * The condition is given by 2 parameters and 1 computed value.
-     * maxTraversals indicates the maximum number of times the same
-     * vertex can be visited by the algorithm. This max value
-     * is tested each time a vertex is visited.
-     * dontMindTraversal is set by the user to skip the above test.
-     */
-    private boolean canTraverse()
-    throws GraphException{
-        
-        if(currentVertex == null){
-            throw new GraphException("canTraverse: vertex is null");
-        }
-		return (currentVertex.getVisitsCount() <= maxCycling);
     }
     
     /** The ctor builds the iterator on the graph given as parameter.
@@ -94,13 +62,5 @@ public final class AdjListDepthFirstIterator<VV, EV> extends DepthFirstIterator<
     throws UnsupportedOperationException, IllegalStateException{
         
         throw new UnsupportedOperationException("");
-    }
-    
-    @Override
-    /** @return the edge used to access the current node
-     */
-    public EV usedLink(){
-        return lastUsedEdge.getUserValue();
-        
     }
 }
