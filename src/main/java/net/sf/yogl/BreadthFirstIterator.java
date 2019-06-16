@@ -1,4 +1,3 @@
-/* Default implementation. No assumption about the implementation of the graph */
    
 package net.sf.yogl;
 
