@@ -14,9 +14,9 @@ import net.sf.yogl.Edge;
  *  - the interger 'vertex' value points to the destination vertex.
  */
 
-public class AdjKeyEdge <VK extends Comparable<VK>, EK extends Comparable<EK>, EV> extends Edge<AdjKeyVertex>{
+public class AdjKeyEdge <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Edge<AdjKeyVertex<VK, VV, EK, EV>>{
 	
-	private AdjKeyGraph graph;
+	private AdjKeyGraph<VK, VV, EK, EV> graph;
 	
 	/** used by traversal algorithms to indicate the number
 	 * of times the edge has been visited.
@@ -49,8 +49,8 @@ public class AdjKeyEdge <VK extends Comparable<VK>, EK extends Comparable<EK>, E
 	/** duplicate referenced edge
 	 * @return a copy of this Edge
 	 */
-	public AdjKeyEdge<VK, EK, EV> clone() {
-		AdjKeyEdge<VK, EK, EV> dup = new AdjKeyEdge<VK, EK, EV>(this.edgeKey, this.nextVertexKey, this.userValue);
+	public AdjKeyEdge<VK, VV, EK, EV> clone() {
+		AdjKeyEdge<VK, VV, EK, EV> dup = new AdjKeyEdge<VK, VV, EK, EV>(this.graph, this.edgeKey, this.nextVertexKey, this.userValue);
 		return dup;
 	}
 
@@ -66,7 +66,7 @@ public class AdjKeyEdge <VK extends Comparable<VK>, EK extends Comparable<EK>, E
 		boolean result = false;
 
 		if (rhs instanceof AdjKeyEdge) {
-			result = edgeKey.equals(((AdjKeyEdge<VK, EK, EV>) rhs).edgeKey);
+			result = edgeKey.equals(((AdjKeyEdge<VK, VV, EK, EV>) rhs).edgeKey);
 		}
 		return result;
 	}
@@ -141,7 +141,7 @@ public class AdjKeyEdge <VK extends Comparable<VK>, EK extends Comparable<EK>, E
 	}
 
 	@Override
-	public AdjKeyVertex getOutgoingVertex() {
+	public AdjKeyVertex<VK, VV, EK, EV> getOutgoingVertex() {
 		// TODO Auto-generated method stub
 		return graph.getVertex (nextVertexKey);
 	}

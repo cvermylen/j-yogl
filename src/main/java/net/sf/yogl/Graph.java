@@ -2,7 +2,7 @@ package net.sf.yogl;
 
 import java.util.Collection;
 
-public interface Graph<V extends Vertex> {
+public interface Graph<V extends Vertex<? extends Edge<?>>> {
 
 	/** Returns the max degree by only taking into account the incoming
 	 *  edges
@@ -14,6 +14,10 @@ public interface Graph<V extends Vertex> {
 	 */
 	public int getMaxOutDegree();
 
+	public int getMaxInDegree();
+	
+	public int getNodeCount();
+	
 	/** Check if the graph is empty or not. That is, if the graph contains
 	 * at least one node.
 	 */

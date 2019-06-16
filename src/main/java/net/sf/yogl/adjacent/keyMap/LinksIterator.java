@@ -4,8 +4,6 @@ package net.sf.yogl.adjacent.keyMap;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import net.sf.yogl.adjacent.list.AdjListEdge;
-import net.sf.yogl.adjacent.list.AdjListVertex;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.impl.ImplementationGraph;
 
@@ -33,8 +31,8 @@ public class LinksIterator<VK extends Comparable<VK>, VV, EK extends Comparable<
 		Iterator<VK> nodesIter = graph.nodesKeySet().iterator();
 		while (nodesIter.hasNext()) {
 			VK key = nodesIter.next();
-			AdjListVertex<VK, VV, EK, EV> vertex = graph.findVertexByKey(key);
-			AdjListEdge<VK, EK, EV>[]neighbors = vertex.getNeighbors();
+			AdjKeyVertex<VK, VV, EK, EV> vertex = graph.findVertexByKey(key);
+			AdjKeyEdge<VK, VV, EK, EV>[]neighbors = vertex.getNeighbors();
 			for(int i=0; i < neighbors.length; i++) {
 				predNodes.add(index, key);
 				links.add(index, neighbors[i].getUserValue());

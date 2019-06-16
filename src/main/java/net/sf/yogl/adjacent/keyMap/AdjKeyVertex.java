@@ -2,10 +2,11 @@
 package net.sf.yogl.adjacent.keyMap;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.stream.Collectors;
 
 import net.sf.yogl.Vertex;
-import net.sf.yogl.Edge;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 /**
  * The Vertex describes the node of the graph. It is a container for a
@@ -19,7 +20,7 @@ import net.sf.yogl.exceptions.GraphCorruptedException;
  *  V = user value Object
  */
 
-public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV >  extends Vertex<AdjKeyEdge>{
+public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV >  extends Vertex<AdjKeyEdge<VK, VV, EK, EV>>{
         
     /** contains the list of all adjacent vertices.
      */
@@ -83,12 +84,12 @@ public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<
      *  @return an edge or null if both vertex (this & to)
      *          are not connected.
      */
-    public AdjKeyEdge<VK, EK, EV>[]getEdgeTo(VK key){
+    public AdjKeyEdge<VK, VV, EK, EV>[]getEdgeTo(VK key){
         
-        ArrayList<AdjKeyEdge<VK, EK, EV>> result = new ArrayList<>();
-        Iterator<AdjKeyEdge<VK, EK, EV>> iter = outgoingEdges.values().iterator();
+        ArrayList<AdjKeyEdge<VK, VV, EK, EV>> result = new ArrayList<>();
+        Iterator<AdjKeyEdge<VK, VV, EK, EV>> iter = outgoingEdges.values().iterator();
         while(iter.hasNext()){
-            AdjKeyEdge<VK, EK, EV> edge = iter.next();
+            AdjKeyEdge<VK, VV, EK, EV> edge = iter.next();
             if(edge.getNextVertexKey().equals(key)){
                 result.add(edge);
                 break;
@@ -97,7 +98,7 @@ public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<
         if(result.size() == 0){
         	return null;
         }else{
-        	return (AdjKeyEdge<VK, EK, EV>[])result.toArray(new AdjKeyEdge[result.size()]);
+        	return (AdjKeyEdge<VK, VV, EK, EV>[])result.toArray(new AdjKeyEdge[result.size()]);
         }
     }
     
@@ -129,18 +130,23 @@ public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<
      *    removing elements
      * @return the list of outgoing edges
      */
-    public AdjKeyEdge<VK, EK, EV>[]getNeighbors(){
-    	ArrayList<AdjKeyEdge<VK, EK, EV>> result = new ArrayList<>(outgoingEdges.values());
-        return (AdjKeyEdge<VK, EK, EV>[])result.toArray(new AdjKeyEdge[outgoingEdges.size()]);
+    public AdjKeyEdge<VK, VV, EK, EV>[]getNeighbors(){
+    	ArrayList<AdjKeyEdge<VK, VV, EK, EV>> result = new ArrayList<>(outgoingEdges.values());
+        return (AdjKeyEdge<VK, VV, EK, EV>[])result.toArray(new AdjKeyEdge[outgoingEdges.size()]);
     }
     
+    @Override
+	public Collection<AdjKeyEdge<VK, VV, EK, EV>> getOutgoingEdges() {
+		return outgoingEdges.values();
+	}
+    
     public VK getNextVertexKey(EK edgeKey){
-    	AdjKeyEdge<VK, EK, EV> edge = getEdge(edgeKey);
+    	AdjKeyEdge<VK, VV, EK, EV> edge = getEdge(edgeKey);
     	return edge.getNextVertexKey();
     }
     
-    public AdjKeyEdge<VK, EK, EV> getEdge(EK edgeKey){
-    	return (AdjKeyEdge<VK, EK, EV>)outgoingEdges.get(edgeKey);
+    public AdjKeyEdge<VK, VV, EK, EV> getEdge(EK edgeKey){
+    	return (AdjKeyEdge<VK, VV, EK, EV>)outgoingEdges.get(edgeKey);
     }
     
     /** This method insert a new edge between 'this' vertex
@@ -149,7 +155,7 @@ public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<
      * @exception GraphCorruptedException if 'edge' cannot
      *            be inserted in the neighbors list.
      */
-    public void addEdgeLast(AdjKeyEdge<VK, EK, EV> newEdge)throws GraphCorruptedException{
+    public void addEdgeLast(AdjKeyEdge<VK, VV, EK, EV> newEdge)throws GraphCorruptedException{
         if (newEdge != null){
             if (outgoingEdges != null){
                 outgoingEdges.addLast(newEdge.getEdgeKey(), newEdge);
@@ -168,7 +174,7 @@ public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<
      * @exception InvalidVertexException if 'edge' cannot
      *            be inserted in the neighbors list.
      */
-    public void addEdgeFirst(AdjKeyEdge<VK, EK, EV> newEdge)throws GraphCorruptedException{
+    public void addEdgeFirst(AdjKeyEdge<VK, VV, EK, EV> newEdge)throws GraphCorruptedException{
         if (newEdge != null){
             if (outgoingEdges != null){
                 outgoingEdges.addFirst(newEdge.getEdgeKey(), newEdge);
@@ -182,7 +188,7 @@ public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<
     /** Removes from the neighbors list the edge given as parameter
      * @param edge to be removed
      */
-    public void removeEdge(AdjKeyEdge<VK, EK, EV> edge){
+    public void removeEdge(AdjKeyEdge<VK, VV, EK, EV> edge){
         if (edge != null){
             outgoingEdges.remove(edge.getEdgeKey());
         }
@@ -206,4 +212,6 @@ public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<
     public VK getKey(){
     	return key;
     }
+
+	
 }

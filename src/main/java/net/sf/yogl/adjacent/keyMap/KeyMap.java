@@ -10,24 +10,24 @@ import java.util.Set;
 
 import net.sf.yogl.adjacent.list.AdjListEdge;
 
-public class KeyMap<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends AbstractMap<EK, AdjKeyEdge<VK, EK, EV>> {
+public class KeyMap<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends AbstractMap<EK, AdjKeyEdge<VK, VV, EK, EV>> {
 
 	private LinkedList<EK> list = new LinkedList<EK>();
-	private HashMap<EK, AdjKeyEdge<VK, EK, EV>> map = new HashMap<>();
+	private HashMap<EK, AdjKeyEdge<VK, VV, EK, EV>> map = new HashMap<>();
 	  
 	/* (non-Javadoc)
 	 * @see java.util.AbstractMap#entrySet()
 	 */
-	public Set<Map.Entry<EK, AdjKeyEdge<VK, EK, EV>>> entrySet() {
+	public Set<Map.Entry<EK, AdjKeyEdge<VK, VV, EK, EV>>> entrySet() {
 		return map.entrySet();
 	}
 
-	public void addFirst(EK key, AdjKeyEdge<VK, EK, EV> value){
+	public void addFirst(EK key, AdjKeyEdge<VK, VV, EK, EV> value){
 		map.put(key, value);
 		list.addFirst(key);
 	}
 	
-	public void addLast(EK key, AdjKeyEdge<VK, EK, EV> value){
+	public void addLast(EK key, AdjKeyEdge<VK, VV, EK, EV> value){
 		map.put(key, value);
 		list.addLast(key);
 	}
@@ -37,7 +37,7 @@ public class KeyMap<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV
 		map.clear();
 	}
 	
-	public AdjKeyEdge<VK, EK, EV> get(EK key){
+	public AdjKeyEdge<VK, VV, EK, EV> get(EK key){
 		return map.get(key);
 	}
 	
@@ -49,13 +49,13 @@ public class KeyMap<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV
 		return list.getLast();
 	}
 	
-	public AdjKeyEdge<VK, EK, EV> put(EK key, AdjKeyEdge<VK, EK, EV> value){
+	public AdjKeyEdge<VK, VV, EK, EV> put(EK key, AdjKeyEdge<VK, VV, EK, EV> value){
 		addLast(key, value);
 		return value;
 	}
 	
-	public AdjKeyEdge<VK, EK, EV> remove(EK key){
-		AdjKeyEdge<VK, EK, EV> result = map.get(key);
+	public AdjKeyEdge<VK, VV, EK, EV> remove(EK key){
+		AdjKeyEdge<VK, VV, EK, EV> result = map.get(key);
 		list.remove(key);
 		map.remove(key);
 		return result;
@@ -65,7 +65,7 @@ public class KeyMap<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV
 		return list.size();
 	}
 	
-	public Collection<AdjKeyEdge<VK, EK, EV>> values(){
+	public Collection<AdjKeyEdge<VK, VV, EK, EV>> values(){
 		return map.values();
 	}
 	

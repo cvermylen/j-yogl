@@ -31,6 +31,6 @@ public interface ImplementationGraph<VK extends Comparable<VK>, VV, EK extends C
 	 */
 	public List<AdjKeyVertex<VK, VV, EK, EV>>getSuccessorVertices(AdjKeyVertex<VK, VV, EK, EV> node)throws NodeNotFoundException ;
 	
-	public AdjKeyVertex<VK, VV, EK, EV>[] getSuccessorVertices(AdjKeyVertex<VK, VV, EK, EV> vertex, AdjKeyEdge<VK, EK, EV> link)
+	public AdjKeyVertex<VK, VV, EK, EV>[] getSuccessorVertices(AdjKeyVertex<VK, VV, EK, EV> vertex, AdjKeyEdge<VK, VV, EK, EV> link)
 		throws NodeNotFoundException;
 }

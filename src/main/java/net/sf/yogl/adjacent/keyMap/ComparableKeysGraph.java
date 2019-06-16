@@ -37,7 +37,7 @@ import net.sf.yogl.impl.DuplicateVertexException;
  * responsibility to find the right combinations of decorators.
  */
 
-public interface ComparableKeysGraph <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Graph{
+public interface ComparableKeysGraph <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Graph<AdjKeyVertex<VK, VV, EK, EV>>{
 
 	/** Insert a new link between 2 nodes. This new link will be placed 
 	 *  'before' any existing link between these 2 nodes.

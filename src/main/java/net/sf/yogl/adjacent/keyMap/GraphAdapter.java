@@ -104,7 +104,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 
 	/** @see graph.ComparableKeysGraph#getNodes
 	 */
-	public final List<AdjListVertex<VK,VV,EK,EV>> getVertices(int nodeType)
+	public final List<AdjKeyVertex<VK,VV,EK,EV>> getVertices(int nodeType)
 		throws GraphCorruptedException {
 
 		return graph.getVertices(nodeType);
@@ -462,7 +462,7 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		return graph.getAllStartNodeKeys();
 	}
 
-	public final Collection<Vertex>getRoots(){
+	public final Collection<AdjKeyVertex<VK, VV, EK, EV>>getRoots(){
 		return graph.getRoots();
 	}
 	
@@ -487,10 +487,26 @@ public class GraphAdapter<VK extends Comparable<VK>, VV, EK extends Comparable<E
 		return graph.getMaxOutDegree();
 	}
 
-	@Override
-	public void addNode(Vertex v) {
-		// TODO Auto-generated method stub
+	public void addNode(AdjKeyVertex<VK, VV, EK, EV> v) {
+		this.graph.addNode(v.getKey(), v.getUserValue());
 		
+	}
+
+	@Override
+	public AdjKeyVertex<VK, VV, EK, EV> addRootVertex(AdjKeyVertex<VK, VV, EK, EV> v) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void clearAllVisitCounts() {
+		graph.clearAllVisitCounts();
+	}
+
+	@Override
+	public BreadthFirstIterator breadthFirstIterator(int maxCycle) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

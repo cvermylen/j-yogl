@@ -9,11 +9,11 @@ import java.util.NoSuchElementException;
 
 import net.sf.yogl.exceptions.GraphException;
 
-public class BreadthFirstIterator implements Iterator<Vertex> {
+public class BreadthFirstIterator<V extends Vertex<? extends Edge<?>>> implements Iterator<V> {
 
 	/** breadth first working structure
 	 */
-	private Deque<Vertex> queue = new ArrayDeque<>();
+	private Deque<V> queue = new ArrayDeque<>();
 
 	/** Maximum number of times a node can be visited.
 	 */
@@ -24,10 +24,7 @@ public class BreadthFirstIterator implements Iterator<Vertex> {
 	 *  Precondition: graph & node must contain valid values. All node
 	 *  counters (used to count the number of visits) must be reset.
 	 */
-	public BreadthFirstIterator(
-		Graph graph,
-		int maxCycling)
-		throws GraphException {
+	public BreadthFirstIterator(Graph<V> graph, int maxCycling)	throws GraphException {
 		queue.addAll(graph.getRoots());
 		this.maxCycling = maxCycling;
 		graph.clearAllVisitCounts();
@@ -35,21 +32,17 @@ public class BreadthFirstIterator implements Iterator<Vertex> {
 
 	/** Returns the next node key in breadth first order
 	 */
-	public Vertex next() throws NoSuchElementException {
+	public V next() throws NoSuchElementException {
 		try {
 			if (queue.isEmpty())
 				throw new NoSuchElementException("Empty iterator");
-			Vertex current = queue.poll();
+			V current = queue.poll();
 			if(current != null){
-				List<? extends Edge>nextEdges = current.getOutgoingEdges();
-				
-				for (Edge edge: nextEdges) {
-					Vertex v = edge.getOutgoingVertex();
-					if(v.getVisitsCount() < maxCycling){
-						queue.addLast(v);
-						v.incVisitCounts();
-					}
-				}
+				current.getOutgoingEdges().stream()
+				.map(edge -> edge.getOutgoingVertex())
+				.filter(vertex -> vertex.getVisitsCount() < maxCycling)
+				.peek(vertex ->vertex.incVisitCounts())
+				.forEach (vertex ->queue.addLast((V) vertex)); 
 			}
 			return current;
 		} catch (GraphException e1) {

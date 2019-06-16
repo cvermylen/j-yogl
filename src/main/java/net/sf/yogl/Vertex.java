@@ -1,6 +1,6 @@
 package net.sf.yogl;
 
-import java.util.List;
+import java.util.Collection;
 
 public abstract class Vertex<E extends Edge<?>> {
 
@@ -55,7 +55,7 @@ public abstract class Vertex<E extends Edge<?>> {
     	this.visitCounts = 0;
     }
     
-    public abstract List<E> getOutgoingEdges();
+    public abstract Collection<E> getOutgoingEdges();
     
  
 }
