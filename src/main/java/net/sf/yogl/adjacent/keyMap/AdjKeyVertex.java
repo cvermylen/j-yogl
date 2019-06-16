@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import net.sf.yogl.Vertex;
+import net.sf.yogl.Edge;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 /**
  * The Vertex describes the node of the graph. It is a container for a
@@ -34,7 +35,7 @@ import net.sf.yogl.exceptions.GraphCorruptedException;
  *  V = user value Object
  */
 
-public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Vertex implements Comparable<AdjKeyVertex<VK, VV, EK, EV>>{
+public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV >  extends Vertex<AdjKeyEdge>{
         
     /** contains the list of all adjacent vertices.
      */

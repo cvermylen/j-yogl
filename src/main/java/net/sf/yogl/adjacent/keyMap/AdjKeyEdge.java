@@ -17,6 +17,8 @@
    
 package net.sf.yogl.adjacent.keyMap;
 
+import net.sf.yogl.Edge;
+
 /** Edge is the container for user-defined edges. There is one list per vertex
  * (see vertex). The Edge object must be unique within this list.
  * An Edge contains the following information:
@@ -29,7 +31,10 @@ package net.sf.yogl.adjacent.keyMap;
  *  - the interger 'vertex' value points to the destination vertex.
  */
 
-public class AdjKeyEdge <VK extends Comparable<VK>, EK extends Comparable<EK>, EV>{
+public class AdjKeyEdge <VK extends Comparable<VK>, EK extends Comparable<EK>, EV> extends Edge<AdjKeyVertex>{
+	
+	private AdjKeyGraph graph;
+	
 	/** used by traversal algorithms to indicate the number
 	 * of times the edge has been visited.
 	 */
@@ -52,7 +57,7 @@ public class AdjKeyEdge <VK extends Comparable<VK>, EK extends Comparable<EK>, E
 	 * @param rValue refers to an object that is of the type used
 	 * to define all edges in the graph.
 	 */
-	public AdjKeyEdge(EK edgeKey, VK nextVertexKey, EV userValue) {
+	public AdjKeyEdge(AdjKeyGraph graph, EK edgeKey, VK nextVertexKey, EV userValue) {
 		this.edgeKey = edgeKey;
 		this.nextVertexKey = nextVertexKey;
 		this.userValue = userValue;
@@ -150,6 +155,12 @@ public class AdjKeyEdge <VK extends Comparable<VK>, EK extends Comparable<EK>, E
 	 */
 	public EK getEdgeKey() {
 		return edgeKey;
+	}
+
+	@Override
+	public AdjKeyVertex getOutgoingVertex() {
+		// TODO Auto-generated method stub
+		return graph.getVertex (nextVertexKey);
 	}
 
 }
