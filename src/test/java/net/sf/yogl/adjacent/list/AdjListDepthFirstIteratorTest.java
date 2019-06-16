@@ -11,7 +11,7 @@ import net.sf.yogl.DepthFirstIterator;
 public class AdjListDepthFirstIteratorTest {
 
 	@Test
-	public void emptyGraphShouldNotBerakIterator() {
+	public void emptyGraphShouldNotBreakIterator() {
 		AdjListGraph<String, String> graph = new AdjListGraph<>();
 		AdjListDepthFirstIterator<String, String> a = graph.depthFirstIterator(1);
 		
@@ -34,5 +34,26 @@ public class AdjListDepthFirstIteratorTest {
 		assertTrue(a.hasNext());
 		assertEquals("b", a.next());
 		assertFalse(a.hasNext());
+	}
+	
+	@Test
+	public void nextShouldReturnRootNodesInOrder() {
+		AdjListGraph<String, String> graph = new AdjListGraph<>();
+		graph.addRootNode("root1");
+		graph.addRootNode("root2");
+		graph.addRootNode("root3");
+		
+		DepthFirstIterator df = graph.depthFirstIterator(0);
+		
+		assertTrue(df.hasNext());
+		assertEquals("root1", df.next());
+		
+		assertTrue(df.hasNext());
+		assertEquals("root2", df.next());
+		
+		assertTrue(df.hasNext());
+		assertEquals("root3", df.next());
+		
+		assertFalse(df.hasNext());
 	}
 }

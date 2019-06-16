@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.junit.Test;
+import org.powermock.reflect.Whitebox;
 
 import net.sf.yogl.exceptions.GraphException;
 
@@ -40,9 +41,42 @@ public class DepthFirstIteratorTest {
 	
 	class DFImpl extends DepthFirstIterator<V, E>{
 
-		public DFImpl(Collection<V> roots) throws GraphException {
-			super(roots);
+		public DFImpl(V superRoot, Collection<V> roots) throws GraphException {
+			pushVertex(superRoot);
 		}
+		
+		public DFImpl() {}
+		
+		public V next(){return null;}
+	}
+	
+	@Test
+	public void hasMoreNodesToVisitShouldBeFalseOnEmptyStack() throws Exception {
+		DepthFirstIterator<V, E>df = new DFImpl();
+		boolean r = Whitebox.invokeMethod(df, "hasMoreNodesToVisit");
+		assertFalse(r);
+	}
+	
+	@Test
+	public void hasMoreNodesToVisitShouldBeFalseWithOneEmptyNode() throws Exception {
+		V o = new V();
+		DepthFirstIterator<V, E>df = new DFImpl(o, null);
+		assertEquals(1, df.vStack.size());
+		boolean r = Whitebox.invokeMethod(df, "hasMoreNodesToVisit");
+		assertFalse(r);
+	}
+	
+	@Test
+	public void pushVertexShouldAddTheVertexAndAllEdges() {
+		V o = new V();
+		E e = createEdge("e");
+		o.getOutgoingEdges().add(e);
+		
+		DepthFirstIterator<V, E>df = new DFImpl();
+		df.pushVertex(o);
+		
+		assertEquals(1, df.vStack.size());
+		assertTrue(df.vStack.get(0).hasMoreEdges());
 	}
 	
 	@Test
@@ -51,7 +85,7 @@ public class DepthFirstIteratorTest {
 		E e = createEdge("e");
 		o.getOutgoingEdges().add(e);
 		
-		DepthFirstIterator<V, E>df = new DFImpl(Arrays.asList(o));
+		DepthFirstIterator<V, E>df = new DFImpl(o, Arrays.asList(o));
 		
 		assertEquals(1, df.vStack.size());
 		assertTrue(df.vStack.get(0).hasMoreEdges());
@@ -65,7 +99,7 @@ public class DepthFirstIteratorTest {
 	public void callingNextOnEmptyEdgeStackShouldThrowException() {
 		V o = new V();
 		
-		DepthFirstIterator<V, E>df = new DFImpl(Arrays.asList(o));
+		DepthFirstIterator<V, E>df = new DFImpl(o, Arrays.asList(o));
 		
 		assertEquals(1, df.vStack.size());
 		assertFalse(df.vStack.get(0).hasMoreEdges());
@@ -86,7 +120,7 @@ public class DepthFirstIteratorTest {
 		E e5 = createEdge("e5");
 		root.getOutgoingEdges().add(e5);
 		
-		DepthFirstIterator<V, E>df = new DFImpl(Arrays.asList(root));
+		DepthFirstIterator<V, E>df = new DFImpl(root, null);
 		
 		assertEquals(1, df.vStack.size());
 		assertTrue(df.vStack.get(0).hasMoreEdges());
@@ -109,7 +143,7 @@ public class DepthFirstIteratorTest {
 	
 	@Test
 	public void moveToNextVertexShouldNotBreakOnEmptyGraph() {
-		DepthFirstIterator<V, E>df = new DFImpl(new LinkedList<>());
+		DepthFirstIterator<V, E>df = new DFImpl();
 		
 		assertNull(df.currentVertex);
 		df.moveToNextVertex();
@@ -122,7 +156,7 @@ public class DepthFirstIteratorTest {
 		E e1 = createEdge("e1");
 		root.getOutgoingEdges().add(e1);
 		
-		DepthFirstIterator<V, E>df = new DFImpl(Arrays.asList(root));
+		DepthFirstIterator<V, E>df = new DFImpl(root, new LinkedList());
 		
 		assertNull(df.currentVertex);
 		df.moveToNextVertex();
@@ -134,7 +168,7 @@ public class DepthFirstIteratorTest {
 	public void moveToNextVertexOnEmptyEdgeListShouldNotBreak() {
 		V root = new V();
 		
-		DepthFirstIterator<V, E>df = new DFImpl(Arrays.asList(root));
+		DepthFirstIterator<V, E>df = new DFImpl(root, null);
 		
 		df.moveToNextVertex();
 		assertNotNull(df.currentVertex);
@@ -142,30 +176,22 @@ public class DepthFirstIteratorTest {
 	}
 	
 	@Test
-	public void moveToNextVertexShouldReturnRootNodesInOrder() {
-		V root1 = createVertex("root1");
-		V root2 = createVertex("root2");
-		V root3 = createVertex("root3");
+	public void hasNextShouldReturnFalseOnEmptyGraph() {
+		DepthFirstIterator<V, E>df = new DFImpl();
 		
-		DepthFirstIterator<V, E>df = new DFImpl(Arrays.asList(root1, root2, root3));
+		boolean b = df.hasNext();
 		
-		df.moveToNextVertex();
-		assertNotNull(df.currentVertex);
-		assertEquals(root1, df.currentVertex);
-		
-		df.moveToNextVertex();
-		assertNotNull(df.currentVertex);
-		assertEquals(root2, df.currentVertex);
-		
-		df.moveToNextVertex();
-		assertNotNull(df.currentVertex);
-		assertEquals(root3, df.currentVertex);
+		assertFalse(b);
 	}
 	
-	private V createVertex(String value) {
-		V vertex = new V();
-		vertex.value = value;
-		return vertex;
+	@Test
+	public void hasNextShouldBeTrueWithOneEmptyNode() {
+		V root = new V();
+		DepthFirstIterator<V, E>df = new DFImpl(root, null);
+		
+		boolean b = df.hasNext();
+		
+		assertTrue(b);
 	}
 	
 	private E createEdge(String value) {

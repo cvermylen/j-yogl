@@ -106,7 +106,11 @@ public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>> {
 	 */
 	public AdjListDepthFirstIterator<V, E> depthFirstIterator(int maxCycling)
 		throws GraphException {
-		return new AdjListDepthFirstIterator<>(this);
+		
+		AdjListVertex<V, E> artificialRoot = new AdjListVertex<>();
+		roots.stream().forEach(r -> {artificialRoot.addEdgeLast(new AdjListEdge<V, E>(r));});
+		
+		return new AdjListDepthFirstIterator<>(artificialRoot, this);
 	}
 
 	@Override

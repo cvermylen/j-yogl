@@ -17,12 +17,10 @@
    
 package net.sf.yogl;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 
 /** Given a specific graph, this iterator returns the next vertex in a
@@ -33,7 +31,7 @@ import net.sf.yogl.exceptions.NodeNotFoundException;
 
 public abstract class DepthFirstIterator<V extends Vertex<E>, E extends Edge<V>> {
     
-	class LinearEdgesIterator<V extends Vertex<E>, E extends Edge<V>>{
+	protected class LinearEdgesIterator<V extends Vertex<E>, E extends Edge<V>>{
 		
 		/** Reference to the vertex' node
 		 */
@@ -74,6 +72,10 @@ public abstract class DepthFirstIterator<V extends Vertex<E>, E extends Edge<V>>
 	
 	protected V currentVertex;
 	
+	protected E traversedEdge;
+	
+	public abstract <T> T next();
+	
     /** The vStack contains all nodes in the order they are visited.
      * This stack is used to simulate the recursivity.
      * The Objects contained in the stack will be of type 'Vertex'
@@ -89,10 +91,7 @@ public abstract class DepthFirstIterator<V extends Vertex<E>, E extends Edge<V>>
      * of it.
      * @param graph is a valid, possibly decorated, concrete graph.
      */
-    public DepthFirstIterator(Collection<V> roots)
-    throws GraphException{
-        
-    	roots.stream().forEach(r -> {pushVertex(r);});
+    protected DepthFirstIterator(){
     }
     
     /** Used to iterate through the graph
@@ -104,38 +103,52 @@ public abstract class DepthFirstIterator<V extends Vertex<E>, E extends Edge<V>>
     }
 
     protected void moveToNextVertex(){
+    	if(vStack == null) throw new IllegalArgumentException();
     	if(vStack.size() == 0){
     		return;
     	}
-    	if(hasVertexAlreadyBeenVisited(vStack.peek())){
-    		E e = getNextEdge();
-    		currentVertex = e.getOutgoingVertex();
+    	while(!vertexCanBeVisited(getNextEdge()) && hasMoreNodesToVisit()){
+    		popTheEdge();
+    	}
+    	traversedEdge = getNextEdge();
+    	while(vertexHasOutgoingEdges(getNextEdge()) && vertexCanBeVisited(getNextEdge())){
+    		pushVertex(getNextEdge().getOutgoingVertex());
+    		traversedEdge = getNextEdge();
+    	}
+//    	currentVertex = vStack.getLast().getVertex();
+    	
+    	currentVertex = (traversedEdge == null)?(vStack.getLast().getVertex()):(traversedEdge.getOutgoingVertex());
+    	currentVertex.incVisitCounts();
+    	
+    }
+    
+    protected void pushVertex(V v) {
+    	if(v == null) throw new IllegalArgumentException("Cannot add null vertex to the graph");
+    	vStack.addLast(new LinearEdgesIterator<V, E>(v));
+    }
+    
+    private boolean vertexHasOutgoingEdges(E e) {
+    	return e != null && e.getOutgoingVertex() != null && e.getOutgoingVertex().getOutgoingEdges().size() > 0;
+    }
+    
+    private boolean vertexCanBeVisited(E e){
+    	return e != null && e.getOutgoingVertex() != null && e.getOutgoingVertex().getVisitsCount() >= maxCycling;
+    }
+    
+    private boolean hasMoreNodesToVisit() {
+    	return vStack.size() > 0 && vStack.get(0).hasMoreEdges();
+    }
+    
+    protected void popTheEdge() {
+    	if(vStack.getLast().hasMoreEdges()){
+    		vStack.getLast().nextEdge();
     	}else{
-    		currentVertex = vStack.peek().getVertex();
-    		currentVertex.incVisitCounts();
+    		vStack.removeLast();
     	}
     }
     
-    private boolean hasVertexAlreadyBeenVisited(LinearEdgesIterator<V, E> topVertex){
-    	return topVertex == null || topVertex.getVertex().getVisitsCount() > 0;
-    }
-    
     private E getNextEdge() {
-    	E result = null;
-    	do {
-    		LinearEdgesIterator<V, E> nextEdgeIter = vStack.peek();
-    		if(!nextEdgeIter.hasMoreEdges()){
-    			vStack.pop();
-    		}else{
-    			result = nextEdgeIter.nextEdge();
-    			pushVertex(result.getOutgoingVertex());
-    		}
-    	}while(result == null && hasNext());
-    	return result;
-    }
-    
-    private void pushVertex(V vertex) {
-    	vStack.addLast(new LinearEdgesIterator<V, E>(vertex));
+    	return vStack.getLast().peekEdge();
     }
     
     /** This method is part of the Iterator interface. It is not

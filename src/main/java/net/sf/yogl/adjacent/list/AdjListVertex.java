@@ -47,6 +47,10 @@ public class AdjListVertex <VV, EV> extends Vertex<AdjListEdge<VV, EV>> {
         this.userValue = userValue;
     }
     
+    protected AdjListVertex() {
+    	super();
+    }
+    
     public AdjListVertex<VV, EV> clone(){
         
         AdjListVertex<VV, EV> cloned = new AdjListVertex<VV, EV>(userValue);

@@ -35,12 +35,20 @@ public final class AdjListDepthFirstIterator<VV, EV> extends DepthFirstIterator<
      *  @return the next user object in first order
      * @exception NoSuchElementException if the iterator is empty
      */
+	@Override
     public VV next()
     throws NoSuchElementException{
         if(currentVertex == null) throw new NoSuchElementException();
         moveToNextVertex();
+        popTheEdge();
         VV result = currentVertex.getUserValue();
         return result;
+    }
+	
+	@Override
+	public boolean hasNext(){
+        
+        return (vStack.size() > 1) || ((vStack.size() == 1) && (vStack.get(0).hasMoreEdges()));
     }
     
     /** The ctor builds the iterator on the graph given as parameter.
@@ -48,10 +56,12 @@ public final class AdjListDepthFirstIterator<VV, EV> extends DepthFirstIterator<
      * of it.
      * @param graph is a valid, possibly decorated, concrete graph.
      */
-    AdjListDepthFirstIterator(AdjListGraph<VV,EV> graph)
+    AdjListDepthFirstIterator(AdjListVertex<VV, EV> artificialRoot, AdjListGraph<VV,EV> graph)
     throws GraphException{
         
-    	super(graph.getRoots());
+    	pushVertex(artificialRoot);
+    	graph.getRoots().stream().forEach(r -> {pushVertex(r);});
+    	moveToNextVertex();
     }
     
     /** This method is part of the Iterator interface. It is not

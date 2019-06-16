@@ -50,6 +50,10 @@ public class AdjListEdge <VV, EV> extends Edge<AdjListVertex<VV, EV>>{
 		this.userValue = userValue;
 	}
 
+	public AdjListEdge(AdjListVertex<VV, EV> v) {
+		this.nextVertex = v;
+	}
+	
 	public AdjListVertex<VV, EV> setNextNode(VV value) {
 		AdjListVertex<VV, EV> result = new AdjListVertex<>(value);
 		return this.setNextVertex(result);
