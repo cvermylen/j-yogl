@@ -134,7 +134,7 @@ public final class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Compar
 	 */
 	public DepthFirstIterator<AdjKeyVertex<VK, VV, EK, EV>, AdjKeyEdge<VK, VV, EK, EV>> depthFirstIterator(int maxCycling)
 		throws GraphException {
-		return new DepthFirstIterator<AdjKeyVertex<VK, VV, EK, EV>, AdjKeyEdge<VK, VV, EK, EV>>(this, maxCycling);
+		return new DepthFirstIterator<AdjKeyVertex<VK, VV, EK, EV>, AdjKeyEdge<VK, VV, EK, EV>>(this.getRoots(), maxCycling);
 	}
 
 	/** @see ComparableKeysGraph#existsNode
@@ -821,6 +821,13 @@ public final class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Compar
 		return null;
 	}
 
+	/** Will duplicate the content of the vertex and insert it into this graph.
+	 * Method is used to copy vertices from graph to graph
+	 */
+	public void tryAddNode(AdjKeyVertex<VK, VV, EK, EV> vertex) {
+		addNode(vertex.getKey(), vertex.getUserValue());
+	}
+	
 	/** @see ComparableKeysGraph#tryAddLinkFirst
 	 */
 	public void tryAddLinkFirst(

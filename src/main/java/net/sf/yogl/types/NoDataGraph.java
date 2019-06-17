@@ -3,13 +3,13 @@ package net.sf.yogl.types;
 
 import java.util.Collection;
 
-import net.sf.yogl.adjacent.keyMap.GraphAdapter;
+import net.sf.yogl.adjacent.list.AdjListGraph;
 import net.sf.yogl.exceptions.GraphException;
 
 /** Simple graph which does not contains any data. Nodes and links
  *  are just identified by keys.
  */
-public final class NoDataGraph<VK extends Comparable<VK>, EK extends Comparable<EK>> extends GraphAdapter<VK, Object, EK, Object> {
+public final class NoDataGraph<VK extends Comparable<VK>, EK extends Comparable<EK>> extends AdjListGraph<VK, Object, EK, Object> {
 
 	public void addNode(VK nodeKey) throws GraphException{
 		super.addNode(nodeKey, "");

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import net.sf.yogl.BreadthFirstIterator;
+import net.sf.yogl.DepthFirstIterator;
 import net.sf.yogl.Graph;
 import net.sf.yogl.adjacent.keyMap.ComparableKeysGraph;
 import net.sf.yogl.exceptions.GraphCorruptedException;
@@ -32,7 +33,7 @@ import net.sf.yogl.exceptions.GraphException;
  * @version 1.0
  */
 
-public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>> {
+public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>, AdjListEdge<V, E>> {
 
 	/** Contains the list of all entry points in the graph.
 	 *  When a new node is created, it is by default inserted into the set.
@@ -65,10 +66,10 @@ public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>> {
 	 * 		If null, the algorithm will use all nodes marked as 'START'.
 	 */
 	@Override
-	public BreadthFirstIterator breadthFirstIterator(
+	public BreadthFirstIterator<AdjListVertex<V, E>, AdjListEdge<V, E>> breadthFirstIterator(
 		int maxCycles)
 		throws GraphException {
-		return new BreadthFirstIterator(this, maxCycles);
+		return new BreadthFirstIterator<AdjListVertex<V, E>, AdjListEdge<V, E>>(this, maxCycles);
 	}
 
 	/** @see ComparableKeysGraph#clone
@@ -79,7 +80,7 @@ public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>> {
 
 	/** @see ComparableKeysGraph#deepCopy
 	 */
-	public void deepCopy(Graph<AdjListVertex<V, E>> dest) throws GraphException {
+	public void deepCopy(Graph<AdjListVertex<V, E>, AdjListEdge<V, E>> dest) throws GraphException {
 
 		for(AdjListVertex<V, E> root: roots){
 			dest.addRootVertex(root.deepCopy());
@@ -88,13 +89,13 @@ public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>> {
 
 	/** @see ComparableKeysGraph#depthFirstIterator
 	 */
-	public AdjListDepthFirstIterator<V, E> depthFirstIterator(int maxCycling)
+	public DepthFirstIterator<AdjListVertex<V, E>, AdjListEdge<V, E>> depthFirstIterator(int maxCycling)
 		throws GraphException {
 		
 		AdjListVertex<V, E> artificialRoot = new AdjListVertex<>();
 		roots.stream().forEach(r -> {artificialRoot.addEdgeLast(new AdjListEdge<V, E>(r));});
 		
-		return new AdjListDepthFirstIterator<>(artificialRoot, this);
+		return new DepthFirstIterator<AdjListVertex<V, E>, AdjListEdge<V, E>>(this, maxCycling);
 	}
 
 	@Override
@@ -195,5 +196,15 @@ public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>> {
 			nodeConsumer.accept(target);
 			target.incVisitCounts();
 		}
+	}
+
+	@Override
+	public int getMaxInDegree() {
+		return this.roots.size();
+	}
+
+	@Override
+	public int getNodeCount() {
+		throw new RuntimeException("Not yet implemented");
 	}
 }

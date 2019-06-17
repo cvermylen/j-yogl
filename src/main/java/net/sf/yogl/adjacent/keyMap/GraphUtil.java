@@ -6,8 +6,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import net.sf.yogl.LinksIterator;
-import net.sf.yogl.adjacent.keyMap.ComparableKeysGraph;
+import net.sf.yogl.DepthFirstIterator;
+import net.sf.yogl.Edge;
+import net.sf.yogl.Graph;
+import net.sf.yogl.Vertex;
 import net.sf.yogl.adjacent.keyMap.GraphAdapter;
 import net.sf.yogl.adjacent.list.AdjListDepthFirstIterator;
 import net.sf.yogl.exceptions.GraphCorruptedException;
@@ -23,11 +25,11 @@ public final class GraphUtil {
 	 *  The resulting subgraph will contain one entry point
 	 *  and one exit point.
 	 */
-	public static <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> void subgraph(
-		Graph<VK,VV,EK,EV> graph,
-		GraphAdapter<VK,VV,EK,EV> result,
-		VK startNodeKey,
-		VK endNodeKey)
+	public static <V extends Vertex<E>, E extends Edge<V>> void subgraph(
+		Graph<V, E> graph,
+		Graph<V, E> result,
+		V startNode,
+		V endNodeKey)
 		throws GraphException {
 
 		if (graph == null) {
@@ -36,21 +38,21 @@ public final class GraphUtil {
 		if (result == null) {
 			throw new NullPointerException("input parameter result is null");
 		}
-		if (startNodeKey == null) {
+		if (startNode == null) {
 			throw new NullPointerException("input parameter startNode is null");
 		}
 		if (endNodeKey == null) {
 			throw new NullPointerException("input parameter endNode is null");
 		}
 		int degree = graph.getMaxOutDegree();
-		AdjListDepthFirstIterator iter = graph.depthFirstIterator(startNodeKey, degree);
+		DepthFirstIterator<V, E> iter = graph.depthFirstIterator(startNode, degree);
 		while (iter.hasNext()) {
 			if (endNodeKey.equals(iter.next())) {
-				List nodes = iter.nodePath();
-				ArrayList nodesArray = new ArrayList(Arrays.asList(nodes));
+				List<V> nodes = iter.nodePath();
+				ArrayList<V> nodesArray = new ArrayList(Arrays.asList(nodes));
 				nodesArray.add(endNodeKey);
-				Iterator nodesIter = nodesArray.iterator();
-				 List links = iter.linkPath();
+				Iterator<V> nodesIter = nodesArray.iterator();
+				List<E> links = iter.linkPath();
 				//links.removeFirst();
 				//Check the validity of link & node lists.
 				//The node list must contain 1 more element than the link list.
@@ -58,12 +60,11 @@ public final class GraphUtil {
 				if (nodesArray.size() - links.size() - 1 != 0) {
 					throw new GraphCorruptedException(
 						"mismatch between link & node lists " ); }
-				VK leftNodeKey = (VK)nodesIter.next();
-				Object leftNodeValue = graph.getNodeValue(leftNodeKey);
+				V leftNodeKey = nodesIter.next();
 				Object rightNodeKey = null;
 				Object rightNodeValue = null;
 //				Object link = null;
-				result.tryAddNode(leftNodeKey, (VV)leftNodeValue);
+				result.tryAddNode(leftNodeKey);
 				for(Object link: links){
 
 					rightNodeKey = nodesIter.next();

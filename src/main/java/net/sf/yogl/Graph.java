@@ -60,6 +60,8 @@ public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
 	 *         Accepted values are: [1 .. n]. There is no way to express
 	 *         an infinite value.
 	 */
-	public DepthFirstIterator<V, E> depthFirstIterator(int maxCycling)
+	public DepthFirstIterator<V, E> depthFirstIterator(V startVertex, int maxCycling)
 		throws GraphException;
+	
+	public void tryAddNode(V vertex);
 }

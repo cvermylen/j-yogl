@@ -1,13 +1,12 @@
 
 package net.sf.yogl;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import net.sf.yogl.adjacent.list.AdjListGraph;
-import net.sf.yogl.adjacent.list.AdjListVertex;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 
@@ -62,9 +61,9 @@ public class DepthFirstIterator<V extends Vertex<E>, E extends Edge<V>> {
 	
 	protected E traversedEdge;
 	
-	public DepthFirstIterator(Graph<V,E> graph, int maxCycling) throws GraphException{
+	public DepthFirstIterator(Collection<V> startNodes, int maxCycling) throws GraphException{
 		this.maxCycling = maxCycling;
-		graph.getRoots().forEach(vertex -> pushVertex(vertex));	       
+		startNodes.forEach(vertex -> pushVertex (vertex));
 		moveToNextVertex();
 	}
 	
