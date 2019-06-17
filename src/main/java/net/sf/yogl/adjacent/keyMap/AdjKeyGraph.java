@@ -132,9 +132,10 @@ public final class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Compar
 
 	/** @see ComparableKeysGraph#depthFirstIterator
 	 */
-	public DepthFirstIterator<AdjKeyVertex<VK, VV, EK, EV>, AdjKeyEdge<VK, VV, EK, EV>> depthFirstIterator(int maxCycling)
+	public DepthFirstIterator<AdjKeyVertex<VK, VV, EK, EV>, AdjKeyEdge<VK, VV, EK, EV>> depthFirstIterator(Collection<AdjKeyVertex<VK, VV, EK, EV>> startVertices, 
+			int maxCycling)
 		throws GraphException {
-		return new DepthFirstIterator<AdjKeyVertex<VK, VV, EK, EV>, AdjKeyEdge<VK, VV, EK, EV>>(this.getRoots(), maxCycling);
+		return new DepthFirstIterator<AdjKeyVertex<VK, VV, EK, EV>, AdjKeyEdge<VK, VV, EK, EV>>(startVertices, maxCycling);
 	}
 
 	/** @see ComparableKeysGraph#existsNode
@@ -347,7 +348,7 @@ public final class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Compar
 	
 	/** @see ComparableKeysGraph#getType
 	 */
-	public int getNodeType(VK nodeKey) throws NodeNotFoundException {
+	public VertexType getNodeType(VK nodeKey) throws NodeNotFoundException {
 		if (this.allStartNodeKeys.contains(nodeKey)) {
 			AdjKeyVertex<VK, VV, EK, EV> vertex = findVertexByKey(nodeKey);
 			if ((vertex.getNeighbors() == null)

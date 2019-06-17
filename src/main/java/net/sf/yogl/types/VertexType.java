@@ -6,19 +6,19 @@ package net.sf.yogl.types;
  * entry points, end nodes and between them intermediates nodes.
  */
 
-public class VertexType {
+public enum VertexType {
 	/** intermediate vertex. Has predecessors AND successors */
-	public static final int NONE = 1;
+	NONE,
 
 	/** starting vertex in the graph. Has successors only, no predessors */
-	public static final int START = 2;
+	START,
 
 	/** indicates a final(terminating) vertex. Has predecessors only,
 	 * no successors */
-	public static final int END = 4;
+	END,
 
 	/** If the graph contains only one vertex, this latter is a start & end
 	 *  node
 	 */
-	public static final int STARTEND = 8;
+	STARTEND;
 }

@@ -12,6 +12,7 @@ import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.impl.DuplicateEdgeException;
 import net.sf.yogl.impl.DuplicateVertexException;
+import net.sf.yogl.types.VertexType;
 
 /** The interface described here is the top hierarchy of the decorator pattern.
  * Methods listed hereafter are common to all graph implementations.
@@ -181,7 +182,7 @@ public interface ComparableKeysGraph <VK extends Comparable<VK>, VV, EK extends 
 	 *  @return a value from VertexType
 	 *  @exception GraphException if the node does not exists
 	 */
-	public int getNodeType(VK nodeKey) throws GraphException;
+	public VertexType getNodeType(VK nodeKey) throws GraphException;
 
 	/** Returns the user-defined value associated with the given key.
 	 * @param nodeKey

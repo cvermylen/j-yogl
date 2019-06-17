@@ -3,6 +3,7 @@ package net.sf.yogl;
 import java.util.Collection;
 
 import net.sf.yogl.exceptions.GraphException;
+import net.sf.yogl.types.VertexType;
 
 public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
 
@@ -19,6 +20,8 @@ public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
 	public int getMaxInDegree();
 	
 	public int getNodeCount();
+	
+	public int getLinkCount();
 	
 	/** Check if the graph is empty or not. That is, if the graph contains
 	 * at least one node.
@@ -60,8 +63,14 @@ public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
 	 *         Accepted values are: [1 .. n]. There is no way to express
 	 *         an infinite value.
 	 */
-	public DepthFirstIterator<V, E> depthFirstIterator(V startVertex, int maxCycling)
+	public DepthFirstIterator<V, E> depthFirstIterator(Collection<V> startVertex, int maxCycling)
 		throws GraphException;
 	
 	public void tryAddNode(V vertex);
+	
+	public void tryAddLinkLast (V vertex, E edge);
+	
+	public VertexType getNodeType (V vertex);
+	
+	public Collection<V> getVertices (VertexType type);
 }
