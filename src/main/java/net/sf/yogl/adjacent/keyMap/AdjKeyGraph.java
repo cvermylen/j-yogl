@@ -12,8 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.yogl.BreadthFirstIterator;
-import net.sf.yogl.LinksIterator;
-import net.sf.yogl.adjacent.list.AdjListDepthFirstIterator;
+import net.sf.yogl.DepthFirstIterator;
 import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.DuplicateNodeException;
 import net.sf.yogl.exceptions.GraphCorruptedException;
@@ -103,11 +102,9 @@ public final class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Compar
 	 * 		If null, the algorithm will use all nodes marked as 'START'.
 	 */
 	@Override
-	public BreadthFirstIterator breadthFirstIterator(
-		VK startingNodeKey,
-		int maxCycles)
-		throws GraphException {
-		return new BreadthFirstIterator(this, maxCycles);
+	public BreadthFirstIterator<AdjKeyVertex<VK, VV, EK, EV>, AdjKeyEdge<VK, VV, EK, EV>> breadthFirstIterator(
+			int maxCycles) throws GraphException {
+		return new BreadthFirstIterator<AdjKeyVertex<VK, VV, EK, EV>, AdjKeyEdge<VK, VV, EK, EV>>(this, maxCycles);
 	}
 
 	/** @see ComparableKeysGraph#clone
@@ -135,9 +132,9 @@ public final class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Compar
 
 	/** @see ComparableKeysGraph#depthFirstIterator
 	 */
-	public AdjKeyDepthFirstIterator depthFirstIterator(VK node, int maxCycling)
+	public DepthFirstIterator<AdjKeyVertex<VK, VV, EK, EV>, AdjKeyEdge<VK, VV, EK, EV>> depthFirstIterator(int maxCycling)
 		throws GraphException {
-		return new AdjKeyDepthFirstIterator(this, node, maxCycling);
+		return new DepthFirstIterator<AdjKeyVertex<VK, VV, EK, EV>, AdjKeyEdge<VK, VV, EK, EV>>(this, maxCycling);
 	}
 
 	/** @see ComparableKeysGraph#existsNode
@@ -916,12 +913,6 @@ public final class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Compar
 	public void clearAllVisitCounts() {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public BreadthFirstIterator breadthFirstIterator(int maxCycle) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

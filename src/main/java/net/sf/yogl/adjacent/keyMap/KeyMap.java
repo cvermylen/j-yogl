@@ -8,8 +8,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.yogl.adjacent.list.AdjListEdge;
-
 public class KeyMap<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends AbstractMap<EK, AdjKeyEdge<VK, VV, EK, EV>> {
 
 	private LinkedList<EK> list = new LinkedList<EK>();

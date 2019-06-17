@@ -3,8 +3,12 @@ package net.sf.yogl;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import net.sf.yogl.adjacent.list.AdjListGraph;
+import net.sf.yogl.adjacent.list.AdjListVertex;
+import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 
 /** Given a specific graph, this iterator returns the next vertex in a
@@ -13,42 +17,42 @@ import net.sf.yogl.exceptions.NodeNotFoundException;
  * being modified during the traversal.
  */
 
-public abstract class DepthFirstIterator<V extends Vertex<E>, E extends Edge<V>> {
+public class DepthFirstIterator<V extends Vertex<E>, E extends Edge<V>> {
     
-	protected class LinearEdgesIterator<V extends Vertex<E>, E extends Edge<V>>{
+	protected class LinearEdgesIterator<V1 extends Vertex<E1>, E1 extends Edge<V1>>{
 		
 		/** Reference to the vertex' node
 		 */
-		private V old_node = null;
+		private V1 old_node = null;
 		
 		/** Reference to links exiting from this vertex
 		 *  Order in this stack is extremely important.
 		 *  It MUST follow the same order as the one in the
 		 *  vStack.
 		 */
-		private LinkedList<E> outgoingEdges = new LinkedList<>();
+		private LinkedList<E1> outgoingEdges = new LinkedList<>();
 		
-		public LinearEdgesIterator(V node){
+		public LinearEdgesIterator(V1 node){
 			this.old_node = node;
-			outgoingEdges = node.getOutgoingEdges().stream().collect(LinkedList::new, LinkedList::add, LinkedList::addAll);
+			outgoingEdges = node.getOutgoingEdges().stream().collect(Collectors.toCollection(LinkedList::new));
 		}
 
 		public boolean hasMoreEdges() {
 			return outgoingEdges.size() > 0;
 		}
 		
-		public E nextEdge() {
+		public E1 nextEdge() {
 			return outgoingEdges.pop();
 		}
 		
 		/** getter method
 		 * @return the vertex index
 		 */
-		public V getVertex(){
+		public V1 getVertex(){
 			return old_node;
 		}
 		
-		public E peekEdge() {
+		public E1 peekEdge() {
 			return outgoingEdges.peek();
 		}
 		
@@ -58,8 +62,20 @@ public abstract class DepthFirstIterator<V extends Vertex<E>, E extends Edge<V>>
 	
 	protected E traversedEdge;
 	
-	public abstract <T> T next();
+	public DepthFirstIterator(Graph<V,E> graph, int maxCycling) throws GraphException{
+		this.maxCycling = maxCycling;
+		graph.getRoots().forEach(vertex -> pushVertex(vertex));	       
+		moveToNextVertex();
+	}
 	
+	public V next() throws NoSuchElementException {
+		if (currentVertex == null)
+			throw new NoSuchElementException();
+		moveToNextVertex();
+		popTheEdge();
+		return currentVertex;
+	}
+
     /** The vStack contains all nodes in the order they are visited.
      * This stack is used to simulate the recursivity.
      * The Objects contained in the stack will be of type 'Vertex'
@@ -83,7 +99,7 @@ public abstract class DepthFirstIterator<V extends Vertex<E>, E extends Edge<V>>
      */
     public boolean hasNext(){
         
-        return (vStack.size() > 0);
+        return (vStack.size() > 1) || ((vStack.size() == 1) && (vStack.get(0).hasMoreEdges()));
     }
 
     protected void moveToNextVertex(){

@@ -2,7 +2,9 @@ package net.sf.yogl;
 
 import java.util.Collection;
 
-public interface Graph<V extends Vertex<? extends Edge<?>>> {
+import net.sf.yogl.exceptions.GraphException;
+
+public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
 
 	/** Returns the max degree by only taking into account the incoming
 	 *  edges
@@ -32,5 +34,32 @@ public interface Graph<V extends Vertex<? extends Edge<?>>> {
 	
 	public void clearAllVisitCounts();
 	
-	public BreadthFirstIterator breadthFirstIterator(int maxCycle);
+	/** Return an iterator to browse ALL nodes in the graph that can
+	 *  be accessed from the startingNode. The method 'next()' in the
+	 *  iterator will return the nodes in the order defined by the 
+	 *  breadth first' policy.
+	 *  @param startingNodeKey identify a Node in the graph which will be
+	 *  the starting point of the traversal.
+	 *  @param maxCycles fixes the number of times each node can be
+	 *         visited. A value of 1 indicates that each node will be
+	 *         returned max. 1 time, this is thus a way to avoid cycling.
+	 *         Accepted values are: [1 .. n]. There is no way to express
+	 *         an infinite value.
+	 */
+	public BreadthFirstIterator<V, E> breadthFirstIterator(int maxCycle);
+	
+	/** Return an iterator to browse ALL nodes in the graph that can
+	 *  be accessed from the startingNode. The method 'next()' in the
+	 *  iterator will return the nodes in the order defined by the 
+	 *  depth first' policy.
+	 *  @param startingNodeKey identify a Node in the graph which will be
+	 *  the starting point of the traversal.
+	 *  @param maxCycles fixes the number of times each node can be
+	 *         visited. A value of 1 indicates that each node will be
+	 *         returned max. 1 time, this is thus a way to avoid cycling.
+	 *         Accepted values are: [1 .. n]. There is no way to express
+	 *         an infinite value.
+	 */
+	public DepthFirstIterator<V, E> depthFirstIterator(int maxCycling)
+		throws GraphException;
 }

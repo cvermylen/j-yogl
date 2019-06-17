@@ -5,9 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.yogl.BreadthFirstIterator;
 import net.sf.yogl.Graph;
-import net.sf.yogl.adjacent.list.AdjListDepthFirstIterator;
 import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
@@ -37,7 +35,7 @@ import net.sf.yogl.impl.DuplicateVertexException;
  * responsibility to find the right combinations of decorators.
  */
 
-public interface ComparableKeysGraph <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Graph<AdjKeyVertex<VK, VV, EK, EV>>{
+public interface ComparableKeysGraph <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Graph<AdjKeyVertex<VK, VV, EK, EV>, AdjKeyEdge<VK, VV, EK, EV>>{
 
 	/** Insert a new link between 2 nodes. This new link will be placed 
 	 *  'before' any existing link between these 2 nodes.
@@ -107,22 +105,6 @@ public interface ComparableKeysGraph <VK extends Comparable<VK>, VV, EK extends 
 	public void addNode(VK nodeKey, VV nodeValue)
 		throws GraphException;
 
-	/** Return an iterator to browse ALL nodes in the graph that can
-	 *  be accessed from the startingNode. The method 'next()' in the
-	 *  iterator will return the nodes in the order defined by the 
-	 *  breadth first' policy.
-	 *  @param startingNodeKey identify a Node in the graph which will be
-	 *  the starting point of the traversal.
-	 *  @param maxCycles fixes the number of times each node can be
-	 *         visited. A value of 1 indicates that each node will be
-	 *         returned max. 1 time, this is thus a way to avoid cycling.
-	 *         Accepted values are: [1 .. n]. There is no way to express
-	 *         an infinite value.
-	 */
-	public BreadthFirstIterator breadthFirstIterator(
-		VK startingNodeKey,
-		int maxCycles)
-		throws GraphException;
 
 	/** Clones the structure of the graph. User values are not cloned.
 	 */
@@ -132,21 +114,6 @@ public interface ComparableKeysGraph <VK extends Comparable<VK>, VV, EK extends 
 	 *  Internal variables (traversal) are reset.
 	 */
 	public void deepCopy(ComparableKeysGraph<VK, VV, EK, EV> dest) throws GraphException;
-
-	/** Return an iterator to browse ALL nodes in the graph that can
-	 *  be accessed from the startingNode. The method 'next()' in the
-	 *  iterator will return the nodes in the order defined by the 
-	 *  depth first' policy.
-	 *  @param startingNodeKey identify a Node in the graph which will be
-	 *  the starting point of the traversal.
-	 *  @param maxCycles fixes the number of times each node can be
-	 *         visited. A value of 1 indicates that each node will be
-	 *         returned max. 1 time, this is thus a way to avoid cycling.
-	 *         Accepted values are: [1 .. n]. There is no way to express
-	 *         an infinite value.
-	 */
-	public AdjListDepthFirstIterator depthFirstIterator(VK startingNodeKey, int maxCycling)
-		throws GraphException;
 
 	/** Test for the presence of a given node key.
 	 * @param nodeKey identify the node

@@ -4,12 +4,11 @@ package net.sf.yogl;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 import net.sf.yogl.exceptions.GraphException;
 
-public class BreadthFirstIterator<V extends Vertex<? extends Edge<?>>> implements Iterator<V> {
+public class BreadthFirstIterator<V extends Vertex<E>, E extends Edge<V>> implements Iterator<V> {
 
 	/** breadth first working structure
 	 */
@@ -24,7 +23,7 @@ public class BreadthFirstIterator<V extends Vertex<? extends Edge<?>>> implement
 	 *  Precondition: graph & node must contain valid values. All node
 	 *  counters (used to count the number of visits) must be reset.
 	 */
-	public BreadthFirstIterator(Graph<V> graph, int maxCycling)	throws GraphException {
+	public BreadthFirstIterator(Graph<V, E> graph, int maxCycling)	throws GraphException {
 		queue.addAll(graph.getRoots());
 		this.maxCycling = maxCycling;
 		graph.clearAllVisitCounts();

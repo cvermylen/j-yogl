@@ -24,7 +24,7 @@ public final class GraphUtil {
 	 *  and one exit point.
 	 */
 	public static <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> void subgraph(
-		GraphAdapter<VK,VV,EK,EV> graph,
+		Graph<VK,VV,EK,EV> graph,
 		GraphAdapter<VK,VV,EK,EV> result,
 		VK startNodeKey,
 		VK endNodeKey)
