@@ -92,7 +92,7 @@ public final class GraphUtil {
 
 		if (endNodeKey == null)
 			return;
-		switch (source.getNodeType(endNodeKey)) {
+		switch (source.getVertexType(endNodeKey)) {
 			case START :
 			case STARTEND :
 				destination.tryAddNode(vertexCtor.apply(endNodeKey), source.isStartVertex(endNodeKey));
@@ -116,7 +116,7 @@ public final class GraphUtil {
 
 		if (startNodeKey == null)
 			return;
-		switch (source.getNodeType(startNodeKey)) {
+		switch (source.getVertexType(startNodeKey)) {
 			case END :
 			case STARTEND :
 				destination.tryAddNode(vertexCtor.apply(startNodeKey), source.isStartVertex(startNodeKey));
@@ -132,7 +132,7 @@ public final class GraphUtil {
 		} else {
 			type = VertexType.STARTEND;
 		}
-		destination.tryAddNode(vertexCtor.apply(firstKey));
+		destination.tryAddVertex(vertexCtor.apply(firstKey));
 
 		while (iter.hasNext()) {
 			V refKey = iter.next();

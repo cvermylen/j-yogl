@@ -130,9 +130,9 @@ public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<
      *    removing elements
      * @return the list of outgoing edges
      */
-    public AdjKeyEdge<VK, VV, EK, EV>[]getNeighbors(){
+    public Collection<AdjKeyEdge<VK, VV, EK, EV>> getNeighbors(){
     	ArrayList<AdjKeyEdge<VK, VV, EK, EV>> result = new ArrayList<>(outgoingEdges.values());
-        return (AdjKeyEdge<VK, VV, EK, EV>[])result.toArray(new AdjKeyEdge[outgoingEdges.size()]);
+        return result;
     }
     
     @Override
@@ -141,11 +141,11 @@ public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<
 	}
     
     public VK getNextVertexKey(EK edgeKey){
-    	AdjKeyEdge<VK, VV, EK, EV> edge = getEdge(edgeKey);
+    	AdjKeyEdge<VK, VV, EK, EV> edge = getEdgeByKey(edgeKey);
     	return edge.getNextVertexKey();
     }
     
-    public AdjKeyEdge<VK, VV, EK, EV> getEdge(EK edgeKey){
+    public AdjKeyEdge<VK, VV, EK, EV> getEdgeByKey(EK edgeKey){
     	return (AdjKeyEdge<VK, VV, EK, EV>)outgoingEdges.get(edgeKey);
     }
     
@@ -155,7 +155,7 @@ public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<
      * @exception GraphCorruptedException if 'edge' cannot
      *            be inserted in the neighbors list.
      */
-    public void addEdgeLast(AdjKeyEdge<VK, VV, EK, EV> newEdge)throws GraphCorruptedException{
+    public void tryAddEdgeLast(AdjKeyEdge<VK, VV, EK, EV> newEdge)throws GraphCorruptedException{
         if (newEdge != null){
             if (outgoingEdges != null){
                 outgoingEdges.addLast(newEdge.getEdgeKey(), newEdge);
@@ -174,7 +174,7 @@ public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<
      * @exception InvalidVertexException if 'edge' cannot
      *            be inserted in the neighbors list.
      */
-    public void addEdgeFirst(AdjKeyEdge<VK, VV, EK, EV> newEdge)throws GraphCorruptedException{
+    public void tryAddEdgeFirst(AdjKeyEdge<VK, VV, EK, EV> newEdge)throws GraphCorruptedException{
         if (newEdge != null){
             if (outgoingEdges != null){
                 outgoingEdges.addFirst(newEdge.getEdgeKey(), newEdge);

@@ -155,18 +155,6 @@ public interface ComparableKeysGraph <VK extends Comparable<VK>, VV, EK extends 
 	 */
 	public Set<VK> getNodesKeys() throws GraphCorruptedException;
 
-	/** Return the list of nodes that are of a particular type
-	 *  @param nodeType has a value described in VertexType
-	 */
-	public List<AdjKeyVertex<VK,VV,EK,EV>> getVertices(int nodeType) throws GraphCorruptedException;
-
-	/** Returns the type associated to the node.
-	 *  The type is specified by a value defined in VertexType.
-	 *  @return a value from VertexType
-	 *  @exception GraphException if the node does not exists
-	 */
-	public VertexType getNodeType(VK nodeKey) throws GraphException;
-
 	/** Returns the user-defined value associated with the given key.
 	 * @param nodeKey
 	 * @return
@@ -193,19 +181,6 @@ public interface ComparableKeysGraph <VK extends Comparable<VK>, VV, EK extends 
 	 */
 	public EV getOutgoingLinkValue(VK nodeKeyFrom, EK linkKey)
 		throws NodeNotFoundException;
-
-	/** Returns the nodes that have a 'predecessor' relationship with nodeTo.
-	 *  A predecessor is a node that is the originator of a link whose
-	 *  destination is indicated by the parameter.
-	 *  @param nodeTo destination node
-	 */
-	public VK[] getPredecessorNodesKeys(VK nodeKeyTo)
-		throws GraphException;
-
-	/** Ditto but for a given link
-	 */
-	public VK[] getPredecessorNodesKeys(VK nodeKeyTo, EK link)
-		throws GraphException;
 
 	/** Ask the graph to return the list of all nodes that are adjacent
 	 * to the node given in parameter. In other words, it will return
@@ -239,12 +214,6 @@ public interface ComparableKeysGraph <VK extends Comparable<VK>, VV, EK extends 
 	/** Increment the passage variable by 1. The new value is returned.
 	 */
 	public int incVisitCount(VK nodeKey) throws GraphException;
-
-	/** Test if the identified node is an entry point.
-	 * @param nodeKey node identifier
-	 * @return true if is an entry point
-	 */
-	public boolean isStartNode(VK nodeKey);
 
 	/** Returns an iterator on all existing links.
 	 *  Links returned by this iterator are not garanteed to be
@@ -295,38 +264,5 @@ public interface ComparableKeysGraph <VK extends Comparable<VK>, VV, EK extends 
 	/** Initialize the content of the variable to a given value.
 	 */
 	public void setVisitCount(VK nodeKey, int count) throws GraphException;
-
-	/** This method does not throw an exception if the link already exists
-	 *  between the two nodes.
-	 * @param nodeKeyFrom
-	 * @param nodeKeyTo
-	 * @param link
-	 * @throws GraphException
-	 */
-	public void tryAddLinkFirst(
-		VK nodeKeyFrom,
-		VK nodeKeyTo,
-		EK linkKey,
-		EV linkValue)
-		throws NodeNotFoundException, GraphCorruptedException;
-
-	/** This method does not throw an exception if the link already exists
-	 *  between the two nodes.
-	 */
-	public void tryAddLinkLast(
-		VK nodeKeyFrom,
-		VK nodeKeyTo,
-		EK linkKey,
-		EV linkValue)
-		throws NodeNotFoundException, GraphCorruptedException;
-
-	/** This method is exactly the same as 'addNode' but does not throw an
-	 *  exception if the node is already present.
-	 * @param nodeKey
-	 * @param nodeValue
-	 * @param type
-	 * @return
-	 */
-	public Object tryAddNode(VK nodeKey, VV nodeValue);
 
 }

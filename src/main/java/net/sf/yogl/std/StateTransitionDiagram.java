@@ -423,7 +423,7 @@ public final class StateTransitionDiagram {
 		//retrieve 'link' in the edge list of the
 		//current vertex.
 		AdjListVertex peek = graph.findVertexByKey((Comparable)vertexKeysPath.peek());
-		AdjListEdge edge = peek.getEdge((Comparable)transitionKey);
+		AdjListEdge edge = peek.getEdgeByKey((Comparable)transitionKey);
 		if (edge == null) {
 			throw new LinkNotFoundException(
 				transitionKey.toString() + "not found from" + vertexKeysPath.peek());
@@ -445,7 +445,7 @@ public final class StateTransitionDiagram {
 		AdjListEdge result = null;
 		AdjListVertex vertex = graph.findVertexByKey((Comparable)vertexKey);
 		if (vertex != null)
-			result = vertex.getEdge((Comparable)edgeKey);
+			result = vertex.getEdgeByKey((Comparable)edgeKey);
 		return result;
 	}
 }

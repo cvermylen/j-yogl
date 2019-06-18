@@ -26,7 +26,7 @@ public final class GraphUtil {
 
 		if (endNodeKey == null)
 			return;
-		switch (source.getNodeType(endNodeKey)) {
+		switch (source.getVertexType(endNodeKey)) {
 			case VertexType.START :
 			case VertexType.STARTEND :
 				destination.tryAddVertex(vertexCtor.apply(endNode), source.isStartVertex(endNode));
@@ -52,7 +52,7 @@ public final class GraphUtil {
 
 		if (startNodeKey == null)
 			return;
-		switch (source.getNodeType((Comparable)startNodeKey)) {
+		switch (source.getVertexType((Comparable)startNodeKey)) {
 			case VertexType.END :
 			case VertexType.STARTEND :
 				destination.tryAddVertex(vertexCtor.apply(startNodeKey), source.isStartVertex(startNodeKey));

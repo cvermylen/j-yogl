@@ -57,5 +57,7 @@ public abstract class Vertex<E extends Edge<?>> {
     
     public abstract Collection<E> getOutgoingEdges();
     
- 
+    public abstract void tryAddEdgeFirst(E edge);
+    
+    public abstract void tryAddEdgeLast(E edge);
 }

@@ -2,8 +2,8 @@ package net.sf.yogl;
 
 import java.util.Collection;
 
+import net.sf.yogl.adjacent.keyMap.AdjKeyEdge;
 import net.sf.yogl.adjacent.keyMap.AdjKeyVertex;
-import net.sf.yogl.adjacent.keyMap.ComparableKeysGraph;
 import net.sf.yogl.adjacent.keyMap.LinksIterator;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.types.VertexType;
@@ -31,13 +31,34 @@ public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
 	 */
 	public boolean isEmpty();
 	
+	/** Test if the identified node is an entry point.
+	 * @param nodeKey node identifier
+	 * @return true if is an entry point
+	 */
 	public boolean isStartVertex(V nodeKey);
 	
 	public Collection<V>getRoots();
 	
+	/** Return the list of nodes of a particular type
+	 *  @param nodeType has a value described in VertexType
+	 */
+	public Collection<V> getVertices (VertexType type);
+	
 	public void clearAllVisitCounts();
 	
+	/** Returns the nodes that have a 'predecessor' relationship with nodeTo.
+	 *  A predecessor is a node that is the originator of a link whose
+	 *  destination is indicated by the parameter.
+	 *  @param nodeTo destination node
+	 */
 	public Collection<V> getPredecessorVertices(V vertex);
+	
+	/** Returns the vertex having the 'destVertex' as a successor via the given 'edge'
+	 * @param destVertex
+	 * @param edge
+	 * @return
+	 */
+	public V getPredecessorVertex(V destVertex, E edge);
 	
 	public Collection<V> getSuccessorVertices(V vertex);
 	
@@ -72,13 +93,16 @@ public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
 	public DepthFirstIterator<V, E> depthFirstIterator(Collection<V> startVertex, int maxCycling)
 		throws GraphException;
 	
-	public V tryAddNode(V vertex);
+	public V tryAddVertex(V vertex, boolean isRoot);
 	
 	public void tryAddLinkLast (V vertex, E edge);
 	
-	public VertexType getNodeType (V vertex);
-	
-	public Collection<V> getVertices (VertexType type);
+	/** Returns the type associated to the node.
+	 *  The type is specified by a value defined in VertexType.
+	 *  @return a value from VertexType
+	 *  @exception GraphException if the node does not exists
+	 */
+	public VertexType getVertexType (V vertex);
 	
 	/** Clones the structure of the graph. User values are cloned.
 	 *  Internal variables (traversal) are reset.
