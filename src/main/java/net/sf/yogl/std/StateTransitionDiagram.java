@@ -21,6 +21,8 @@ import net.sf.yogl.impl.ImplementationGraph;
 
 /** The STD implementation is based on a directed graph with the following
  *  restrictions:
+ *  - The class 'State' replaces the class 'Vertex'
+ *  - The class 'Transition' replaces the class 'Edge'
  *  - the graph must have 1! entry state
  *  - each node must extend the class State
  *  - each link must extend the class Transition

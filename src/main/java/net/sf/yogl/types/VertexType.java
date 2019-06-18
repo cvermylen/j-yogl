@@ -7,6 +7,9 @@ package net.sf.yogl.types;
  */
 
 public enum VertexType {
+	/** For a query, consider any type */
+	ANY,
+	
 	/** intermediate vertex. Has predecessors AND successors */
 	NONE,
 

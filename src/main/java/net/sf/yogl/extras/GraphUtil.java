@@ -2,6 +2,7 @@
 package net.sf.yogl.extras;
 
 import java.util.List;
+import java.util.function.Function;
 
 import net.sf.yogl.adjacent.keyMap.ComparableKeysGraph;
 import net.sf.yogl.adjacent.keyMap.GraphAdapter;
@@ -19,16 +20,17 @@ public final class GraphUtil {
 	public static void headgraph(
 		GraphAdapter source,
 		GraphAdapter destination,
-		Object endNodeKey)
+		V endNode,
+		Function<V, V>vertexCtor)
 		throws GraphException {
 
 		if (endNodeKey == null)
 			return;
-		switch (source.getNodeType((Comparable)endNodeKey)) {
+		switch (source.getNodeType(endNodeKey)) {
 			case VertexType.START :
 			case VertexType.STARTEND :
 				Object endNodeValue = source.getNodeValue((Comparable)endNodeKey);
-				destination.tryAddNode((Comparable)endNodeKey, endNodeValue);
+				destination.tryAddNode(vertexCtor.apply(endNode));
 				return;
 		}
 		List startList = source.getVertices(VertexType.START);

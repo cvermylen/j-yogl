@@ -2,10 +2,14 @@
 package net.sf.yogl.adjacent.keyMap;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
+import net.sf.yogl.Edge;
+import net.sf.yogl.Graph;
+import net.sf.yogl.Vertex;
 import net.sf.yogl.exceptions.NodeNotFoundException;
-import net.sf.yogl.impl.ImplementationGraph;
+import net.sf.yogl.types.VertexType;
 
 /** A LinksIterator allows to retrieve all links from a given graph.
  *  When pointing to a specific link, the iterator gives also
@@ -13,30 +17,31 @@ import net.sf.yogl.impl.ImplementationGraph;
  *  
  *  REFACTOR: From a given Vertex, returns an iterator on all outgoing edges (key & value)
  */
-public class LinksIterator<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> implements Iterator<EV> {
+public class LinksIterator<V extends Vertex<E>, E extends Edge<V>> implements Iterator<E> {
 
-	private ArrayList<VK> predNodes = null;
-	private ArrayList<EV> links = null;
-	private ArrayList<VK> succNodes = null;
+	private ArrayList<V> predNodes = null;
+	private ArrayList<E> links = null;
+	private ArrayList<V> succNodes = null;
 	private int counter = 0;
 
-	public LinksIterator(ImplementationGraph<VK, VV, EK, EV> graph) throws NodeNotFoundException {
+	public LinksIterator(Graph<V, E> graph) throws NodeNotFoundException {
 
 		int count = graph.getLinkCount();
 		int index = 0;
-		predNodes = new ArrayList<VK>(count);
-		links = new ArrayList<EV>(count);
-		succNodes = new ArrayList<VK>(count);
+		predNodes = new ArrayList<V>(count);
+		links = new ArrayList<E>(count);
+		succNodes = new ArrayList<V>(count);
 
-		Iterator<VK> nodesIter = graph.nodesKeySet().iterator();
+		Iterator<V> nodesIter = graph.getVertices(VertexType.ANY).iterator();
 		while (nodesIter.hasNext()) {
-			VK key = nodesIter.next();
-			AdjKeyVertex<VK, VV, EK, EV> vertex = graph.findVertexByKey(key);
-			AdjKeyEdge<VK, VV, EK, EV>[]neighbors = vertex.getNeighbors();
-			for(int i=0; i < neighbors.length; i++) {
-				predNodes.add(index, key);
-				links.add(index, neighbors[i].getUserValue());
-				VK destKey = neighbors[i].getNextVertexKey();
+			V vertex = nodesIter.next();
+			Collection<E> neighbors = vertex.getOutgoingEdges();
+			Iterator<E> edgesIter = neighbors.iterator();
+			while (edgesIter.hasNext()) {
+				E edge = edgesIter.next();
+				predNodes.add(index, vertex);
+				links.add(index, edge);
+				V destKey = edge.getOutgoingVertex();
 				succNodes.add(index++, destKey);
 			}
 		}
@@ -51,9 +56,9 @@ public class LinksIterator<VK extends Comparable<VK>, VV, EK extends Comparable<
 
 	/** Read the next link from the iterator
 	 */
-	public EV next() {
+	public E next() {
 
-		EV result = null;
+		E result = null;
 		if (hasNext()) {
 			result = links.get(counter);
 			counter++;
@@ -63,9 +68,9 @@ public class LinksIterator<VK extends Comparable<VK>, VV, EK extends Comparable<
 
 	/** Returns the source node of the last 'read' link
 	 */
-	public VK getOriginator() {
+	public V getOriginator() {
 
-		VK result = null;
+		V result = null;
 		if ((counter <= links.size()) && (counter > 0)) {
 			result = predNodes.get(counter - 1);
 		}
@@ -74,9 +79,9 @@ public class LinksIterator<VK extends Comparable<VK>, VV, EK extends Comparable<
 
 	/** Returns the sink node of the last 'read' node
 	 */
-	public VK getDestination() {
+	public V getDestination() {
 
-		VK result = null;
+		V result = null;
 		if ((counter <= links.size()) && (counter > 0)) {
 			result = succNodes.get(counter - 1);
 		}

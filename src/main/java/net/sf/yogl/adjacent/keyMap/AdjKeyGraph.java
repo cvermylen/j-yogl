@@ -43,7 +43,7 @@ import net.sf.yogl.types.VertexType;
  * @version 1.0
  */
 
-public final class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> implements ImplementationGraph <VK, VV, EK, EV> {
+public class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> implements ImplementationGraph <VK, VV, EK, EV> {
 
 	/** Since it should be too tedious to traverse the whole graph
 	 * just to count the number of edges, this data is stored here.
@@ -92,6 +92,29 @@ public final class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Compar
 		}
 	}
 
+	/** Will duplicate the content of the vertex and insert it into this graph.
+	 * Method is used to copy vertices from graph to graph
+	 */
+	public AdjKeyVertex<VK, VV, EK, EV> tryAddNode(AdjKeyVertex<VK, VV, EK, EV> vertex) {
+		AdjKeyVertex<VK, VV, EK, EV> result = null;
+		if(!existsNode(vertex.getKey())) {
+			this.vertices.put(vertex.getKey(), vertex);
+			this.allStartNodeKeys.add(vertex.getKey());
+		}
+		return result;
+	}
+	
+	/** @see ComparableKeysGraph#tryAddNode
+	 */
+	public Object tryAddNode(VK nodeKey, VV nodeValue) {
+
+		try {
+			addNode(nodeKey, nodeValue);
+		} catch (GraphException e) {
+		}
+		return null;
+	}
+	
 	/**
 	 * @param maxCycles fixes the number of times each node can be
 	 *        visited. A value of 1 indicates that each node will be
@@ -811,23 +834,9 @@ public final class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Compar
 		vertex.setVisitCounts(count);
 	}
 
-	/** @see ComparableKeysGraph#tryAddNode
-	 */
-	public Object tryAddNode(VK nodeKey, VV nodeValue) {
+	
 
-		try {
-			addNode(nodeKey, nodeValue);
-		} catch (GraphException e) {
-		}
-		return null;
-	}
-
-	/** Will duplicate the content of the vertex and insert it into this graph.
-	 * Method is used to copy vertices from graph to graph
-	 */
-	public void tryAddNode(AdjKeyVertex<VK, VV, EK, EV> vertex) {
-		addNode(vertex.getKey(), vertex.getUserValue());
-	}
+	
 	
 	/** @see ComparableKeysGraph#tryAddLinkFirst
 	 */

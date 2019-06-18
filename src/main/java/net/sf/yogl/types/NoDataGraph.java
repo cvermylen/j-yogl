@@ -1,28 +1,24 @@
    
 package net.sf.yogl.types;
 
-import java.util.Collection;
+import java.util.HashMap;
 
-import net.sf.yogl.adjacent.list.AdjListGraph;
+import net.sf.yogl.adjacent.keyMap.AdjKeyGraph;
+import net.sf.yogl.adjacent.keyMap.AdjKeyVertex;
+import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 
 /** Simple graph which does not contains any data. Nodes and links
  *  are just identified by keys.
  */
-public final class NoDataGraph<VK extends Comparable<VK>, EK extends Comparable<EK>> extends AdjListGraph<VK, Object, EK, Object> {
+public final class NoDataGraph extends AdjKeyGraph<String, Object, String, Object> {
 
-	public void addNode(VK nodeKey) throws GraphException{
-		super.addNode(nodeKey, "");
+	public NoDataGraph()
+			throws GraphCorruptedException {
+		super(new HashMap<String, AdjKeyVertex<String, Object, String, Object>>());
 	}
-	
-	public void addNode(VK nodeKey, Object nodeValue)throws GraphException{
-		super.addNode(nodeKey, "");
-	}
-	public Collection nodesValues(){
-		return null;
-	}
-	
-	public void tryAddNode(VK nodeKey) throws GraphException{
-		super.tryAddNode(nodeKey, null);
+
+	public void tryAddNode(String nodeKey) throws GraphException{
+		super.tryAddNode(new AdjKeyVertex<String, Object, String, Object>(nodeKey, null));
 	}
 }

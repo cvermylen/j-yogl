@@ -1,7 +1,7 @@
    
 package net.sf.yogl.types;
 
-import net.sf.yogl.adjacent.keyMap.GraphAdapter;
+import net.sf.yogl.adjacent.keyMap.AdjKeyGraph;
 import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
@@ -18,7 +18,7 @@ import net.sf.yogl.impl.DuplicateVertexException;
  * method LinkedList getNeighbors is inherited
  */
 
-public final class DirectedAcyclicGraph<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends GraphAdapter<VK,VV,EK,EV> {
+public final class DirectedAcyclicGraph<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends AdjKeyGraph<VK,VV,EK,EV> {
 
 	/** @see graph.ComparableKeysGraph.getNeighbors
 	 */

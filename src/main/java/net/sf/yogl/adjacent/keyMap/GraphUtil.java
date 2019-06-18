@@ -3,6 +3,7 @@ package net.sf.yogl.adjacent.keyMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -12,8 +13,6 @@ import net.sf.yogl.DepthFirstIterator;
 import net.sf.yogl.Edge;
 import net.sf.yogl.Graph;
 import net.sf.yogl.Vertex;
-import net.sf.yogl.adjacent.keyMap.GraphAdapter;
-import net.sf.yogl.adjacent.list.AdjListDepthFirstIterator;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.types.VertexType;
@@ -48,7 +47,7 @@ public final class GraphUtil {
 			throw new NullPointerException("input parameter endNode is null");
 		}
 		int degree = graph.getMaxOutDegree();
-		DepthFirstIterator<V, E> iter = graph.depthFirstIterator(startNode, degree);
+		DepthFirstIterator<V, E> iter = graph.depthFirstIterator(Arrays.asList(startNode), degree);
 		while (iter.hasNext()) {
 			if (endNodeKey.equals(iter.next())) {
 				List<V> nodes = iter.nodePath();
@@ -94,12 +93,13 @@ public final class GraphUtil {
 		if (endNodeKey == null)
 			return;
 		switch (source.getNodeType(endNodeKey)) {
-			case VertexType.START :
-			case VertexType.STARTEND :
+			case START :
+			case STARTEND :
 				destination.tryAddNode(vertexCtor.apply(endNodeKey));
 				return;
+			default:
 		}
-		List<V> startList = source.getVertices(VertexType.START);
+		Collection<V> startList = source.getVertices(VertexType.START);
 		//Iterator iter = startList.iterator();
 		for (V startKey: startList) {
 			//while(iter.hasNext()){
@@ -116,16 +116,17 @@ public final class GraphUtil {
 
 		if (startNodeKey == null)
 			return;
-		switch (source.getNodeType(startNodeKey) {
-			case VertexType.END :
-			case VertexType.STARTEND :
+		switch (source.getNodeType(startNodeKey)) {
+			case END :
+			case STARTEND :
 				destination.tryAddNode(vertexCtor.apply(startNodeKey));
 				return;
+			default:
 		}
 		int degree = source.getMaxOutDegree();
-		DepthFirstIterator<V, E> iter = source.depthFirstIterator(startNodeKey, degree);
+		DepthFirstIterator<V, E> iter = source.depthFirstIterator(Arrays.asList(startNodeKey), degree);
 		V firstKey = iter.next();
-		int type;
+		VertexType type;
 		if (iter.hasNext()) {
 			type = VertexType.START;
 		} else {
@@ -209,7 +210,7 @@ public final class GraphUtil {
 	 *  @param subgraph to be inserted at 'insertion point'
 	 */
 	public static <V extends Vertex<E>, E extends Edge<V>> void insertSubgraph(Graph<V, E> dest,
-			V insertionPointKey, Graph<V, E> subgraph, Function<V, V> vertexCtor) throws GraphException {
+			V insertionPointVertex, Graph<V, E> subgraph, Function<V, V> vertexCtor) throws GraphException {
 
 		/* Do the following validation:
 		 * 1- the destination graph contains the insertion point
@@ -217,72 +218,80 @@ public final class GraphUtil {
 		 */
 		if (dest == null)
 			throw new NullPointerException("parameter dest is null");
-		if (insertionPointKey == null)
+		if (insertionPointVertex == null)
 			throw new NullPointerException("parameter insertionPoint is null");
 		if (subgraph == null)
 			throw new NullPointerException("parameter subgraph is null");
 
 		//Insert all nodes from subgraph into the dest graph
-		List<V> intermediateNodes = subgraph.getVertices(VertexType.NONE);
-		//Iterator intermediateIter = intermediateNodes.iterator();
-		//while(intermediateIter.hasNext()){
-		for (int i = 0; i < intermediateNodes.size(); i++) {
-			V nodeKey = intermediateNodes.get(i);
-			dest.tryAddNode(vertexCtor.apply(nodeKey));
-		}
+		Collection<V> intermediateNodes = subgraph.getVertices(VertexType.NONE);
+		intermediateNodes.forEach(vertex -> dest.tryAddNode(vertexCtor.apply(vertex)));
 		//extract the start & end nodes from the subgraph
 		//extract the start nodes from the subgraph. Should be max 1.
-		List<V> startList = null;
+		Collection<V> startList = null;
 		startList = subgraph.getVertices(VertexType.START);
 		if (startList.size() != 1) {
 			throw new GraphException(
 				"parameter subgraph should "
 					+ "contain 1 and only 1 'start' node");
 		}
-		V startNodeKey = startList.get(0);
+		V startNodeKey = startList.stream().findFirst().get();
 		
 		//extract the end node from the subgraph. Should be max 1.
-		List<V> endList = null;
+		Collection<V> endList = null;
 		endList = subgraph.getVertices(VertexType.END);
 		if (endList.size() != 1) {
 			throw new GraphException(
 				"parameter graph should " + "contain 1 and only 1 'end' node");
 		}
-		V endNodeKey = endList.get(0);
+		V endNodeKey = endList.parallelStream().findFirst().get();
 		
 		dest.tryAddNode(vertexCtor.apply(startNodeKey));
 		dest.tryAddNode(vertexCtor.apply(endNodeKey));
 
 		//Insert all links from subgraph into dest graph
-		LinksIterator<E> allLinks = subgraph.edgesIterator();
+		LinksIterator<V, E> allLinks = subgraph.edgesIterator();
 		while (allLinks.hasNext()) {
 			E link = allLinks.next();
-			dest.addLinkLast(allLinks.getOriginator(), allLinks.getDestination(), (Comparable) link, null);
+			dest.tryAddLinkLast(allLinks.getOriginator(), allLinks.getDestination(), link, null);
 		}
 
 		//Connect subgraph to dest graph
 
-		Object[] predecessorsKeys = null;
-		predecessorsKeys = dest.getPredecessorNodesKeys((Comparable)insertionPointKey);
-		for(int j=0; j < predecessorsKeys.length; j++) { //for each predecessor
-			Object[] links = null;
-			links = dest.getLinksKeysBetween((Comparable)predecessorsKeys[j], (Comparable)insertionPointKey);
-			for(int i=0; i < links.length; i++) {
+		Collection<V> predecessors = null;
+		predecessors = dest.getPredecessorVertices(insertionPointVertex);
+		Iterator<V> predsIter = predecessors.iterator();
+		while (predsIter.hasNext()) {
+//		for(int j=0; j < predecessors.size(); j++) { //for each predecessor
+			V pred = predsIter.next();
+			Collection<E> links = null;
+			links = dest.getLinksKeysBetween(pred, insertionPointVertex);
+			Iterator<E> linksIter = links.iterator();
+			while (linksIter.hasNext()) {
+				E edge = linksIter.next();
+//			for(int i=0; i < links.length; i++) {
 				//remove existing link
-				dest.removeLink((Comparable)predecessorsKeys[j], (Comparable)insertionPointKey, (Comparable)links[i]);
+				dest.removeLink(pred, insertionPointVertex, edge);
 				//and connect new subgraph
-				dest.addLinkLast((Comparable)predecessorsKeys[j], (Comparable)startNodeKey, (Comparable)links[i], null);
+				dest.addLinkLast(pred, startNodeKey, edge, null);
 			}
 		}
 
-		Object[] successorsKeys = null;
-		successorsKeys = dest.getSuccessorNodesKeys((Comparable)insertionPointKey, 1);
-		for(int i=0; i < successorsKeys.length; i++) {
-			Object[] links = null;
-			links = dest.getLinksKeysBetween((Comparable)insertionPointKey, (Comparable)successorsKeys[i]);
-			for(int j=0; j < links.length; j++) {
-				dest.removeLink((Comparable)insertionPointKey, (Comparable)successorsKeys[i], (Comparable)links[j]);
-				dest.addLinkLast((Comparable)endNodeKey, (Comparable)successorsKeys[i], (Comparable)links[j], null);
+		Collection<V> successors = null;
+		successors = dest.getSuccessorVertices(insertionPointVertex, 1);
+		Iterator<V> succIter = successors.iterator();
+		while (succIter.hasNext()) {
+			V succ = succIter.next();
+//		for(int i=0; i < successors.size(); i++) {
+			Collection<E> links = null;
+			links = dest.getLinksKeysBetween(insertionPointVertex, succ);
+			Iterator<E> linksIter = links.iterator();
+			while (linksIter.hasNext()) {
+				E edge = linksIter.next();
+			
+//			for(int j=0; j < links.length; j++) {
+				dest.removeLink(insertionPointVertex, succ, edge);
+				dest.addLinkLast(endNodeKey, succ, edge, null);
 			}
 		}
 	}
