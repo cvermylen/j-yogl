@@ -3,6 +3,7 @@ package net.sf.yogl;
 import java.util.Collection;
 
 import net.sf.yogl.adjacent.keyMap.AdjKeyVertex;
+import net.sf.yogl.adjacent.keyMap.ComparableKeysGraph;
 import net.sf.yogl.adjacent.keyMap.LinksIterator;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.types.VertexType;
@@ -30,10 +31,7 @@ public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
 	 */
 	public boolean isEmpty();
 	
-	/** By default, a new node added to a graph is a root
-	 * 
-	 */
-	public V addRootVertex(V v);
+	public boolean isStartVertex(V nodeKey);
 	
 	public Collection<V>getRoots();
 	
@@ -81,4 +79,9 @@ public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
 	public VertexType getNodeType (V vertex);
 	
 	public Collection<V> getVertices (VertexType type);
+	
+	/** Clones the structure of the graph. User values are cloned.
+	 *  Internal variables (traversal) are reset.
+	 */
+	public void deepCopy(Graph<V, E> dest) throws GraphException;
 }

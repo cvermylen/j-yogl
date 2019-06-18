@@ -44,15 +44,6 @@ public final class DirectedAcyclicGraph<VK extends Comparable<VK>, VV, EK extend
 		return graph.getLinksKeysBetween(nodeKeyFrom, nodeKeyFrom);
 	}
 
-	public void addNode(VK nodeKey, VV nodeValue)
-		throws GraphException {
-
-		try {
-			super.addNode(nodeKey, nodeValue);
-		} catch (DuplicateVertexException e) {
-			//do nothing
-		}
-	}
 
 	/** @see graph.ComparableKeysGraph.insertLink
 	 */

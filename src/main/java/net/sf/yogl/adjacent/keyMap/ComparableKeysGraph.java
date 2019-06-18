@@ -93,28 +93,11 @@ public interface ComparableKeysGraph <VK extends Comparable<VK>, VV, EK extends 
 		EK linkKey)
 		throws NodeNotFoundException, DuplicateLinkException, GraphCorruptedException;
 
-	/** This method inserts a new node in the graph.
-	 * Pre-condition: the node object does not exists in the graph
-	 * The presence of the node in the graph is implemented by the
-	 * 'equals' method. Once defined, a node value cannot be changed.
-	 * @param nodeKey uniquely identify the new node to insert in the graph
-	 * @param nodeValue refers any user-defined object
-	 * @param type is the type that will be associated to the node
-	 * @exception DuplicateVertexException thrown if the node is
-	 *            already present in the graph.
-	 */
-	public void addNode(VK nodeKey, VV nodeValue)
-		throws GraphException;
-
-
 	/** Clones the structure of the graph. User values are not cloned.
 	 */
 	public Object clone();
 
-	/** Clones the structure of the graph. User values are cloned.
-	 *  Internal variables (traversal) are reset.
-	 */
-	public void deepCopy(ComparableKeysGraph<VK, VV, EK, EV> dest) throws GraphException;
+	
 
 	/** Test for the presence of a given node key.
 	 * @param nodeKey identify the node

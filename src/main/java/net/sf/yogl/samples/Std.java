@@ -79,7 +79,7 @@ public class Std {
 			if(stdDes[i].length == 2){
 				MyState state = std.new MyState();
 				state.setStateValue(stdDes[i][1]);
-				ga.addNode(stdDes[i][0], state);
+				ga.tryAddNode(stdDes[i][0], state);
 			}else if(stdDes[i].length == 3){
 				MyTransition transition = std.new MyTransition();
 				transition.setKey(stdDes[i][2]);

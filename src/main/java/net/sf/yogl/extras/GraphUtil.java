@@ -29,8 +29,7 @@ public final class GraphUtil {
 		switch (source.getNodeType(endNodeKey)) {
 			case VertexType.START :
 			case VertexType.STARTEND :
-				Object endNodeValue = source.getNodeValue((Comparable)endNodeKey);
-				destination.tryAddNode(vertexCtor.apply(endNode));
+				destination.tryAddVertex(vertexCtor.apply(endNode), source.isStartVertex(endNode));
 				return;
 		}
 		List startList = source.getVertices(VertexType.START);
@@ -47,7 +46,8 @@ public final class GraphUtil {
 	public static void tailgraph(
 		GraphAdapter source,
 		GraphAdapter destination,
-		Object startNodeKey)
+		Object startNodeKey,
+		Function<V, V>vertexCtor)
 		throws GraphException {
 
 		if (startNodeKey == null)
@@ -55,8 +55,7 @@ public final class GraphUtil {
 		switch (source.getNodeType((Comparable)startNodeKey)) {
 			case VertexType.END :
 			case VertexType.STARTEND :
-				Object startNodeValue = source.getNodeValue((Comparable)startNodeKey);
-				destination.tryAddNode((Comparable)startNodeKey, startNodeValue);
+				destination.tryAddVertex(vertexCtor.apply(startNodeKey), source.isStartVertex(startNodeKey));
 				return;
 		}
 		int degree = source.getMaxOutDegree();
@@ -69,15 +68,14 @@ public final class GraphUtil {
 		} else {
 			type = VertexType.STARTEND;
 		}
-		destination.tryAddNode((Comparable)firstKey, firstValue);
+		destination.tryAddVertex(vertexCtor.apply(firstKey), source.isStartVertex(firstKey));
 
 		while (iter.hasNext()) {
 			Object refKey = iter.next();
 			Object refValue = source.getNodeValue((Comparable)refKey);
 			List path = iter.nodePath();
 			Object predKey = path.get(path.size() -1);
-			Object predValue = source.getNodeValue((Comparable)predKey);
-			destination.tryAddNode((Comparable)refKey, refValue);
+			destination.tryAddVertex(vertexCtor.apply(refKey), source.isStartVertex(refKey));
 			//TODO next line commented to suppress compile eror on usedLink
 //			destination.tryAddLinkLast((Comparable)predKey, (Comparable)refKey, (Comparable)iter.usedLink(), null);
 		}
