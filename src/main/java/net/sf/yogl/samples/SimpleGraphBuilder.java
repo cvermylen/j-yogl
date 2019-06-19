@@ -22,7 +22,7 @@ public class SimpleGraphBuilder {
 		System.out.println(ndg);
 		
 		System.out.println("\nSecond graph\n-----------");
-		AdjKeyGraph<String, String, String, String> alg = new AdjKeyGraph<>(new HashMap<String, AdjKeyVertex<String, String, String, String>>());
+		AdjKeyGraph<String, String, String, String> alg = new AdjKeyGraph<>();
 		String[][]data2 = {
 			{"1", "as the root node"},
 			{"2", "intermediate node"},

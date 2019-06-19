@@ -1,6 +1,13 @@
    
 package net.sf.yogl.extras;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import net.sf.yogl.Graph;
+import net.sf.yogl.adjacent.keyMap.AdjKeyEdge;
+import net.sf.yogl.adjacent.keyMap.AdjKeyGraph;
+import net.sf.yogl.adjacent.keyMap.AdjKeyVertex;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.types.NoDataGraph;
@@ -18,22 +25,24 @@ public class GraphBuilderArray {
 	 * @param destGraph on entry, the graph must be empty.
 	 * @throws GraphException
 	 */
-	public static void buildNoDataGraph(
-		Object[][] srcData,
-		NoDataGraph destGraph)
-		throws GraphException {
+	public static void buildNoDataGraph(String[][] srcData, NoDataGraph destGraph) throws GraphException {
 		if (destGraph.getNodeCount() > 0) {
 			throw new GraphCorruptedException("The graph must be empty");
 		}
-		PreparedGraph pg = new PreparedGraph();
 		for (int i = 0; i < srcData.length; i++) {
-			pg.tryAddNode(srcData[i][0], null);
-			pg.tryAddNode(srcData[i][1], null);
+			boolean isRoot = false;
+			for (int j=0; j < srcData.length; i++) {
+				if(srcData[j][1].contentEquals(srcData[i][0])) {
+					isRoot = true;
+					break;
+				}
+			}
+			destGraph.tryAddNode(srcData[i][0], isRoot);
+			destGraph.tryAddNode(srcData[i][1], false);
 		}
 		for (int i = 0; i < srcData.length; i++) {
-			pg.tryAddLink(srcData[i][0], srcData[i][1], srcData[i][2]);
+			destGraph.tryAddLinkFirst(srcData[i][0], srcData[i][1], srcData[i][2]);
 		}
-		pg.populateGraph(destGraph);
 	}
 
 	/** Insert the content of the array into the graph.
@@ -52,17 +61,26 @@ public class GraphBuilderArray {
 	 * @param destGraph
 	 * @throws GraphException
 	 */
-	public static void buildGraph(Object[][] srcData, ComparableKeysGraph destGraph) throws GraphException {
-		PreparedGraph pg = new PreparedGraph();
+	public static void buildGraph(String[][] srcData, Graph destGraph) throws GraphException {
+		AdjKeyGraph<String, String, String, String> pg = new AdjKeyGraph<>();
+		Set<String>nonRootVerticeKeys = new HashSet<>();
+		for (int i=0; i < srcData.length; i++) {
+			if (srcData[i].length == 4)
+				nonRootVerticeKeys.add(srcData[i][1]);
+		}
 		for (int i = 0; i < srcData.length; i++) {
 			if(srcData[i].length == 2){
-				pg.tryAddNode(srcData[i][0], srcData[i][1]);
-			}else if(srcData[i].length == 4){
-				pg.tryAddLink(srcData[i][0], srcData[i][1],srcData[i][2]/*,srcData[i][3]*/);
-			}else{
-				throw new GraphCorruptedException("Cannot use graph description: bad data at line:"+i);
+				AdjKeyVertex<String, String, String, String> vertex = new AdjKeyVertex<>(srcData[i][0], srcData[i][1]);
+				pg.tryAddVertex(vertex, nonRootVerticeKeys.contains(srcData[i][0]));
 			}
 		}
-		pg.populateGraph(destGraph);
+		for (int i = 0; i < srcData.length; i++) {
+			if(srcData[i].length == 4){
+				AdjKeyVertex<String, String, String, String> fromVertex = pg.getVertex(srcData[i][0]);
+				AdjKeyVertex<String, String, String, String> toVertex = pg.getVertex(srcData[i][1]);
+				AdjKeyEdge<String, String, String, String> edge = new AdjKeyEdge<>(toVertex, srcData[i][2], srcData[i][3]);
+				fromVertex.tryAddEdgeLast(edge);
+			}
+		}
 	}
 }

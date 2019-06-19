@@ -49,7 +49,7 @@ public class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Comparable<E
 	/** 'vertices' contains all vertices of the graph. This vector
 	 * is automatically resized when all entries are occupied.
 	 */
-	protected Map<VK, AdjKeyVertex<VK, VV, EK, EV>> vertices = null;
+	protected Map<VK, AdjKeyVertex<VK, VV, EK, EV>> vertices = new HashMap<>();
 
 	/** Contains the list of all entry points in the graph.
 	 *  When a new node is created, it is by default inserted into the set.
@@ -58,12 +58,7 @@ public class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Comparable<E
 
 	/** basic ctor, no default value
 	 */
-	public AdjKeyGraph(Map<VK, AdjKeyVertex<VK, VV, EK, EV>> prototype) throws GraphCorruptedException {
-		if (!prototype.isEmpty()) {
-			throw new GraphCorruptedException("The map must be empty");
-		}
-		vertices = prototype;
-	}
+	public AdjKeyGraph(){}
 
 	/** Will duplicate the content of the vertex and insert it into this graph.
 	 * Method is used to copy vertices from graph to graph
@@ -238,7 +233,7 @@ public class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Comparable<E
 		return list;
 	}
 
-	AdjKeyVertex<VK, VV, EK, EV> getVertex (VK key) {
+	public AdjKeyVertex<VK, VV, EK, EV> getVertex (VK key) {
 		return this.vertices.get(key);
 	}
 	

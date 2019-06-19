@@ -1,6 +1,7 @@
    
 package net.sf.yogl.std;
 
+import net.sf.yogl.Edge;
 import net.sf.yogl.exceptions.StdExecutionException;
 
 /** The interface can be implemented by links in the State Transition diagram.
@@ -8,8 +9,18 @@ import net.sf.yogl.exceptions.StdExecutionException;
  *  Before the link can be traversed, the 'testAction' can be triggered.
  *  In a STD, a node that does not implements this interface is a 'nil' node.
  */
-public abstract class Transition {
+public abstract class Transition<TK extends Comparable<TK>, SK extends Comparable<SK>> extends Edge<State<SK, TK>>{
 
+	private TK key;
+	
+	public Transition(TK key) {
+		this.key = key;
+	}
+	
+	public TK getKey() {
+		return this.key;
+	}
+	
 	/** The method will be called when the link is crossed. Before this
 	 *  method is called by the STD engine, the 'testAction' method has also
 	 *  be called.
@@ -25,11 +36,7 @@ public abstract class Transition {
 	 *         is 'false', there will be no backtrack operation on the from
 	 *         state.
 	 */
-	public boolean doAction(
-		Object thisTransitionKey,
-		State from,
-		Object parameter,
-		State to)
+	public <SP> boolean doTransition(State<SK, TK> from, SP parameter, State<SK, TK> to)
 		throws StdExecutionException {
 		return true;
 	}
@@ -45,12 +52,7 @@ public abstract class Transition {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean actionAfterBacktrack(
-		Object thisTransitionKey,
-		State from,
-		Object parameter,
-		State to,
-		Exception e)
+	public <SP> boolean actionAfterBacktrack(State<SK, TK> from, SP parameter, State<SK, TK> to, Exception e)
 		throws StdExecutionException {
 		return true;
 	}
@@ -67,11 +69,7 @@ public abstract class Transition {
 	 *          will not be performed.
 	 *  @exception Exception 
 	 */
-	public boolean testAction(
-		Object thisTransitionKey,
-		State from,
-		Object parameter,
-		State to)
+	public <SP> boolean testAction(State<SK, TK> from, SP parameter, State<SK, TK> to)
 		throws StdExecutionException {
 		return true;
 	}

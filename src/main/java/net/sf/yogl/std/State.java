@@ -1,15 +1,29 @@
    
 package net.sf.yogl.std;
 
+import java.util.Collection;
+
+import net.sf.yogl.Vertex;
 import net.sf.yogl.exceptions.StdExecutionException;
 
 /** The purpose of this class is to be extended to give each State its
  *  expected behaviour. It defines a set of methods which are called on 
  *  pre-defined events on the STD. All the states are 'contained' in the
  *  STD, and the STD points at any time to one 'current State'.
+ *  <SP> stands for 'State Parameter'
  */
-public abstract class State {
+public abstract class State<SK extends Comparable<SK>, TK extends Comparable<TK>> extends Vertex<Transition<TK, SK>>{
 
+	private SK key;
+	
+	public State(SK key) {
+		this.key = key;
+	}
+	
+	public SK getKey() {
+		return this.key;
+	}
+	
 	/** The method is called when testing the transition arriving to this
 	 *  state. This method is called by:
 	 *  StateTransitionDiagram.doActiveTransition
@@ -33,12 +47,8 @@ public abstract class State {
 	 *         given parameter values.
 	 * @throws Exception
 	 */
-	public boolean checkBeforeEntry(
-		Object thisStateKey,
-		State from,
-		Transition using,
-		Object parameter)
-		throws StdExecutionException {
+	public <SP> boolean checkBeforeEntry(State<SK, TK> comingFrom, Transition<TK, SK> using, SP parameter)
+			throws StdExecutionException {
 		return true;
 	}
 
@@ -68,7 +78,7 @@ public abstract class State {
 	 * @throws Exception if thrown, the STD automaticall backtracks to the
 	 *         previous node.
 	 */
-	public boolean onEntry(Object thisStateKey, State from, Transition using, Object parameter)
+	public <SP> boolean onEntry(State<SK, TK> comingFrom, Transition<TK, SK> using, SP parameter)
 		throws StdExecutionException {
 		return true;
 	}
@@ -77,7 +87,7 @@ public abstract class State {
 	 *  'this' will become the new 'currentState'.
 	 *  If an error occurs during a normal transition move (doTransition, ..),
 	 *  this method is also called on the starting state. This automatic
-	 *  backatrack is triggered by an exception raised or a 'false' return
+	 *  backtrack is triggered by an exception raised or a 'false' return
 	 *  code during the processing of the following methods:
 	 *  Transition.doAction
 	 *  State.onExit 
@@ -91,16 +101,12 @@ public abstract class State {
 	 *        has been traversed in 'reverse'.
 	 * @param parameter is the user defined value used during the call that caused
 	 *        the backtrack.
+	 * @param e is the exception that provoqued the backtrack
 	 * @return true or false. This does not affect the processing. 
 	 * @throws Exception even if an exception is raised, this state is the 
 	 *         'current state'.
 	 */
-	public boolean entryAfterBacktrack(
-		Object thisStateKey,
-		State from,
-		Transition using,
-		Object parameter,
-		Exception e)
+	public <SP> boolean reEntryAfterBacktrack(State<SK, TK> from, Transition<TK, SK> using, SP parameter, Exception e)
 		throws StdExecutionException {
 		return true;
 	}
@@ -122,11 +128,7 @@ public abstract class State {
 	 *         according to the values in the context.
 	 * @throws Exception
 	 */
-	public boolean checkBeforeExit(
-		Object thisStateKey,
-		State to,
-		Transition using,
-		Object parameter)
+	public <SP> boolean checkBeforeExit(State<SK, TK> navigatingTo, Transition<TK, SK> using, SP parameter)
 		throws StdExecutionException {
 		return true;
 	}
@@ -148,7 +150,7 @@ public abstract class State {
 	 *         on any other states or transitions. The STD ermains in its
 	 *         current state.
 	 */
-	public boolean onExit(Object thisStateKey, State to, Transition using, Object parameter)
+	public <SP> boolean onExit(State<SK, TK> navigatingTo, Transition<TK, SK> using, SP parameter)
 		throws StdExecutionException {
 		return true;
 	}
@@ -163,12 +165,28 @@ public abstract class State {
 	 * @return if the state can be left using this method
 	 * @throws Exception
 	 */
-	public boolean exitAfterBacktrack(
-		Object thisStateKey,
-		State to,
-		Transition using,
-		Object parameter)
+	public <SP> boolean exitAfterBacktrack(State<SK, TK> navigatingTo, Transition<TK, SK> using, SP parameter)
 		throws StdExecutionException {
 		return true;
+	}
+
+	public abstract Transition<TK, SK> getOutgoingEdge(TK nextTransitionKey);
+	
+	@Override
+	public Collection<Transition<TK, SK>> getOutgoingEdges() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void tryAddEdgeFirst(Transition<TK, SK> edge) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void tryAddEdgeLast(Transition<TK, SK> edge) {
+		// TODO Auto-generated method stub
+		
 	}
 }

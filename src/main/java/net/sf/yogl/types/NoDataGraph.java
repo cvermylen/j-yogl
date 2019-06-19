@@ -1,12 +1,9 @@
    
 package net.sf.yogl.types;
 
-import java.util.HashMap;
-
 import net.sf.yogl.adjacent.keyMap.AdjKeyEdge;
 import net.sf.yogl.adjacent.keyMap.AdjKeyGraph;
 import net.sf.yogl.adjacent.keyMap.AdjKeyVertex;
-import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 
 /** Simple graph which does not contains any data. Nodes and links
@@ -15,9 +12,8 @@ import net.sf.yogl.exceptions.GraphException;
  */
 public final class NoDataGraph extends AdjKeyGraph<String, Object, String, Object> {
 
-	public NoDataGraph()
-			throws GraphCorruptedException {
-		super(new HashMap<String, AdjKeyVertex<String, Object, String, Object>>());
+	public NoDataGraph(){
+		super();
 	}
 
 	public void tryAddNode(String nodeKey, boolean isRoot) throws GraphException{
@@ -26,6 +22,6 @@ public final class NoDataGraph extends AdjKeyGraph<String, Object, String, Objec
 	
 	public void tryAddLinkFirst(String fromVertexKey, String toVertexKey, String edgeKey) {
 		AdjKeyVertex<String, Object, String, Object> fromVertex = super.vertices.get(fromVertexKey);
-		fromVertex.tryAddEdgeFirst(new AdjKeyEdge<String, Object, String, Object>(null, edgeKey, toVertexKey, null));
+		fromVertex.tryAddEdgeFirst(new AdjKeyEdge<String, Object, String, Object>(toVertexKey, edgeKey, null));
 	}
 }

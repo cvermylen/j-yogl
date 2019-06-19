@@ -73,7 +73,7 @@ public class Std {
 			{"3", "2", "key32"},
 			{"2", "4", "key24"}
 		};
-		AdjKeyGraph<String, MyState, String, MyState> ga = new AdjKeyGraph<String, MyState, String, MyState>(new HashMap<String, AdjKeyVertex<String, MyState, String, MyState>>());
+		AdjKeyGraph<String, MyState, String, MyState> ga = new AdjKeyGraph<String, MyState, String, MyState>();
 		Std std = new Std();
 		for(int i=0; i < stdDes.length; i++){
 			if(stdDes[i].length == 2){

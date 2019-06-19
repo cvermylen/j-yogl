@@ -1,7 +1,7 @@
    
 package net.sf.yogl.samples;
 
-import net.sf.yogl.extras.GraphUtil;
+import net.sf.yogl.adjacent.keyMap.GraphUtil;
 import net.sf.yogl.types.NoDataGraph;
 
 

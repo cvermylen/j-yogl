@@ -40,7 +40,7 @@ public class AdjKeyEdge <VK extends Comparable<VK>, VV, EK extends Comparable<EK
 	 * @param rValue refers to an object that is of the type used
 	 * to define all edges in the graph.
 	 */
-	public AdjKeyEdge(AdjKeyGraph graph, EK edgeKey, VK nextVertexKey, EV userValue) {
+	public AdjKeyEdge(VK nextVertexKey, EK edgeKey, EV userValue) {
 		this.edgeKey = edgeKey;
 		this.nextVertexKey = nextVertexKey;
 		this.userValue = userValue;
@@ -50,7 +50,7 @@ public class AdjKeyEdge <VK extends Comparable<VK>, VV, EK extends Comparable<EK
 	 * @return a copy of this Edge
 	 */
 	public AdjKeyEdge<VK, VV, EK, EV> clone() {
-		AdjKeyEdge<VK, VV, EK, EV> dup = new AdjKeyEdge<VK, VV, EK, EV>(this.graph, this.edgeKey, this.nextVertexKey, this.userValue);
+		AdjKeyEdge<VK, VV, EK, EV> dup = new AdjKeyEdge<VK, VV, EK, EV>(this.nextVertexKey, this.edgeKey, this.userValue);
 		return dup;
 	}
 

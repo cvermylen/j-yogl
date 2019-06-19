@@ -140,7 +140,7 @@ public final class GraphUtil {
 			V predKey = path.get(path.size() -1);
 			V v = vertexCtor.apply(refKey);
 			destination.tryAddVertex(v, source.isStartVertex(refKey));
-			destination.tryAddLinkLast(predKey, edgeCtor.apply(v, null));
+			predKey.tryAddEdgeLast(edgeCtor.apply(v, null));
 		}
 	}
 
@@ -245,9 +245,10 @@ public final class GraphUtil {
 				"parameter graph should " + "contain 1 and only 1 'end' node");
 		}
 		V endNodeKey = endList.parallelStream().findFirst().get();
-		
-		dest.tryAddVertex(vertexCtor.apply(startNodeKey), subgraph.isStartVertex(startNodeKey));
-		dest.tryAddVertex(vertexCtor.apply(endNodeKey), subgraph.isStartVertex(endNodeKey));
+		V fromVertex = vertexCtor.apply(startNodeKey);
+		dest.tryAddVertex(fromVertex, subgraph.isStartVertex(startNodeKey));
+		V toVertex = vertexCtor.apply(endNodeKey);
+		dest.tryAddVertex(toVertex, subgraph.isStartVertex(endNodeKey));
 
 		//Insert all links from subgraph into dest graph
 		LinksIterator<V, E> allLinks = subgraph.edgesIterator();

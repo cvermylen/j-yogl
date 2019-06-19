@@ -2,22 +2,20 @@
 package net.sf.yogl.std;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
+import net.sf.yogl.Graph;
 import net.sf.yogl.adjacent.list.AdjListEdge;
 import net.sf.yogl.adjacent.list.AdjListVertex;
-import net.sf.yogl.adjacent.keyMap.GraphAdapter;
-import net.sf.yogl.adjacent.list.AdjListDepthFirstIterator;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.LinkNotFoundException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.exceptions.StdDefinitionException;
 import net.sf.yogl.exceptions.StdExecutionException;
-import net.sf.yogl.impl.ImplementationGraph;
 
 /** The STD implementation is based on a directed graph with the following
  *  restrictions:
@@ -33,89 +31,36 @@ import net.sf.yogl.impl.ImplementationGraph;
  *  error in the Std (Std damaged, not usable anymore). 
  */
 
-public final class StateTransitionDiagram {
+public final class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Comparable<TK>> {
 	/** current graph the iterator is pointing to
 	 */
-	private ImplementationGraph graph = null;
+	private Graph<State<SK, TK>, Transition<TK, SK>> graph = null;
 
 	/** Contains the path followed by the iterator from
 	 *  the initialisation to the current node.
 	 *  The top value (peek) contains the 'current' value.
 	 *  The vector element 0 refers to the initial value.
 	 */
-	private Stack vertexKeysPath = new Stack();
-	private Stack transitionPath = new Stack();
+	private Stack<State<SK, TK>> vertexKeysPath = new Stack<>();
+	private Stack<Transition<TK, SK>> transitionPath = new Stack<>();
 
 	/** Builds up the state transition diagram with the given graph.
 	 *  Checks that each node is a State and each link is a Transition.
 	 *  The graph must have a unique entry point. This state must not
 	 *  have an incoming transition.
 	 */
-	public StateTransitionDiagram(GraphAdapter graph)
+	public StateTransitionDiagram(Graph<State<SK, TK>, Transition<TK, SK>> graph)
 		throws StdDefinitionException {
 
 		if (graph == null) {
 			throw new NullPointerException("parameter graph is null");
 		}
-
-		Iterator nodesIter = graph.nodesValues().iterator();
-		while (nodesIter.hasNext()) {
-			Object node = nodesIter.next();
-			if ((node == null) || (!(node instanceof State)))
-				throw new StdDefinitionException("Each node value must be a State");
-		}
-
-		Iterator linksIter = graph.linksValues().iterator();
-		while (linksIter.hasNext()) {
-			Object link = linksIter.next();
-			if ((link == null) || (!(link instanceof Transition)))
-				throw new StdDefinitionException("Each link value must be a Transition");
-		}
-		this.graph = graph.getImplementation();
-		Collection startNodeKeys = graph.getAllStartNodeKeys();
-		if (startNodeKeys.isEmpty()) {
+		this.graph = graph;
+		Collection<State<SK, TK>> startNodeKeys = graph.getRoots();
+		if (startNodeKeys.size() != 1) {
 			throw new StdDefinitionException("graph must have 1 unique entry");
 		}
-		vertexKeysPath.push(startNodeKeys);
-	}
-
-	/** The init method is used to initialize the Std.
-	 *  post-condition: the current vertex is reset to the entry
-	 *  point of the STD.
-	 * @param value is passed to the std entry node.onEntry method.
-	 */
-	public void init(Object parameter) throws Exception {
-		Object lastVisitedKey = vertexKeysPath.elementAt(0);
-		vertexKeysPath.clear();
-		vertexKeysPath.push(lastVisitedKey);
-		State state = findStateByVertexKey(vertexKeysPath.peek());
-		state.onEntry(lastVisitedKey, null, null, parameter);
-	}
-
-	/** Force the current node to the node specified.
-	 *  @param node the new node to become the 'currentNode'
-	 *  @return true if the change could occur
-	 */
-	public boolean set(Object nodeKey) {
-
-		boolean result = false;
-		try {
-			AdjListDepthFirstIterator df = graph.depthFirstIterator(null, 1);
-			while (df.hasNext()) {
-				Object o = df.next();
-				if (nodeKey.equals(o)) {
-					result = true;
-					vertexKeysPath = new Stack();
-					vertexKeysPath.addAll(Arrays.asList(df.nodePath()));
-					vertexKeysPath.push(nodeKey);
-					break;
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			return result;
-		}
+		startNodeKeys.stream().forEach(state -> vertexKeysPath.push(state));
 	}
 
 	/** An 'active transition' will move the internal pointer from
@@ -139,12 +84,12 @@ public final class StateTransitionDiagram {
 	 *  @exception LinkNotFoundException if the transition identified by 'key'
 	 *             is not attached to the current state
 	 */
-	public boolean doActiveTransition(Object transitionKey, Object parameter)
+	public <SP> boolean doActiveTransition(TK transitionKey, SP parameter)
 		throws StdExecutionException, NodeNotFoundException, LinkNotFoundException {
 
-		State currentState = findStateByVertexKey(vertexKeysPath.peek());
-		AdjListEdge edge = findEdgeByKey(vertexKeysPath.peek(), transitionKey);
-		if (edge == null) {
+		State<SK, TK> currentState = vertexKeysPath.peek();
+		Transition<TK, SK> transition = currentState.getOutgoingEdge(transitionKey);
+		if (transition == null) {
 			LinkNotFoundException e =
 				new LinkNotFoundException(
 					"No such transition from current node:" + vertexKeysPath.peek());
@@ -152,41 +97,39 @@ public final class StateTransitionDiagram {
 			e.setLink(transitionKey);
 			throw e;
 		}
-		Transition t = (Transition) edge.getUserValue();
-		Object k = edge.getNextVertexKey();
-		State nextState = findStateByVertexKey(k);
+		State<SK, TK> nextState = transition.getToVertex();
 		//check the path
-		if ((currentState.checkBeforeExit(vertexKeysPath.peek(), nextState, t, parameter))
-			&& (t.testAction(transitionKey, currentState, parameter, nextState))
-			&& (nextState.checkBeforeEntry(k, currentState, t, parameter)) == false)
+		if ((currentState.checkBeforeExit(nextState, transition, parameter))
+			&& (transition.testAction(currentState, parameter, nextState))
+			&& (nextState.checkBeforeEntry(currentState, transition, parameter)) == false)
 			return false;
 		//Exit the current state
-		if (!currentState.onExit(vertexKeysPath.peek(), nextState, t, parameter))
+		if (!currentState.onExit(nextState, transition, parameter))
 			return false;
 		//walk through the transition
 		try {
-			if (!t.doAction(transitionKey, currentState, parameter, nextState)) {
-				currentState.entryAfterBacktrack(vertexKeysPath.peek(), null, t, parameter, null);
+			if (!transition.doTransition(currentState, parameter, nextState)) {
+				currentState.reEntryAfterBacktrack(null, transition, parameter, null);
 				return false;
 			}
 		} catch (StdExecutionException e) {
-			currentState.entryAfterBacktrack(vertexKeysPath.peek(), null, t, parameter, e);
+			currentState.reEntryAfterBacktrack(null, transition, parameter, e);
 			throw e;
 		}
 		//Enter the new current state
 		try {
-			if (nextState.onEntry(k, currentState, t, parameter)) {
-				vertexKeysPath.push(edge.getNextVertexKey());
-				transitionPath.push(t);
-				edge.incVisitCounts();
+			if (nextState.onEntry(currentState, transition, parameter)) {
+				vertexKeysPath.push(transition.getToVertex());
+				transitionPath.push(transition);
+				transition.incVisitCounts();
 			} else {
-				t.actionAfterBacktrack(transitionKey, null, parameter, currentState, null);
-				currentState.entryAfterBacktrack(vertexKeysPath.peek(), null, t, parameter, null);
+				transition.actionAfterBacktrack(null, parameter, currentState, null);
+				currentState.reEntryAfterBacktrack(null, transition, parameter, null);
 				return false;
 			}
 		} catch (StdExecutionException e) {
-			t.actionAfterBacktrack(transitionKey, null, parameter, currentState, e);
-			currentState.entryAfterBacktrack(vertexKeysPath.peek(), null, t, parameter, e);
+			transition.actionAfterBacktrack(null, parameter, currentState, e);
+			currentState.reEntryAfterBacktrack(null, transition, parameter, e);
 			throw e;
 		}
 		return true;
@@ -201,10 +144,10 @@ public final class StateTransitionDiagram {
 	 *  @exception LinkNotFoundException if the transition identified by 'key'
 	 *             is not attached to the current state
 	 */
-	public boolean doTransition(Object key)
+	public <SP> boolean doTransition(TK useThisTransition)
 		throws StdExecutionException, NodeNotFoundException, LinkNotFoundException {
 
-		return doActiveTransition(key, null);
+		return doActiveTransition(useThisTransition, null);
 	}
 
 	/** The method just gives a list of the outgoing transitions, whithout
@@ -215,65 +158,43 @@ public final class StateTransitionDiagram {
 	 *         identification of the current node does not match any valid
 	 *         state in the graph).
 	 */
-	public Transition[] getTransitions() throws NodeNotFoundException {
-
+	public Collection<Transition<TK, SK>> getTransitions() throws NodeNotFoundException {
+		Collection<Transition<TK, SK>> list = new ArrayList<>();
 		if (vertexKeysPath.size() > 0) {
-			ArrayList list = new ArrayList();
-			AdjListVertex peek = graph.findVertexByKey((Comparable)vertexKeysPath.peek());
-			AdjListEdge[] eList = peek.getNeighbors();
-			for (int i = 0; i < eList.length; i++) {
-				list.add(eList[i].getUserValue());
-			}
-			return (Transition[]) list.toArray(new Transition[list.size()]);
-		} else {
-			return null;
+			State<SK, TK> currentState = vertexKeysPath.peek();
+			list = currentState.getOutgoingEdges();
 		}
+		return list;
 	}
 
 	/** Return the Transition object attached to the current node and
 	 *  identified by the given key.
 	 */
-	public Transition getTransition(Object transitionKey) throws NodeNotFoundException {
-		AdjListEdge edge = findEdgeByKey(vertexKeysPath.peek(), transitionKey);
-		if (edge == null)
-			return null;
-		return (Transition) edge.getUserValue();
+	public Transition<TK, SK> getTransition(TK transitionKey) throws NodeNotFoundException {
+		return vertexKeysPath.peek().getOutgoingEdge(transitionKey);
 	}
 
 	/** Checks if the given transition exists.
 	 * @return true if the given key identify a transition from the current state
 	 * @throws GraphCorruptedException
 	 */
-	public boolean isTransition(Object transitionKey) throws NodeNotFoundException{
-		AdjListEdge edge = findEdgeByKey(vertexKeysPath.peek(), transitionKey);
-		return (edge != null);
+	public boolean isTransition(TK transitionKey) throws NodeNotFoundException{
+		return vertexKeysPath.peek().getOutgoingEdge(transitionKey) != null;
 	}
 	
 	/** Returns the a list of all transition keys going out from the current node
 	 */
-	public Object[] getTransitionKeys() throws GraphCorruptedException {
-		try {
-			return graph.getSuccessorNodesKeys((Comparable)vertexKeysPath.peek(), 1);
-		} catch (GraphException e) {
-			throw new GraphCorruptedException(e);
-		}
+	public Collection<TK> getTransitionKeys() throws GraphCorruptedException {
+		Collection<Transition<TK, SK>> transitions = vertexKeysPath.peek().getOutgoingEdges();
+		return transitions.stream().map(transition -> {return transition.getKey();})
+				.collect(Collectors.toList());
 	}
 
 	/** Returns the value of all states that are accessible from the current
 	 *  state, or <null> if the if the current state is an end state. 
 	 */
-	public State[] getNextStates() throws GraphCorruptedException {
-		try {
-			Object[] keys =
-				graph.getSuccessorNodesKeys((Comparable)vertexKeysPath.peek(), 1);
-			State[] result = new State[keys.length];
-			for (int i = 0; i < result.length; i++) {
-				result[i] = (State) graph.getNodeValue((Comparable)keys[i]);
-			}
-			return result;
-		} catch (GraphException e) {
-			throw new GraphCorruptedException(e);
-		}
+	public Collection<State<SK, TK>> getNextStates() throws GraphCorruptedException {
+		return vertexKeysPath.peek().getOutgoingEdges().stream().map(transition ->transition.getToVertex()).collect(Collectors.toList());
 	}
 
 	/** 
@@ -282,16 +203,16 @@ public final class StateTransitionDiagram {
 	 *         identification of the current node does not match any valid
 	 *         state in the graph).
 	 */
-	public State getCurrentState() throws NodeNotFoundException {
+	public State<SK, TK> getCurrentState() {
 
-		return findStateByVertexKey(vertexKeysPath.peek());
+		return vertexKeysPath.peek();
 	}
 
 	/**
 	 * @return the value of the currentState key value. This key is unique in
 	 *  the STD.
 	 */
-	public Object getCurrentStateKey(){
+	public State<SK, TK> getCurrentStateKey(){
 		return vertexKeysPath.peek();
 	}
 	
@@ -318,22 +239,19 @@ public final class StateTransitionDiagram {
 	 * 	@return false if there is no 'back' value possible, 'true'
 	 *          otherwise.
 	 */
-	public boolean backtrack(Object parameter)
+	public <SP> boolean backtrack(SP parameter)
 		throws NodeNotFoundException, StdExecutionException {
 
 		if (vertexKeysPath.size() < 1)
 			return false;
 
-		Object key = vertexKeysPath.pop();
-		State currentState = this.findStateByVertexKey(key);
-		Transition t = (Transition) transitionPath.peek();
-		Object previousKey = vertexKeysPath.peek();
-		vertexKeysPath.push(key);
-		State previousState = this.findStateByVertexKey(previousKey);
-		if (!currentState.exitAfterBacktrack(key, previousState, t, parameter))
+		State<SK, TK> currentState = vertexKeysPath.pop();
+		Transition<TK, SK> t = transitionPath.peek();
+		State<SK, TK> previousState = vertexKeysPath.peek();
+		vertexKeysPath.push(currentState);
+		if (!currentState.exitAfterBacktrack(previousState, t, parameter))
 			return false;
-		if (!previousState
-			.entryAfterBacktrack(previousKey, currentState, t, parameter, null))
+		if (!previousState.reEntryAfterBacktrack(currentState, t, parameter, null))
 			return false;
 		vertexKeysPath.pop();
 		transitionPath.pop();
