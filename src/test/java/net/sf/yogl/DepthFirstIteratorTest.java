@@ -34,7 +34,7 @@ public class DepthFirstIteratorTest {
 		String value;
 		
 		@Override
-		public V getOutgoingVertex() {
+		public V getToVertex() {
 			return v;
 		}
 	}

@@ -140,10 +140,4 @@ public class AdjKeyEdge <VK extends Comparable<VK>, VV, EK extends Comparable<EK
 		return edgeKey;
 	}
 
-	@Override
-	public AdjKeyVertex<VK, VV, EK, EV> getOutgoingVertex() {
-		// TODO Auto-generated method stub
-		return graph.getVertex (nextVertexKey);
-	}
-
 }

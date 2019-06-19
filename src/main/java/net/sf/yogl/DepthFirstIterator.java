@@ -111,12 +111,12 @@ public class DepthFirstIterator<V extends Vertex<E>, E extends Edge<V>> {
     	}
     	traversedEdge = getNextEdge();
     	while(vertexHasOutgoingEdges(getNextEdge()) && vertexCanBeVisited(getNextEdge())){
-    		pushVertex(getNextEdge().getOutgoingVertex());
+    		pushVertex(getNextEdge().getToVertex());
     		traversedEdge = getNextEdge();
     	}
 //    	currentVertex = vStack.getLast().getVertex();
     	
-    	currentVertex = (traversedEdge == null)?(vStack.getLast().getVertex()):(traversedEdge.getOutgoingVertex());
+    	currentVertex = (traversedEdge == null)?(vStack.getLast().getVertex()):(traversedEdge.getToVertex());
     	currentVertex.incVisitCounts();
     	
     }
@@ -127,11 +127,11 @@ public class DepthFirstIterator<V extends Vertex<E>, E extends Edge<V>> {
     }
     
     private boolean vertexHasOutgoingEdges(E e) {
-    	return e != null && e.getOutgoingVertex() != null && e.getOutgoingVertex().getOutgoingEdges().size() > 0;
+    	return e != null && e.getToVertex() != null && e.getToVertex().getOutgoingEdges().size() > 0;
     }
     
     private boolean vertexCanBeVisited(E e){
-    	return e != null && e.getOutgoingVertex() != null && e.getOutgoingVertex().getVisitsCount() >= maxCycling;
+    	return e != null && e.getToVertex() != null && e.getToVertex().getVisitsCount() >= maxCycling;
     }
     
     private boolean hasMoreNodesToVisit() {

@@ -72,14 +72,14 @@ public class AdjListEdge <VV, EV> extends Edge<AdjListVertex<VV, EV>>{
 	/** setter method
 	 * @param vertex is the new Vertex this edge points to
 	 */
-	public void setOutgoingVertex(AdjListVertex<VV, EV> nextVertex) {
+	public void setToVertex(AdjListVertex<VV, EV> nextVertex) {
 		this.nextVertex = nextVertex;
 	}
 
 	/** getter method
 	 * @ return the vertex this edge points to
 	 */
-	public AdjListVertex<VV, EV> getOutgoingVertex() {
+	public AdjListVertex<VV, EV> getToVertex() {
 		return nextVertex;
 	}
 

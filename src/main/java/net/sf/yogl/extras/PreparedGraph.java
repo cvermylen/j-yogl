@@ -6,16 +6,13 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import net.sf.yogl.Edge;
 import net.sf.yogl.Graph;
 import net.sf.yogl.Vertex;
-import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.GraphException;
-import net.sf.yogl.impl.DuplicateVertexException;
+import net.sf.yogl.exceptions.NodeNotFoundException;
 
 /** Utility class that help to create a new graph. Inserting nodes in a graph
  *  requires to known for each node if it has predecessors or successors or
@@ -24,120 +21,56 @@ import net.sf.yogl.impl.DuplicateVertexException;
  *  the graph is populated. Local structures are used to determine the position
  *  of each node in the graph.
  */
-public class PreparedGraph<V extends Vertex<E>, E extends Edge<V>> {
+public class PreparedGraph<V extends Vertex<E>, E extends Edge<V>, VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> {
     
-    private HashSet heads = new HashSet();
+    private BiFunction<VK, VV, V> vertexCtor;
     
-    private HashSet tails = new HashSet();
+    private BiFunction<EK, EV, E> edgeCtor;
+
+	private HashSet<V> heads = new HashSet<>();
     
-    private LinkedList links = new LinkedList();
+    private List<E> links = new LinkedList<>();
     
-    private LinkedHashMap nodes = new LinkedHashMap();
+    private LinkedHashMap<VK, V> nodes = new LinkedHashMap<>();
     
-    /** Structure to store relations
-     */
-    private class Rel{
-        Object from;
-        Object to;
-        Object link;
-        Rel(Object from, Object to, Object link){
-            this.from = from;
-            this.to = to;
-            this.link = link;
-        }
-        
-        public boolean equals(Object o){
-            boolean result = false;
-            if(o instanceof Rel){
-                Rel rel = (Rel)o;
-                result = this.from.equals(rel.from) && this.to.equals(rel.to);
-            }
-            return result;
-        }
-    }
+    private Graph<V, E> destGraph;
     
     /** Creates new PrepareInsert */
-    public PreparedGraph(Graph<V, E> destGraph, Function<V, V> vertexCtor, BiFunction<V, V, E> edgeCtor) {
-    }
-    
-    public Map getNodes(){
-        return this.nodes;
-    }
-    
-    public List getLinks(){
-        return this.links;
+    public PreparedGraph(Graph<V, E> destGraph, BiFunction<VK, VV, V> vertexCtor, BiFunction<EK, EV, E> edgeCtor) {
+    	this.destGraph = destGraph;
+    	this.vertexCtor = vertexCtor;
+    	this.edgeCtor = edgeCtor;
     }
     
     /** CReates a new node if it does not already exists. The duplicate
      *  existence is detected by the 'equals' method.
      *  @param node is the new node to be inserted in the graph
-     *  @exception DuplicateVertexException if the node is already present
      */
-    public void tryAddNode(java.lang.Object nodeKey, Object nodeValue)
-    throws DuplicateVertexException {
+    public void tryAddNode(VK nodeKey, VV nodeValue) {
         if(!nodes.containsKey(nodeKey)){
-            nodes.put(nodeKey, nodeValue);
+        	V vertex = vertexCtor.apply(nodeKey, nodeValue);
+            nodes.put(nodeKey, vertex);
+            heads.add(vertex);
         }
     }
     
-    public void addLink(java.lang.Object nodeKeyFrom,java.lang.Object nodeKeyTo, Object link) {
-        links.add(new Rel(nodeKeyFrom, nodeKeyTo, link));
-        heads.add(nodeKeyFrom);
-        tails.add(nodeKeyTo);
+    public void tryAddLink(VK nodeKeyFrom, VK nodeKeyTo, EK edgeKey, EV edgeValue) throws NodeNotFoundException{
+    	V fromVertex = nodes.get(nodeKeyFrom);
+    	V toVertex = nodes.get(nodeKeyTo);
+    	if (fromVertex == null || toVertex == null) throw new NodeNotFoundException((fromVertex == null)?(nodeKeyFrom.toString()):(nodeKeyTo.toString()));
+    	E edge = edgeCtor.apply(edgeKey, edgeValue);
+    	fromVertex.tryAddEdgeLast(edge);
+    	edge.setToVertex(toVertex);
+    	links.add(edge);
     }
     
-    public void tryAddLink(java.lang.Object nodeKeyFrom,java.lang.Object nodeKeyTo, Object link)
-    throws DuplicateLinkException {
-        Rel rel = new Rel(nodeKeyFrom, nodeKeyTo, link);
-        if(links.contains(rel)){
-        	DuplicateLinkException e = new DuplicateLinkException();
-        	e.setNodeKeyFrom(nodeKeyFrom);
-        	e.setNodeKeyTo(nodeKeyTo);
-        	e.setLink(link);
-            throw new DuplicateLinkException();
-        }
-        links.add(rel);
-        heads.add(nodeKeyFrom);
-        tails.add(nodeKeyTo);
-    }
-    
-    public void populateGraph(Graph graph) throws GraphException {
-        cleanUpHeadsAndTails();
-        Iterator nodesIter = nodes.entrySet().iterator();
-        while(nodesIter.hasNext()){
-            Map.Entry node = (Map.Entry)nodesIter.next();
-            graph.tryAddNode((Comparable)node.getKey(), node.getValue());
-        }
-        
-        Iterator linksIter = links.iterator();
-        while(linksIter.hasNext()){
-            Rel rel = (Rel)linksIter.next();
-            graph.addLinkLast((Comparable)rel.from, (Comparable)rel.to, (Comparable)rel.link, null);
-        }
-    }
-    
-    private void cleanUpHeadsAndTails(){
-        Iterator toIter = tails.iterator();
-        while(toIter.hasNext()){
-            heads.remove(toIter.next());
-        }
-        Iterator fromIter = heads.iterator();
-        while(fromIter.hasNext()){
-            tails.remove(fromIter.next());
-        }
-        //Nodes without relations are standalone
-        LinkedHashMap nodesClone = (LinkedHashMap)nodes.clone();
-        Iterator linksIter = links.iterator();
-        while(linksIter.hasNext()){
-            Rel rel = (Rel)linksIter.next();
-            nodesClone.remove(rel.from);
-            nodesClone.remove(rel.to);
-        }
-        Iterator remainder = nodesClone.keySet().iterator();
-        while(remainder.hasNext()){
-            Object nodeKey = remainder.next();
-            heads.add(nodeKey);
-            tails.add(nodeKey);
-        }
+    public void populateGraph() throws GraphException {
+    	links.stream().forEach(edge -> heads.remove(edge.getToVertex()));
+    	
+    	Iterator<V> allVertexIter = nodes.values().iterator();
+    	while (allVertexIter.hasNext()) {
+    		V vertex = allVertexIter.next();
+    		destGraph.tryAddVertex(vertex, heads.contains(vertex));
+    	}
     }
 }

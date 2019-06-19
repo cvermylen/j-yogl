@@ -118,7 +118,7 @@ public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>, Ad
 		for(AdjListEdge<V, E> edge: node.getOutgoingEdges()){
 			if(edge.getVisitsCount() == 0) {
 				linkConsumer.accept(edge.getUserValue());
-				AdjListVertex<V, E> target = edge.getOutgoingVertex();
+				AdjListVertex<V, E> target = edge.getToVertex();
 				consumeNode(nodeConsumer, linkConsumer, target);
 				edge.incVisitCounts();
 			}
@@ -156,7 +156,7 @@ public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>, Ad
 		
 		edge.setVisitsCount(Integer.MAX_VALUE);
 		allEdges.add(edge);
-		AdjListVertex<V, E> target = edge.getOutgoingVertex();
+		AdjListVertex<V, E> target = edge.getToVertex();
 		clearVertexAndSubgraph(allNodes, allEdges, target);
 	}
 
@@ -183,7 +183,7 @@ public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>, Ad
 		for(AdjListEdge<V, E> edge: node.getOutgoingEdges()){
 			if(edge.getVisitsCount() == 0) {
 				edgeConsumer.accept(edge);
-				AdjListVertex<V, E> target = edge.getOutgoingVertex();
+				AdjListVertex<V, E> target = edge.getToVertex();
 				consumeVertex(target, vertexConsumer, edgeConsumer);
 				edge.incVisitCounts();
 			}

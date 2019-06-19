@@ -2,9 +2,17 @@ package net.sf.yogl;
 
 public abstract class Edge<V extends Vertex<?>> {
 
+	private V toVertex;
+	
 	private int visitCounts = 0;
 	
-	public abstract V getOutgoingVertex();
+	public V getToVertex() {
+		return toVertex;
+	}
+	
+	public void setToVertex(V vertex) {
+		this.toVertex = vertex;
+	}
 	
 	public void incVisitCounts() {
 		visitCounts++;

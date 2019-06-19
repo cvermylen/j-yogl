@@ -41,7 +41,7 @@ public class LinksIterator<V extends Vertex<E>, E extends Edge<V>> implements It
 				E edge = edgesIter.next();
 				predNodes.add(index, vertex);
 				links.add(index, edge);
-				V destKey = edge.getOutgoingVertex();
+				V destKey = edge.getToVertex();
 				succNodes.add(index++, destKey);
 			}
 		}

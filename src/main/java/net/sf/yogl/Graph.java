@@ -3,6 +3,7 @@ package net.sf.yogl;
 import java.util.Collection;
 
 import net.sf.yogl.exceptions.GraphException;
+import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.types.VertexType;
 
 public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
@@ -39,7 +40,7 @@ public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
 	/** Return the list of nodes of a particular type
 	 *  @param nodeType has a value described in VertexType
 	 */
-	public Collection<V> getVertices (VertexType type);
+	public Collection<V> getVertices (VertexType type) throws GraphException;
 	
 	public void clearAllVisitCounts();
 	
@@ -71,7 +72,7 @@ public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
 	 *         Accepted values are: [1 .. n]. There is no way to express
 	 *         an infinite value.
 	 */
-	public BreadthFirstIterator<V, E> breadthFirstIterator(int maxCycle);
+	public BreadthFirstIterator<V, E> breadthFirstIterator(int maxCycle) throws NodeNotFoundException;
 	
 	/** Return an iterator to browse ALL nodes in the graph that can
 	 *  be accessed from the startingNode. The method 'next()' in the
