@@ -2,9 +2,6 @@ package net.sf.yogl;
 
 import java.util.Collection;
 
-import net.sf.yogl.adjacent.keyMap.AdjKeyEdge;
-import net.sf.yogl.adjacent.keyMap.AdjKeyVertex;
-import net.sf.yogl.adjacent.keyMap.LinksIterator;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.types.VertexType;
 
@@ -62,8 +59,6 @@ public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
 	
 	public Collection<V> getSuccessorVertices(V vertex);
 	
-	public LinksIterator<V, E> edgesIterator();
-	
 	/** Return an iterator to browse ALL nodes in the graph that can
 	 *  be accessed from the startingNode. The method 'next()' in the
 	 *  iterator will return the nodes in the order defined by the 
@@ -95,8 +90,6 @@ public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
 	
 	public V tryAddVertex(V vertex, boolean isRoot);
 	
-	public void tryAddLinkLast (V vertex, E edge);
-	
 	/** Returns the type associated to the node.
 	 *  The type is specified by a value defined in VertexType.
 	 *  @return a value from VertexType
@@ -104,8 +97,4 @@ public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
 	 */
 	public VertexType getVertexType (V vertex);
 	
-	/** Clones the structure of the graph. User values are cloned.
-	 *  Internal variables (traversal) are reset.
-	 */
-	public void deepCopy(Graph<V, E> dest) throws GraphException;
 }

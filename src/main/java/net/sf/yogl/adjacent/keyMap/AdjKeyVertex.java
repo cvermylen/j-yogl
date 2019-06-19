@@ -4,7 +4,6 @@ package net.sf.yogl.adjacent.keyMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.stream.Collectors;
 
 import net.sf.yogl.Vertex;
 import net.sf.yogl.exceptions.GraphCorruptedException;
@@ -84,7 +83,7 @@ public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<
      *  @return an edge or null if both vertex (this & to)
      *          are not connected.
      */
-    public AdjKeyEdge<VK, VV, EK, EV>[]getEdgeTo(VK key){
+    public Collection<AdjKeyEdge<VK, VV, EK, EV>> getEdgeTo(VK key){
         
         ArrayList<AdjKeyEdge<VK, VV, EK, EV>> result = new ArrayList<>();
         Iterator<AdjKeyEdge<VK, VV, EK, EV>> iter = outgoingEdges.values().iterator();
@@ -98,7 +97,7 @@ public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<
         if(result.size() == 0){
         	return null;
         }else{
-        	return (AdjKeyEdge<VK, VV, EK, EV>[])result.toArray(new AdjKeyEdge[result.size()]);
+        	return result;
         }
     }
     

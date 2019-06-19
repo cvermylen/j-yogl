@@ -18,7 +18,7 @@ public final class NoDataGraph extends AdjKeyGraph<String, Object, String, Objec
 		super(new HashMap<String, AdjKeyVertex<String, Object, String, Object>>());
 	}
 
-	public void tryAddNode(String nodeKey) throws GraphException{
-		super.tryAddVertex(new AdjKeyVertex<String, Object, String, Object>(nodeKey, null));
+	public void tryAddNode(String nodeKey, boolean isRoot) throws GraphException{
+		super.tryAddVertex(new AdjKeyVertex<String, Object, String, Object>(nodeKey, null), isRoot);
 	}
 }

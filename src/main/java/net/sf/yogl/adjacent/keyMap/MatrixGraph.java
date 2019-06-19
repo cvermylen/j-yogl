@@ -36,7 +36,7 @@ import net.sf.yogl.types.VertexType;
  * responsibility to find the right combinations of decorators.
  */
 
-public interface ComparableKeysGraph <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Graph<AdjKeyVertex<VK, VV, EK, EV>, AdjKeyEdge<VK, VV, EK, EV>>{
+public interface MatrixGraph <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Graph<AdjKeyVertex<VK, VV, EK, EV>, AdjKeyEdge<VK, VV, EK, EV>>{
 
 	/** Insert a new link between 2 nodes. This new link will be placed 
 	 *  'before' any existing link between these 2 nodes.
@@ -140,14 +140,6 @@ public interface ComparableKeysGraph <VK extends Comparable<VK>, VV, EK extends 
 	 * @return number of edges.
 	 */
 	public int getLinkCount();
-
-	/** This method return the list of all links between 2 nodes.
-	 * Pre-condition: the 2 nodes must exists in the graph.
-	 * @param nodeKeyFrom
-	 * @param nodeKeyTo
-	 */
-	public EK[] getLinksKeysBetween(VK nodeKeyFrom, VK nodeKeyTo)
-		throws NodeNotFoundException;
 
 	/** Ask the graph to return the list of all valid user-defined
 	 *  nodes.

@@ -65,15 +65,15 @@ public final class GraphUtil {
 				V leftNodeKey = nodesIter.next();
 				V rightNodeKey = null;
 				V leftDup = vertexCtor.apply(leftNodeKey);
-				result.tryAddNode(leftDup, graph.isStartVertex(leftNodeKey));
+				result.tryAddVertex(leftDup, graph.isStartVertex(leftNodeKey));
 				for(E link: links){
 					rightNodeKey = nodesIter.next();
 					V rightDup = vertexCtor.apply(rightNodeKey);
 					if (rightNodeKey.equals(endNodeKey)) {
-						result.tryAddNode(rightDup, graph.isStartVertex(rightNodeKey));
+						result.tryAddVertex(rightDup, graph.isStartVertex(rightNodeKey));
 
 					} else {
-						result.tryAddNode(rightDup, graph.isStartVertex(rightNodeKey));
+						result.tryAddVertex(rightDup, graph.isStartVertex(rightNodeKey));
 					}
 					
 					result.tryAddLinkLast(leftDup, edgeCtor.apply(rightDup, link));
@@ -95,7 +95,7 @@ public final class GraphUtil {
 		switch (source.getVertexType(endNodeKey)) {
 			case START :
 			case STARTEND :
-				destination.tryAddNode(vertexCtor.apply(endNodeKey), source.isStartVertex(endNodeKey));
+				destination.tryAddVertex(vertexCtor.apply(endNodeKey), source.isStartVertex(endNodeKey));
 				return;
 			default:
 		}
@@ -119,7 +119,7 @@ public final class GraphUtil {
 		switch (source.getVertexType(startNodeKey)) {
 			case END :
 			case STARTEND :
-				destination.tryAddNode(vertexCtor.apply(startNodeKey), source.isStartVertex(startNodeKey));
+				destination.tryAddVertex(vertexCtor.apply(startNodeKey), source.isStartVertex(startNodeKey));
 				return;
 			default:
 		}
@@ -132,14 +132,14 @@ public final class GraphUtil {
 		} else {
 			type = VertexType.STARTEND;
 		}
-		destination.tryAddVertex(vertexCtor.apply(firstKey));
+		destination.tryAddVertex(vertexCtor.apply(firstKey), source.isStartVertex(firstKey));
 
 		while (iter.hasNext()) {
 			V refKey = iter.next();
 			List<V> path = iter.nodePath();
 			V predKey = path.get(path.size() -1);
 			V v = vertexCtor.apply(refKey);
-			destination.tryAddNode(v, source.isStartVertex(refKey));
+			destination.tryAddVertex(v, source.isStartVertex(refKey));
 			destination.tryAddLinkLast(predKey, edgeCtor.apply(v, null));
 		}
 	}
@@ -225,7 +225,7 @@ public final class GraphUtil {
 
 		//Insert all nodes from subgraph into the dest graph
 		Collection<V> intermediateNodes = subgraph.getVertices(VertexType.NONE);
-		intermediateNodes.forEach(vertex -> dest.tryAddNode(vertexCtor.apply(vertex), subgraph.isStartVertex(vertex)));
+		intermediateNodes.forEach(vertex -> dest.tryAddVertex(vertexCtor.apply(vertex), subgraph.isStartVertex(vertex)));
 		//extract the start & end nodes from the subgraph
 		//extract the start nodes from the subgraph. Should be max 1.
 		Collection<V> startList = null;
@@ -246,8 +246,8 @@ public final class GraphUtil {
 		}
 		V endNodeKey = endList.parallelStream().findFirst().get();
 		
-		dest.tryAddNode(vertexCtor.apply(startNodeKey), subgraph.isStartVertex(startNodeKey));
-		dest.tryAddNode(vertexCtor.apply(endNodeKey), subgraph.isStartVertex(endNodeKey));
+		dest.tryAddVertex(vertexCtor.apply(startNodeKey), subgraph.isStartVertex(startNodeKey));
+		dest.tryAddVertex(vertexCtor.apply(endNodeKey), subgraph.isStartVertex(endNodeKey));
 
 		//Insert all links from subgraph into dest graph
 		LinksIterator<V, E> allLinks = subgraph.edgesIterator();

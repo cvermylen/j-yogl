@@ -1,7 +1,6 @@
    
 package net.sf.yogl.extras;
 
-import net.sf.yogl.adjacent.keyMap.ComparableKeysGraph;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.types.NoDataGraph;

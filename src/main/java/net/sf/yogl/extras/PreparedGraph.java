@@ -7,8 +7,12 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
-import net.sf.yogl.adjacent.keyMap.ComparableKeysGraph;
+import net.sf.yogl.Edge;
+import net.sf.yogl.Graph;
+import net.sf.yogl.Vertex;
 import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.impl.DuplicateVertexException;
@@ -20,7 +24,7 @@ import net.sf.yogl.impl.DuplicateVertexException;
  *  the graph is populated. Local structures are used to determine the position
  *  of each node in the graph.
  */
-public class PreparedGraph extends java.lang.Object {
+public class PreparedGraph<V extends Vertex<E>, E extends Edge<V>> {
     
     private HashSet heads = new HashSet();
     
@@ -53,16 +57,9 @@ public class PreparedGraph extends java.lang.Object {
     }
     
     /** Creates new PrepareInsert */
-    public PreparedGraph() {
+    public PreparedGraph(Graph<V, E> destGraph, Function<V, V> vertexCtor, BiFunction<V, V, E> edgeCtor) {
     }
     
-    /** Creates a new node if it does not already exists. If it does,
-     *  the previous reference is lost.
-     */
-    public void addNode(Object nodeKey, Object nodeValue) {
-        nodes.put(nodeKey, nodeValue);
-    }
-
     public Map getNodes(){
         return this.nodes;
     }
@@ -104,12 +101,12 @@ public class PreparedGraph extends java.lang.Object {
         tails.add(nodeKeyTo);
     }
     
-    public void populateGraph(ComparableKeysGraph graph) throws GraphException {
+    public void populateGraph(Graph graph) throws GraphException {
         cleanUpHeadsAndTails();
         Iterator nodesIter = nodes.entrySet().iterator();
         while(nodesIter.hasNext()){
             Map.Entry node = (Map.Entry)nodesIter.next();
-            graph.addNode((Comparable)node.getKey(), node.getValue());
+            graph.tryAddNode((Comparable)node.getKey(), node.getValue());
         }
         
         Iterator linksIter = links.iterator();
