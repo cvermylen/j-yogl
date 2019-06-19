@@ -3,15 +3,12 @@ package net.sf.yogl.std;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
 import net.sf.yogl.Graph;
-import net.sf.yogl.adjacent.list.AdjListEdge;
-import net.sf.yogl.adjacent.list.AdjListVertex;
 import net.sf.yogl.exceptions.GraphCorruptedException;
-import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.LinkNotFoundException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.exceptions.StdDefinitionException;
@@ -84,17 +81,16 @@ public final class StateTransitionDiagram<SK extends Comparable<SK>, TK extends 
 	 *  @exception LinkNotFoundException if the transition identified by 'key'
 	 *             is not attached to the current state
 	 */
-	public <SP> boolean doActiveTransition(TK transitionKey, SP parameter)
+	public <SP> boolean doActiveTransition(Transition<TK, SK> transition, SP parameter)
 		throws StdExecutionException, NodeNotFoundException, LinkNotFoundException {
 
 		State<SK, TK> currentState = vertexKeysPath.peek();
-		Transition<TK, SK> transition = currentState.getOutgoingEdge(transitionKey);
 		if (transition == null) {
 			LinkNotFoundException e =
 				new LinkNotFoundException(
 					"No such transition from current node:" + vertexKeysPath.peek());
 			e.setGraph(graph);
-			e.setLink(transitionKey);
+			e.setLink(null);
 			throw e;
 		}
 		State<SK, TK> nextState = transition.getToVertex();
@@ -144,7 +140,7 @@ public final class StateTransitionDiagram<SK extends Comparable<SK>, TK extends 
 	 *  @exception LinkNotFoundException if the transition identified by 'key'
 	 *             is not attached to the current state
 	 */
-	public <SP> boolean doTransition(TK useThisTransition)
+	public <SP> boolean doTransition(Transition<TK, SK> useThisTransition)
 		throws StdExecutionException, NodeNotFoundException, LinkNotFoundException {
 
 		return doActiveTransition(useThisTransition, null);
@@ -267,26 +263,24 @@ public final class StateTransitionDiagram<SK extends Comparable<SK>, TK extends 
 	 *  @exception StdExecutionException if an error occured during the
 	 *  execution of one of the 3 methods.
 	 */
-	public boolean testActiveTransition(Object transitionKey, Object parameter)
+	public <SP> boolean testActiveTransition(Transition<TK, SK> transition, SP parameter)
 		throws StdExecutionException, NodeNotFoundException, LinkNotFoundException {
 
 		boolean found = false;
-		State currentState = findStateByVertexKey(vertexKeysPath.peek());
-		AdjListEdge edge = findEdgeByKey(vertexKeysPath.peek(), transitionKey);
-		if (edge == null) {
+		State<SK, TK> currentState = vertexKeysPath.peek();
+		if (transition == null) {
 			LinkNotFoundException e =
 				new LinkNotFoundException(
 					"No such transition from current node:" + vertexKeysPath.peek());
 			e.setGraph(graph);
-			e.setLink(transitionKey);
+			e.setLink(null);
 			throw e;
 		}
-		Transition t = (Transition) edge.getUserValue();
-		State nextState = findStateByVertexKey(edge.getNextVertexKey());
+		State<SK, TK> nextState = transition.getToVertex();
 		found =
-			(currentState.checkBeforeExit(vertexKeysPath.peek(), nextState, t, parameter)
-				& t.testAction(transitionKey, currentState, parameter, nextState)
-				& nextState.checkBeforeEntry(edge.getNextVertexKey(), currentState, t, parameter));
+			(currentState.checkBeforeExit(nextState, transition, parameter)
+				& transition.testAction(currentState, parameter, nextState)
+				& nextState.checkBeforeEntry(currentState, transition, parameter));
 		return found;
 	}
 
@@ -295,22 +289,19 @@ public final class StateTransitionDiagram<SK extends Comparable<SK>, TK extends 
 	 *  @Return the Transition object that has been used to go to the next State
 	 *          or null if the Std remains in the same state.
 	 */
-	public Transition doAutoTransition(Object parameter)
+	public <SP> Transition<TK, SK> doAutoTransition(SP parameter)
 		throws
 			StdExecutionException,
 			NodeNotFoundException,
 			LinkNotFoundException,
 			GraphCorruptedException {
-		AdjListVertex peek = graph.findVertexByKey((Comparable)vertexKeysPath.peek());
-		State currentState = (State) peek.getUserValue();
-		Object[] keys = getTransitionKeys();
-		if (keys == null)
-			return null;
-		for (int i = 0; i < keys.length; i++) {
-			if (testActiveTransition(keys[i], parameter)) {
-				Transition t = getTransition(keys[i]);
-				doActiveTransition(keys[i], parameter);
-				return t;
+		State<SK, TK> currentState = vertexKeysPath.peek();
+		Iterator<Transition<TK, SK>> possibleTransitionIter = currentState.getOutgoingEdges().iterator();
+		while (possibleTransitionIter.hasNext()) {
+			Transition<TK, SK> possibleTransition = possibleTransitionIter.next();
+			if (possibleTransition.testAction(currentState, parameter, possibleTransition.getToVertex())) {
+				doActiveTransition(possibleTransition, parameter);
+				return possibleTransition;
 			}
 		}
 		return null;
@@ -322,48 +313,8 @@ public final class StateTransitionDiagram<SK extends Comparable<SK>, TK extends 
 	 *  @return true if the transition is possible, false otherwise
 	 */
 
-	public boolean testTransition(Object transitionKey)
+	public boolean testTransition(Transition<TK, SK> transition)
 		throws StdExecutionException, NodeNotFoundException, LinkNotFoundException {
-		return testActiveTransition(transitionKey, null);
-	}
-
-	/** Returns the number of times the corresponding link has been traversed.
-	 *  The link must be one of the possible transition from the current node.
-	 *  @param link the user-defined object representing the link between 2 nodes
-	 *  @return any non-negative number if the link is found
-	 *  @exception InvalidEdgeException if the link does not exists.
-	 */
-	public int getVisitCount(Object transitionKey)
-		throws LinkNotFoundException, NodeNotFoundException {
-
-		boolean found = false;
-		int result = -1;
-		//retrieve 'link' in the edge list of the
-		//current vertex.
-		AdjListVertex peek = graph.findVertexByKey((Comparable)vertexKeysPath.peek());
-		AdjListEdge edge = peek.getEdgeByKey((Comparable)transitionKey);
-		if (edge == null) {
-			throw new LinkNotFoundException(
-				transitionKey.toString() + "not found from" + vertexKeysPath.peek());
-		}
-		return edge.getVisitCount();
-	}
-
-	private State findStateByVertexKey(Object key)
-		throws NodeNotFoundException {
-		State result = null;
-		AdjListVertex vertex = graph.findVertexByKey((Comparable)key);
-		if (vertex != null)
-			result = (State) vertex.getUserValue();
-		return result;
-	}
-
-	private AdjListEdge findEdgeByKey(Object vertexKey, Object edgeKey)
-		throws NodeNotFoundException {
-		AdjListEdge result = null;
-		AdjListVertex vertex = graph.findVertexByKey((Comparable)vertexKey);
-		if (vertex != null)
-			result = vertex.getEdgeByKey((Comparable)edgeKey);
-		return result;
+		return testActiveTransition(transition, null);
 	}
 }
