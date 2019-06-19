@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class KeyMap<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends AbstractMap<EK, AdjKeyEdge<VK, VV, EK, EV>> {
 
@@ -69,8 +70,8 @@ public class KeyMap<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV
 	
 	public Object clone(){
 		KeyMap<VK, VV, EK, EV> result = new KeyMap<VK, VV, EK, EV>();
-		result.list = (LinkedList<EK>)this.list.clone();
-		result.map = (HashMap)this.map.clone();
+		result.list = this.list.stream().collect(Collectors.toCollection(LinkedList<EK>::new));
+		result.map = this.map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (prev, next) -> next, HashMap::new));
 		return result;
 	}
 }

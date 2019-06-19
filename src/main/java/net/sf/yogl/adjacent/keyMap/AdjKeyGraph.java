@@ -49,7 +49,7 @@ public class AdjKeyGraph <VK extends Comparable<VK>, VV, EK extends Comparable<E
 	/** 'vertices' contains all vertices of the graph. This vector
 	 * is automatically resized when all entries are occupied.
 	 */
-	Map<VK, AdjKeyVertex<VK, VV, EK, EV>> vertices = null;
+	protected Map<VK, AdjKeyVertex<VK, VV, EK, EV>> vertices = null;
 
 	/** Contains the list of all entry points in the graph.
 	 *  When a new node is created, it is by default inserted into the set.

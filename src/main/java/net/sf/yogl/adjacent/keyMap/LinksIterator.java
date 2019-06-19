@@ -8,7 +8,7 @@ import java.util.Iterator;
 import net.sf.yogl.Edge;
 import net.sf.yogl.Graph;
 import net.sf.yogl.Vertex;
-import net.sf.yogl.exceptions.NodeNotFoundException;
+import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.types.VertexType;
 
 /** A LinksIterator allows to retrieve all links from a given graph.
@@ -24,7 +24,7 @@ public class LinksIterator<V extends Vertex<E>, E extends Edge<V>> implements It
 	private ArrayList<V> succNodes = null;
 	private int counter = 0;
 
-	public LinksIterator(Graph<V, E> graph) throws NodeNotFoundException {
+	public LinksIterator(Graph<V, E> graph) throws GraphException {
 
 		int count = graph.getLinkCount();
 		int index = 0;

@@ -154,15 +154,9 @@ public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<
      * @exception GraphCorruptedException if 'edge' cannot
      *            be inserted in the neighbors list.
      */
-    public void tryAddEdgeLast(AdjKeyEdge<VK, VV, EK, EV> newEdge)throws GraphCorruptedException{
+    public void tryAddEdgeLast(AdjKeyEdge<VK, VV, EK, EV> newEdge) {
         if (newEdge != null){
-            if (outgoingEdges != null){
-                outgoingEdges.addLast(newEdge.getEdgeKey(), newEdge);
-            }else{
-                throw new GraphCorruptedException(
-                "Vertex identified by "+userValue.toString()+
-                " has a null neighbors list");
-            }
+        	outgoingEdges.addLast(newEdge.getEdgeKey(), newEdge);
         }
     }
     
@@ -173,15 +167,9 @@ public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<
      * @exception InvalidVertexException if 'edge' cannot
      *            be inserted in the neighbors list.
      */
-    public void tryAddEdgeFirst(AdjKeyEdge<VK, VV, EK, EV> newEdge)throws GraphCorruptedException{
+    public void tryAddEdgeFirst(AdjKeyEdge<VK, VV, EK, EV> newEdge) {
         if (newEdge != null){
-            if (outgoingEdges != null){
-                outgoingEdges.addFirst(newEdge.getEdgeKey(), newEdge);
-            }else{
-                throw new GraphCorruptedException(
-                "Vertex identified by "+userValue.toString()+
-                " has a null neighbors list");
-            }
+            outgoingEdges.addFirst(newEdge.getEdgeKey(), newEdge);
         }
     }
     /** Removes from the neighbors list the edge given as parameter

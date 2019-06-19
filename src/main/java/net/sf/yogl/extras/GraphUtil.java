@@ -4,7 +4,7 @@ package net.sf.yogl.extras;
 import java.util.List;
 import java.util.function.Function;
 
-import net.sf.yogl.adjacent.keyMap.ComparableKeysGraph;
+import net.sf.yogl.Graph;
 import net.sf.yogl.adjacent.keyMap.GraphAdapter;
 import net.sf.yogl.adjacent.list.AdjListDepthFirstIterator;
 import net.sf.yogl.exceptions.GraphException;
@@ -86,7 +86,7 @@ public final class GraphUtil {
 	 *  @param graph the whole graph to be stringified
 	     *  @param indent justify some tabs from the left
 	 */
-	public static String depthFirstToString(ComparableKeysGraph graph, int indent)
+	public static String depthFirstToString(Graph graph, int indent)
 		throws GraphException {
 
 		StringBuffer result = new StringBuffer();
