@@ -1,30 +1,27 @@
 package net.sf.yogl.std;
 
-import net.sf.yogl.Edge;
-import net.sf.yogl.Vertex;
-import net.sf.yogl.adjacent.keyMap.AdjKeyEdge;
-import net.sf.yogl.adjacent.keyMap.AdjKeyVertex;
 import net.sf.yogl.exceptions.StdExecutionException;
+import net.sf.yogl.uniqueElements.UniqueEdge;
+import net.sf.yogl.uniqueElements.UniqueVertex;
 
-public class TestComposite<SK extends Comparable<SK>,TK extends Comparable<TK>, X extends Vertex<Edge> & State<SK, TK>, Y extends Edge<Vertex> & Transition<TK, SK>> {
-
+class G<SK extends Comparable<SK>,TK extends Comparable<TK>> extends Graph <X extends UniqueVertex<SK, TK> &State<SK, TK>, Y extends UniqueEdge<TK, SK> &Transition<TK, SK>> {
 }
 
-class TestComposite2<X extends Vertex<Y> , Y extends Edge<X>> {
+class TestComposite2<SK extends Comparable<SK>,TK extends Comparable<TK>, 
+					X extends UniqueVertex<SK, TK> &State<SK, TK>, Y extends UniqueEdge<TK, SK> &Transition<TK, SK>> {
 
 }
 
 class MyTest {
-	TestComposite<String, String, MyState, MyTransition> oops;
-	TestComposite2<MyState, MyTransition> ops;
+	TestComposite2<String, String, MyState, MyTransition> ops;
 }
 /*
 TestComposite<MyState, MyTransition>
 */
-class MyTransition extends AdjKeyEdge<String, Object, String, Object> implements Transition<String, String>{
+class MyTransition extends UniqueEdge<String, String> implements Transition<String, String>{
 
 	MyTransition() {
-		super(null, null, null);
+		super(null);
 	}
 	@Override
 	public String getKey() {
@@ -55,10 +52,10 @@ class MyTransition extends AdjKeyEdge<String, Object, String, Object> implements
 	
 }
 
-class MyState extends AdjKeyVertex<String, Object, String, Object> implements State<String, String>{
+class MyState extends UniqueVertex<String, String> implements State<String, String>{
 
 	MyState(){
-		super(null, null);
+		super(null);
 	}
 	@Override
 	public <SP> boolean checkBeforeEntry(State<String, String> comingFrom, Transition<String, String> using,

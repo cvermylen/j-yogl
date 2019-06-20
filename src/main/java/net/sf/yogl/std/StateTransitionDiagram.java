@@ -31,7 +31,7 @@ import net.sf.yogl.exceptions.StdExecutionException;
 public final class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Comparable<TK>> {
 	/** current graph the iterator is pointing to
 	 */
-	private Graph<X extends Vertex<Y> & State<SK, TK>, Y extends Edge<X> & Transition<TK, SK>> graph = null;
+	private Graph<SK extends Comparable<SK>,TK extends Comparable<TK>, X extends UniqueVertex<SK, TK> & State<SK, TK>, Y extends UniqueEdge<TK, SK> & Transition<TK, SK>> graph = null;
 
 	/** Contains the path followed by the iterator from
 	 *  the initialisation to the current node.

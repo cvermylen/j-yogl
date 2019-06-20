@@ -153,7 +153,7 @@ public interface State<SK extends Comparable<SK>, TK extends Comparable<TK>>{
 	
 	//public Collection<Transition<TK, SK>> getOutgoingEdges();
 
-	public void tryAddEdgeFirst(Transition<TK, SK> edge);
+//	public void tryAddEdgeFirst(Transition<TK, SK> edge);
 
-	public void tryAddEdgeLast(Transition<TK, SK> edge);
+//	public void tryAddEdgeLast(Transition<TK, SK> edge);
 }
