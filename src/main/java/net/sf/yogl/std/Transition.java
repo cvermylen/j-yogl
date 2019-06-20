@@ -1,7 +1,6 @@
    
 package net.sf.yogl.std;
 
-import net.sf.yogl.Edge;
 import net.sf.yogl.exceptions.StdExecutionException;
 
 /** The interface can be implemented by links in the State Transition diagram.
@@ -9,17 +8,9 @@ import net.sf.yogl.exceptions.StdExecutionException;
  *  Before the link can be traversed, the 'testAction' can be triggered.
  *  In a STD, a node that does not implements this interface is a 'nil' node.
  */
-public abstract class Transition<TK extends Comparable<TK>, SK extends Comparable<SK>> extends Edge<State<SK, TK>>{
+public interface Transition<TK extends Comparable<TK>, SK extends Comparable<SK>> /*extends Edge<State<SK, TK>>*/{
 
-	private TK key;
-	
-	public Transition(TK key) {
-		this.key = key;
-	}
-	
-	public TK getKey() {
-		return this.key;
-	}
+	public TK getKey();
 	
 	/** The method will be called when the link is crossed. Before this
 	 *  method is called by the STD engine, the 'testAction' method has also
@@ -37,9 +28,7 @@ public abstract class Transition<TK extends Comparable<TK>, SK extends Comparabl
 	 *         state.
 	 */
 	public <SP> boolean doTransition(State<SK, TK> from, SP parameter, State<SK, TK> to)
-		throws StdExecutionException {
-		return true;
-	}
+		throws StdExecutionException;
 
 	/** The method is called during a backtrack operation.
 	 * @param thisTransitionKey identifiy this transition in the STD. The key
@@ -53,9 +42,7 @@ public abstract class Transition<TK extends Comparable<TK>, SK extends Comparabl
 	 * @throws Exception
 	 */
 	public <SP> boolean actionAfterBacktrack(State<SK, TK> from, SP parameter, State<SK, TK> to, Exception e)
-		throws StdExecutionException {
-		return true;
-	}
+		throws StdExecutionException;
 
 	/** returns a predictable value of the action. It is used to determine
 	 *  in advance if the transition can or cannot be 'crossed'.
@@ -70,7 +57,5 @@ public abstract class Transition<TK extends Comparable<TK>, SK extends Comparabl
 	 *  @exception Exception 
 	 */
 	public <SP> boolean testAction(State<SK, TK> from, SP parameter, State<SK, TK> to)
-		throws StdExecutionException {
-		return true;
-	}
+		throws StdExecutionException;
 }

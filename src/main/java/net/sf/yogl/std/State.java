@@ -3,7 +3,6 @@ package net.sf.yogl.std;
 
 import java.util.Collection;
 
-import net.sf.yogl.Vertex;
 import net.sf.yogl.exceptions.StdExecutionException;
 
 /** The purpose of this class is to be extended to give each State its
@@ -12,17 +11,9 @@ import net.sf.yogl.exceptions.StdExecutionException;
  *  STD, and the STD points at any time to one 'current State'.
  *  <SP> stands for 'State Parameter'
  */
-public abstract class State<SK extends Comparable<SK>, TK extends Comparable<TK>> extends Vertex<Transition<TK, SK>>{
+public interface State<SK extends Comparable<SK>, TK extends Comparable<TK>>{
 
-	private SK key;
-	
-	public State(SK key) {
-		this.key = key;
-	}
-	
-	public SK getKey() {
-		return this.key;
-	}
+	public SK getKey();
 	
 	/** The method is called when testing the transition arriving to this
 	 *  state. This method is called by:
@@ -48,9 +39,7 @@ public abstract class State<SK extends Comparable<SK>, TK extends Comparable<TK>
 	 * @throws Exception
 	 */
 	public <SP> boolean checkBeforeEntry(State<SK, TK> comingFrom, Transition<TK, SK> using, SP parameter)
-			throws StdExecutionException {
-		return true;
-	}
+			throws StdExecutionException;
 
 	/** The method is called when this state is set as the new 'current state'.
 	 *  It is assumed that this state can be set as the 'current state'. The
@@ -79,9 +68,7 @@ public abstract class State<SK extends Comparable<SK>, TK extends Comparable<TK>
 	 *         previous node.
 	 */
 	public <SP> boolean onEntry(State<SK, TK> comingFrom, Transition<TK, SK> using, SP parameter)
-		throws StdExecutionException {
-		return true;
-	}
+		throws StdExecutionException;
 
 	/** This method is called by the backtrack method on the previous state
 	 *  'this' will become the new 'currentState'.
@@ -107,9 +94,7 @@ public abstract class State<SK extends Comparable<SK>, TK extends Comparable<TK>
 	 *         'current state'.
 	 */
 	public <SP> boolean reEntryAfterBacktrack(State<SK, TK> from, Transition<TK, SK> using, SP parameter, Exception e)
-		throws StdExecutionException {
-		return true;
-	}
+		throws StdExecutionException;
 
 	/** The method is called to check if this state can be left.
 	 *  Called by
@@ -129,9 +114,7 @@ public abstract class State<SK extends Comparable<SK>, TK extends Comparable<TK>
 	 * @throws Exception
 	 */
 	public <SP> boolean checkBeforeExit(State<SK, TK> navigatingTo, Transition<TK, SK> using, SP parameter)
-		throws StdExecutionException {
-		return true;
-	}
+		throws StdExecutionException;
 
 	/** This method is executed when the STD leaves this state (identified
 	 *  as the current state) to join a new state. In any circonstances, the
@@ -151,9 +134,7 @@ public abstract class State<SK extends Comparable<SK>, TK extends Comparable<TK>
 	 *         current state.
 	 */
 	public <SP> boolean onExit(State<SK, TK> navigatingTo, Transition<TK, SK> using, SP parameter)
-		throws StdExecutionException {
-		return true;
-	}
+		throws StdExecutionException;
 
 	/** This method is called by the backtrack method on the current state.
 	 * It is not called when an exception is raised from any 'state' method.
@@ -166,27 +147,13 @@ public abstract class State<SK extends Comparable<SK>, TK extends Comparable<TK>
 	 * @throws Exception
 	 */
 	public <SP> boolean exitAfterBacktrack(State<SK, TK> navigatingTo, Transition<TK, SK> using, SP parameter)
-		throws StdExecutionException {
-		return true;
-	}
+		throws StdExecutionException;
 
-	public abstract Transition<TK, SK> getOutgoingEdge(TK nextTransitionKey);
+	//public abstract Transition<TK, SK> getOutgoingEdge(TK nextTransitionKey);
 	
-	@Override
-	public Collection<Transition<TK, SK>> getOutgoingEdges() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	//public Collection<Transition<TK, SK>> getOutgoingEdges();
 
-	@Override
-	public void tryAddEdgeFirst(Transition<TK, SK> edge) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void tryAddEdgeFirst(Transition<TK, SK> edge);
 
-	@Override
-	public void tryAddEdgeLast(Transition<TK, SK> edge) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void tryAddEdgeLast(Transition<TK, SK> edge);
 }

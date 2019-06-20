@@ -2,14 +2,20 @@
 package net.sf.yogl.samples;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.yogl.adjacent.keyMap.AdjKeyGraph;
 import net.sf.yogl.adjacent.keyMap.AdjKeyVertex;
 import net.sf.yogl.exceptions.StdExecutionException;
+import net.sf.yogl.samples.Std.MyObject;
+import net.sf.yogl.samples.Std.MyState;
+import net.sf.yogl.samples.Std.MyTransition;
 import net.sf.yogl.std.State;
 import net.sf.yogl.std.StateTransitionDiagram;
 import net.sf.yogl.std.Transition;
 
+/** Example with StateTransitionDiagram
+ */
 public class Std {
 
 	class MyObject{
@@ -23,12 +29,17 @@ public class Std {
 		}
 
 	}
-	class MyState extends State {
+	class MyState extends AdjKeyVertex<String, String, String, String> implements State<String, String> {
 		private String stateValue;
-
-		public boolean onEntry(State from, Transition using, Object parameter) throws StdExecutionException {
-			MyObject mo = (MyObject)parameter;
-			mo.setState(stateValue);
+		private Map<String, MyTransition> transitions = new HashMap<String, MyTransition>();
+		
+		public MyState (String key, String value){
+			super(key);
+			this.stateValue = value;
+		}
+		
+		public boolean onEntry(Transition<String, String> using, MyObject parameter) throws StdExecutionException {
+			parameter.setState(stateValue);
 			return true;
 		}
 		public void setStateValue(String stateValue) {
@@ -43,17 +54,20 @@ public class Std {
 		public String getStateValue() {
 			return stateValue;
 		}
+		@Override
+		public Transition<String, String> getOutgoingEdge(String nextTransitionKey) {
+			return transitions.get(nextTransitionKey);
+		}
 
 	}
 
-	class MyTransition extends Transition{
-		private String key;
+	class MyTransition extends Transition<String, String>{
 		
-		public void setKey(String string) {
-			key = string;
+		public MyTransition(String key) {
+			super(key);
 		}
 
-		public boolean doAction(State from, Object parameter, State to)
+		public boolean doAction(MyState from, MyObject parameter, MyState to)
 		throws StdExecutionException {
 			return true;
 		}
@@ -73,13 +87,13 @@ public class Std {
 			{"3", "2", "key32"},
 			{"2", "4", "key24"}
 		};
-		AdjKeyGraph<String, MyState, String, MyState> ga = new AdjKeyGraph<String, MyState, String, MyState>();
-		Std std = new Std();
+		AdjKeyGraph<String, Object, String, Object> ga = new AdjKeyGraph<>();
+		StateTransitionDiagram<String, String> std = new StateTransitionDiagram<String, String>(ga);
 		for(int i=0; i < stdDes.length; i++){
 			if(stdDes[i].length == 2){
-				MyState state = std.new MyState();
-				state.setStateValue(stdDes[i][1]);
-				ga.tryAddNode(stdDes[i][0], state);
+				MyState state = std.new MyState(stdDes[i][0], stdDes[i][1]);
+				
+				ga.tryAddVertex(state, i == 0);
 			}else if(stdDes[i].length == 3){
 				MyTransition transition = std.new MyTransition();
 				transition.setKey(stdDes[i][2]);
