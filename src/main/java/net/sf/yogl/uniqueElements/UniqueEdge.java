@@ -12,4 +12,15 @@ public class UniqueEdge<EK extends Comparable<EK>, VK extends Comparable<VK>> ex
 	public EK getKey() {
 		return key;
 	}
+	
+	@Override
+	public boolean equals (Object anotherObject) {
+		boolean result = false;
+		if (anotherObject instanceof UniqueEdge<?, ?>) {
+			@SuppressWarnings("unchecked")
+			UniqueEdge<EK, VK> toVertex = (UniqueEdge<EK, VK>) anotherObject;
+			result = this.getKey().equals(toVertex.getKey());
+		}
+		return result;
+	}
 }

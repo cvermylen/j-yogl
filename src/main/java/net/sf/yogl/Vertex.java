@@ -15,6 +15,11 @@ public abstract class Vertex<E extends Edge<?>> {
      */
     private int visitCounts = 0;
 
+    /** As edges can be only in one direction, this vertex has no direct tracking information of all incoming edges.
+     * To help / optimize some methods, the graph implementation may use the following
+     */
+    private int incomingEdges = 0;
+    
     /** setter method
      * @param freeEntry true means that vertex is in a free pool
      */
@@ -55,9 +60,18 @@ public abstract class Vertex<E extends Edge<?>> {
     	this.visitCounts = 0;
     }
     
+    public int incrementIncomingEdges () {
+    	return ++this.incomingEdges;
+    }
+    
+    public int decrementIncomingEdges () {
+    	return --this.incomingEdges;
+    }
+    
     public abstract Collection<E> getOutgoingEdges();
     
     public abstract void tryAddEdgeFirst(E edge);
     
     public abstract void tryAddEdgeLast(E edge);
+    
 }

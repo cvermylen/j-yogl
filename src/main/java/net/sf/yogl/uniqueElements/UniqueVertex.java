@@ -33,7 +33,22 @@ public class UniqueVertex<VK extends Comparable<VK>, EK extends Comparable<EK>> 
 		}
 	}
 	
+	public void removeEdge(UniqueEdge<EK, VK> edge){
+		edges.remove(edge.getKey());
+	}
+	
 	public VK getKey() {
 		return key;
+	}
+	
+	@Override
+	public boolean equals (Object anotherObject) {
+		boolean result = false;
+		if (anotherObject instanceof UniqueVertex<?, ?>) {
+			@SuppressWarnings("unchecked")
+			UniqueVertex<VK, EK> toVertex = (UniqueVertex<VK, EK>) anotherObject;
+			result = this.getKey().equals(toVertex.getKey());
+		}
+		return result;
 	}
 }
