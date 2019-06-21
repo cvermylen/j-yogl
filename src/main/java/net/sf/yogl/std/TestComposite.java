@@ -2,13 +2,18 @@ package net.sf.yogl.std;
 
 import net.sf.yogl.exceptions.StdExecutionException;
 import net.sf.yogl.uniqueElements.UniqueEdge;
+import net.sf.yogl.uniqueElements.UniqueElementsGraph;
 import net.sf.yogl.uniqueElements.UniqueVertex;
 
-class G<SK extends Comparable<SK>,TK extends Comparable<TK>> extends Graph <X extends UniqueVertex<SK, TK> &State<SK, TK>, Y extends UniqueEdge<TK, SK> &Transition<TK, SK>> {
+class G<SK extends Comparable<SK>,TK extends Comparable<TK>> extends UniqueElementsGraph <SK, TK> {
+	
+	 <T extends UniqueVertex<SK, TK> & State<SK, TK>> void addState (T state){
+		
+	}
 }
 
-class TestComposite2<SK extends Comparable<SK>,TK extends Comparable<TK>, 
-					X extends UniqueVertex<SK, TK> &State<SK, TK>, Y extends UniqueEdge<TK, SK> &Transition<TK, SK>> {
+class TestComposite2<SK1 extends Comparable<SK1>,TK1 extends Comparable<TK1>, 
+					UV extends UniqueVertex<SK1, TK1> &State<SK1, TK1>, UE extends UniqueEdge<TK1, SK1> &Transition<TK1, SK1>> {
 
 }
 

@@ -1,6 +1,6 @@
 package net.sf.yogl;
 
-public abstract class Edge<V extends Vertex<?>> {
+public abstract class Edge<V extends Vertex<?>> implements EdgeIntf<V>{
 
 	private V toVertex;
 	

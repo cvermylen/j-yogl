@@ -7,12 +7,13 @@ import java.util.Iterator;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-import net.sf.yogl.Graph;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.LinkNotFoundException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
-import net.sf.yogl.exceptions.StdDefinitionException;
 import net.sf.yogl.exceptions.StdExecutionException;
+import net.sf.yogl.uniqueElements.UniqueEdgeIntf;
+import net.sf.yogl.uniqueElements.UniqueElementsGraph;
+import net.sf.yogl.uniqueElements.UniqueVertex;
 
 /** The STD implementation is based on a directed graph with the following
  *  restrictions:
@@ -28,10 +29,10 @@ import net.sf.yogl.exceptions.StdExecutionException;
  *  error in the Std (Std damaged, not usable anymore). 
  */
 
-public final class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Comparable<TK>> {
+public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Comparable<TK>> extends UniqueElementsGraph <SK, TK>{
 	/** current graph the iterator is pointing to
 	 */
-	private Graph<SK extends Comparable<SK>,TK extends Comparable<TK>, X extends UniqueVertex<SK, TK> & State<SK, TK>, Y extends UniqueEdge<TK, SK> & Transition<TK, SK>> graph = null;
+//	private Graph<SK extends Comparable<SK>,TK extends Comparable<TK>, X extends UniqueVertex<SK, TK> & State<SK, TK>, Y extends UniqueEdge<TK, SK> & Transition<TK, SK>> graph = null;
 
 	/** Contains the path followed by the iterator from
 	 *  the initialisation to the current node.
@@ -46,18 +47,7 @@ public final class StateTransitionDiagram<SK extends Comparable<SK>, TK extends 
 	 *  The graph must have a unique entry point. This state must not
 	 *  have an incoming transition.
 	 */
-	public StateTransitionDiagram(Graph<State<SK, TK>, Transition<TK, SK>> graph)
-		throws StdDefinitionException {
-
-		if (graph == null) {
-			throw new NullPointerException("parameter graph is null");
-		}
-		this.graph = graph;
-		Collection<State<SK, TK>> startNodeKeys = graph.getRoots();
-		if (startNodeKeys.size() != 1) {
-			throw new StdDefinitionException("graph must have 1 unique entry");
-		}
-		startNodeKeys.stream().forEach(state -> vertexKeysPath.push(state));
+	public StateTransitionDiagram() {
 	}
 
 	/** An 'active transition' will move the internal pointer from
@@ -81,7 +71,7 @@ public final class StateTransitionDiagram<SK extends Comparable<SK>, TK extends 
 	 *  @exception LinkNotFoundException if the transition identified by 'key'
 	 *             is not attached to the current state
 	 */
-	public <SP> boolean doActiveTransition(Transition<TK, SK> transition, SP parameter)
+	public <SP, T extends Transition<TK, SK>> boolean doActiveTransition(T transition, SP parameter)
 		throws StdExecutionException, NodeNotFoundException, LinkNotFoundException {
 
 		State<SK, TK> currentState = vertexKeysPath.peek();
@@ -199,7 +189,7 @@ public final class StateTransitionDiagram<SK extends Comparable<SK>, TK extends 
 	 *         identification of the current node does not match any valid
 	 *         state in the graph).
 	 */
-	public State<SK, TK> getCurrentState() {
+	public <V extends UniqueVertex<SK, TK> & State<SK, TK>> V getCurrentState() {
 
 		return vertexKeysPath.peek();
 	}

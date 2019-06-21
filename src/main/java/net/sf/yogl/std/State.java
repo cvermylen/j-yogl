@@ -1,9 +1,8 @@
    
 package net.sf.yogl.std;
 
-import java.util.Collection;
-
 import net.sf.yogl.exceptions.StdExecutionException;
+import net.sf.yogl.uniqueElements.UniqueVertexIntf;
 
 /** The purpose of this class is to be extended to give each State its
  *  expected behaviour. It defines a set of methods which are called on 
@@ -11,7 +10,7 @@ import net.sf.yogl.exceptions.StdExecutionException;
  *  STD, and the STD points at any time to one 'current State'.
  *  <SP> stands for 'State Parameter'
  */
-public interface State<SK extends Comparable<SK>, TK extends Comparable<TK>>{
+public interface State<SK extends Comparable<SK>, TK extends Comparable<TK>> extends UniqueVertexIntf<SK, TK>{
 
 	public SK getKey();
 	
