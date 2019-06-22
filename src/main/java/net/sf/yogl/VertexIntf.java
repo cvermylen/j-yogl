@@ -2,7 +2,7 @@ package net.sf.yogl;
 
 import java.util.Collection;
 
-public interface VertexIntf<E extends EdgeIntf<?>> {
+public interface VertexIntf<VC extends VertexIntf<VC, TC>, TC extends EdgeIntf<TC, VC>> {
 
 	public void setFreeEntry(boolean freeEntry);
 	
@@ -20,9 +20,9 @@ public interface VertexIntf<E extends EdgeIntf<?>> {
 	
 	public int decrementIncomingEdges ();
 	
-	public Collection<E> getOutgoingEdges();
+	public Collection<TC> getOutgoingEdges();
 	
-	public void tryAddEdgeFirst(E edge);
+	public void tryAddEdgeFirst(TC edge);
 	
-	public void tryAddEdgeLast(E edge);
+	public void tryAddEdgeLast(TC edge);
 }

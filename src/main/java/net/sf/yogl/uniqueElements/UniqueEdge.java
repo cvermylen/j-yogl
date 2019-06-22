@@ -2,7 +2,8 @@ package net.sf.yogl.uniqueElements;
 
 import net.sf.yogl.Edge;
 
-public class UniqueEdge<EK extends Comparable<EK>, VK extends Comparable<VK>> extends Edge<UniqueVertex<VK, EK>>{
+public class UniqueEdge<TC extends UniqueEdgeIntf<TC, VC, EK, VK>, VC extends UniqueVertexIntf<VC, TC, VK, EK>, EK extends Comparable<EK>, VK extends Comparable<VK>> 
+		extends Edge<TC, VC>{
 	private EK key;
 	
 	public UniqueEdge(EK key) {
@@ -16,9 +17,9 @@ public class UniqueEdge<EK extends Comparable<EK>, VK extends Comparable<VK>> ex
 	@Override
 	public boolean equals (Object anotherObject) {
 		boolean result = false;
-		if (anotherObject instanceof UniqueEdge<?, ?>) {
+		if (anotherObject instanceof UniqueEdge<?, ?, ?, ?>) {
 			@SuppressWarnings("unchecked")
-			UniqueEdge<EK, VK> toVertex = (UniqueEdge<EK, VK>) anotherObject;
+			UniqueEdge<TC, VC, EK, VK> toVertex = (UniqueEdge<TC, VC, EK, VK>) anotherObject;
 			result = this.getKey().equals(toVertex.getKey());
 		}
 		return result;

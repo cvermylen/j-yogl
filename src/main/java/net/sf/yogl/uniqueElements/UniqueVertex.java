@@ -4,36 +4,41 @@ import java.util.Collection;
 import java.util.HashMap;
 import net.sf.yogl.Vertex;
 
-public class UniqueVertex<VK extends Comparable<VK>, EK extends Comparable<EK>> extends Vertex<UniqueEdge<EK, VK>>{
+public class UniqueVertex<VC extends UniqueVertexIntf<VC, TC, VK, EK>, TC extends UniqueEdgeIntf<TC, VC, EK, VK>, VK extends Comparable<VK>, EK extends Comparable<EK>> 
+		extends Vertex<VC, TC>{
 
 	private VK key;
 	
-	private HashMap<EK, UniqueEdge<EK, VK>> edges= new HashMap<>();
+	private HashMap<EK, TC> edges= new HashMap<>();
 
 	public UniqueVertex(VK key) {
 		this.key = key;
 	}
 	
 	@Override
-	public Collection<UniqueEdge<EK, VK>> getOutgoingEdges() {
+	public Collection<TC> getOutgoingEdges() {
 		return edges.values();
 	}
 
+	public TC getOutgoingEdge(EK edgeKey) {
+		return edges.get(edgeKey);
+	}
+	
 	@Override
-	public void tryAddEdgeFirst(UniqueEdge<EK, VK> edge) {
+	public void tryAddEdgeFirst(TC edge) {
 		if (!edges.containsKey(edge.getKey())) {
 			edges.put(edge.getKey(), edge);
 		}
 	}
 
 	@Override
-	public void tryAddEdgeLast(UniqueEdge<EK, VK> edge) {
+	public void tryAddEdgeLast(TC edge) {
 		if (!edges.containsKey(edge.getKey())) {
 			edges.put(edge.getKey(), edge);
 		}
 	}
 	
-	public void removeEdge(UniqueEdge<EK, VK> edge){
+	public void removeEdge(TC edge){
 		edges.remove(edge.getKey());
 	}
 	
@@ -44,9 +49,9 @@ public class UniqueVertex<VK extends Comparable<VK>, EK extends Comparable<EK>> 
 	@Override
 	public boolean equals (Object anotherObject) {
 		boolean result = false;
-		if (anotherObject instanceof UniqueVertex<?, ?>) {
+		if (anotherObject instanceof UniqueVertex<?, ?, ?, ?>) {
 			@SuppressWarnings("unchecked")
-			UniqueVertex<VK, EK> toVertex = (UniqueVertex<VK, EK>) anotherObject;
+			UniqueVertex<VC, TC, VK, EK> toVertex = (UniqueVertex<VC, TC, VK, EK>) anotherObject;
 			result = this.getKey().equals(toVertex.getKey());
 		}
 		return result;

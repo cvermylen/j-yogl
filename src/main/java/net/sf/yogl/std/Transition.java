@@ -9,7 +9,7 @@ import net.sf.yogl.uniqueElements.UniqueEdgeIntf;
  *  Before the link can be traversed, the 'testAction' can be triggered.
  *  In a STD, a node that does not implements this interface is a 'nil' node.
  */
-public interface Transition<TK extends Comparable<TK>, SK extends Comparable<SK>> extends UniqueEdgeIntf<TK, SK>{
+public interface Transition<TK extends Comparable<TK>, SK extends Comparable<SK>> extends UniqueEdgeIntf<Transition<TK, SK>, State<SK, TK>, TK, SK>{
 
 	public TK getKey();
 	

@@ -1,10 +1,10 @@
 package net.sf.yogl;
 
-public interface EdgeIntf <V extends VertexIntf<?>> {
+public interface EdgeIntf <TC extends EdgeIntf<TC, VC>, VC extends VertexIntf<VC, TC>> {
 
-	public <T extends V> T getToVertex();
+	public VC getToVertex();
 	
-	public void setToVertex(V vertex);
+	public void setToVertex(VC vertex);
 	
 	public void incVisitCounts();
 

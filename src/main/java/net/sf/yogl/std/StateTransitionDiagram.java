@@ -79,7 +79,6 @@ public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Compar
 			LinkNotFoundException e =
 				new LinkNotFoundException(
 					"No such transition from current node:" + vertexKeysPath.peek());
-			e.setGraph(graph);
 			e.setLink(null);
 			throw e;
 		}
@@ -189,7 +188,7 @@ public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Compar
 	 *         identification of the current node does not match any valid
 	 *         state in the graph).
 	 */
-	public <V extends UniqueVertex<SK, TK> & State<SK, TK>> V getCurrentState() {
+	public State<SK, TK> getCurrentState() {
 
 		return vertexKeysPath.peek();
 	}
@@ -262,7 +261,7 @@ public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Compar
 			LinkNotFoundException e =
 				new LinkNotFoundException(
 					"No such transition from current node:" + vertexKeysPath.peek());
-			e.setGraph(graph);
+//			e.setGraph(graph);
 			e.setLink(null);
 			throw e;
 		}

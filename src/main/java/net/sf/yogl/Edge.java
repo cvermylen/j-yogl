@@ -1,16 +1,16 @@
 package net.sf.yogl;
 
-public abstract class Edge<V extends Vertex<?>> implements EdgeIntf<V>{
+public abstract class Edge<TC extends EdgeIntf<TC, VC>, VC extends VertexIntf<VC, TC>> implements EdgeIntf<TC, VC>{
 
-	private V toVertex;
+	private VC toVertex;
 	
 	private int visitCounts = 0;
 	
-	public V getToVertex() {
+	public VC getToVertex() {
 		return toVertex;
 	}
 	
-	public void setToVertex(V vertex) {
+	public void setToVertex(VC vertex) {
 		this.toVertex = vertex;
 	}
 	

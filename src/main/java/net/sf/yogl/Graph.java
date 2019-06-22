@@ -6,7 +6,7 @@ import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.types.VertexType;
 
-public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
+public interface Graph<VC extends VertexIntf<VC, TC>, TC extends EdgeIntf<TC, VC>> {
 
 	/** Returns the max degree by only taking into account the incoming
 	 *  edges
@@ -33,14 +33,14 @@ public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
 	 * @param nodeKey node identifier
 	 * @return true if is an entry point
 	 */
-	public boolean isStartVertex(V nodeKey);
+	public boolean isStartVertex(VC vertex);
 	
-	public Collection<V>getRoots();
+	public Collection<VC>getRoots();
 	
 	/** Return the list of nodes of a particular type
 	 *  @param nodeType has a value described in VertexType
 	 */
-	public Collection<V> getVertices (VertexType type) throws GraphException;
+	public Collection<VC> getVertices (VertexType type) throws GraphException;
 	
 	public void clearAllVisitCounts();
 	
@@ -49,16 +49,16 @@ public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
 	 *  destination is indicated by the parameter.
 	 *  @param nodeTo destination node
 	 */
-	public Collection<V> getPredecessorVertices(V vertex);
+	public Collection<VC> getPredecessorVertices(VC vertex);
 	
 	/** Returns the vertex having the 'destVertex' as a successor via the given 'edge'
 	 * @param destVertex
 	 * @param edge
 	 * @return
 	 */
-	public V getPredecessorVertex(V destVertex, E edge);
+	public VC getPredecessorVertex(VC destVertex, TC edge);
 	
-	public Collection<V> getSuccessorVertices(V vertex);
+	public Collection<VC> getSuccessorVertices(VC vertex);
 	
 	/** Return an iterator to browse ALL nodes in the graph that can
 	 *  be accessed from the startingNode. The method 'next()' in the
@@ -72,7 +72,7 @@ public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
 	 *         Accepted values are: [1 .. n]. There is no way to express
 	 *         an infinite value.
 	 */
-	public BreadthFirstIterator<V, E> breadthFirstIterator(int maxCycle) throws NodeNotFoundException;
+	public BreadthFirstIterator<VC, TC> breadthFirstIterator(int maxCycle) throws NodeNotFoundException;
 	
 	/** Return an iterator to browse ALL nodes in the graph that can
 	 *  be accessed from the startingNode. The method 'next()' in the
@@ -86,16 +86,16 @@ public interface Graph<V extends Vertex<E>, E extends Edge<V>> {
 	 *         Accepted values are: [1 .. n]. There is no way to express
 	 *         an infinite value.
 	 */
-	public DepthFirstIterator<V, E> depthFirstIterator(Collection<V> startVertex, int maxCycling)
+	public DepthFirstIterator<VC, TC> depthFirstIterator(Collection<VC> startVertex, int maxCycling)
 		throws GraphException;
 	
-	public V tryAddVertex(V vertex, boolean isRoot);
+	public VC tryAddVertex(VC vertex, boolean isRoot);
 	
 	/** Returns the type associated to the node.
 	 *  The type is specified by a value defined in VertexType.
 	 *  @return a value from VertexType
 	 *  @exception GraphException if the node does not exists
 	 */
-	public VertexType getVertexType (V vertex);
+	public VertexType getVertexType (VC vertex);
 	
 }

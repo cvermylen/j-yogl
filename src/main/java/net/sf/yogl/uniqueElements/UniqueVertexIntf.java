@@ -4,18 +4,21 @@ import java.util.Collection;
 
 import net.sf.yogl.VertexIntf;
 
-public interface UniqueVertexIntf<VK extends Comparable<VK>, EK extends Comparable<EK>> extends VertexIntf<UniqueEdgeIntf<EK, VK>>{
+public interface UniqueVertexIntf<VC extends UniqueVertexIntf<VC, TC, VK, EK>, TC extends UniqueEdgeIntf<TC, VC, EK, VK>, VK extends Comparable<VK>, EK extends Comparable<EK>> 
+		extends VertexIntf<VC, TC>{
 
 	@Override
-	public Collection<UniqueEdgeIntf<EK, VK>> getOutgoingEdges();
+	public Collection<TC> getOutgoingEdges();
 
-	@Override
-	public void tryAddEdgeFirst(UniqueEdgeIntf<EK, VK> edge);
-
-	@Override
-	public void tryAddEdgeLast(UniqueEdgeIntf<EK, VK> edge);
+	public TC getOutgoingEdge(EK edgeKey);
 	
-	public void removeEdge(UniqueEdgeIntf<EK, VK> edge);
+	@Override
+	public void tryAddEdgeFirst(TC edge);
+
+	@Override
+	public void tryAddEdgeLast(TC edge);
+	
+	public void removeEdge(TC edge);
 	
 	public VK getKey();
 	

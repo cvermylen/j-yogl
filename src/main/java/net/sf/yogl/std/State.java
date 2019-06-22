@@ -10,7 +10,7 @@ import net.sf.yogl.uniqueElements.UniqueVertexIntf;
  *  STD, and the STD points at any time to one 'current State'.
  *  <SP> stands for 'State Parameter'
  */
-public interface State<SK extends Comparable<SK>, TK extends Comparable<TK>> extends UniqueVertexIntf<SK, TK>{
+public interface State<SK extends Comparable<SK>, TK extends Comparable<TK>> extends UniqueVertexIntf<State<SK,TK>, Transition<TK,SK>, SK, TK>{
 
 	public SK getKey();
 	
