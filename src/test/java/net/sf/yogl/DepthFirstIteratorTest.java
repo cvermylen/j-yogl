@@ -1,25 +1,24 @@
 package net.sf.yogl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.powermock.reflect.Whitebox;
-
-import net.sf.yogl.exceptions.GraphException;
 
 public class DepthFirstIteratorTest {
 
-	class V extends Vertex<E>{
+	class V extends Vertex<V, E>{
 		List<E>el = new LinkedList<>();
 		String value;
 		
@@ -27,9 +26,21 @@ public class DepthFirstIteratorTest {
 		public List<E> getOutgoingEdges() {
 			return el;
 		}
+
+		@Override
+		public void tryAddEdgeFirst(E edge) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void tryAddEdgeLast(E edge) {
+			// TODO Auto-generated method stub
+			
+		}
 	};
 	
-	class E extends Edge<V> {
+	class E extends Edge<E, V> {
 		V v;
 		String value;
 		
@@ -41,7 +52,7 @@ public class DepthFirstIteratorTest {
 	
 	class DFImpl extends DepthFirstIterator<V, E>{
 
-		public DFImpl(V superRoot, Collection<V> roots) throws GraphException {
+		public DFImpl(V superRoot, Collection<V> roots) {
 			pushVertex(superRoot);
 		}
 		
@@ -95,7 +106,7 @@ public class DepthFirstIteratorTest {
 		assertEquals("e", testedValue.value);
 	}
 
-	@Test(expected=NoSuchElementException.class)
+	@Test
 	public void callingNextOnEmptyEdgeStackShouldThrowException() {
 		V o = new V();
 		
@@ -103,7 +114,10 @@ public class DepthFirstIteratorTest {
 		
 		assertEquals(1, df.vStack.size());
 		assertFalse(df.vStack.get(0).hasMoreEdges());
-		df.vStack.get(0).nextEdge();
+		assertThrows(NumberFormatException.class, () -> {
+			df.vStack.get(0).nextEdge();
+		  });
+		
 	}
 	
 	@Test

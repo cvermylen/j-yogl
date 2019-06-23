@@ -16,8 +16,6 @@ import net.sf.yogl.Edge;
 
 public class AdjKeyEdge <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Edge<AdjKeyEdge<VK, VV, EK, EV>, AdjKeyVertex<VK, VV, EK, EV>>{
 	
-	private AdjKeyGraph<VK, VV, EK, EV> graph;
-	
 	/** used by traversal algorithms to indicate the number
 	 * of times the edge has been visited.
 	 */

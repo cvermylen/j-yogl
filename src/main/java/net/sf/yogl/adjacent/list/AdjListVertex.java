@@ -53,22 +53,22 @@ public class AdjListVertex <VV, EV> extends Vertex<AdjListVertex<VV, EV>, AdjLis
     	return this.outgoingEdges;
     }
     
-    public AdjListEdge<VV, EV> addLinkLast(EV value) throws GraphCorruptedException {
+    public AdjListEdge<VV, EV> addLinkLast(EV value) {
     	return this.addEdgeLast(new AdjListEdge<>(value));
     }
     
-    public AdjListEdge<VV, EV> addEdgeLast(AdjListEdge<VV, EV> newEdge)throws GraphCorruptedException{
+    public AdjListEdge<VV, EV> addEdgeLast(AdjListEdge<VV, EV> newEdge){
         if (newEdge != null){
         	outgoingEdges.add(newEdge);
         }
         return newEdge;
     }
     
-    public AdjListEdge<VV, EV> addLinkFirst(EV value) throws GraphCorruptedException{
+    public AdjListEdge<VV, EV> addLinkFirst(EV value) {
     	return this.addEdgeFirst(new AdjListEdge<>(value));
     }
     
-    public AdjListEdge<VV, EV> addEdgeFirst(AdjListEdge<VV, EV> newEdge)throws GraphCorruptedException{
+    public AdjListEdge<VV, EV> addEdgeFirst(AdjListEdge<VV, EV> newEdge){
         if (newEdge != null){
         	outgoingEdges.add(0, newEdge);
         }

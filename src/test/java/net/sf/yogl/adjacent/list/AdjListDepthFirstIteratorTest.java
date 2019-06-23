@@ -1,49 +1,58 @@
 package net.sf.yogl.adjacent.list;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
 
 import net.sf.yogl.DepthFirstIterator;
+import net.sf.yogl.exceptions.GraphException;
 
 public class AdjListDepthFirstIteratorTest {
 
 	@Test
-	public void emptyGraphShouldNotBreakIterator() {
+	public void emptyGraphShouldNotBreakIterator() throws GraphException {
 		AdjListGraph<String, String> graph = new AdjListGraph<>();
-		AdjListDepthFirstIterator<String, String> a = graph.depthFirstIterator(1);
+		DepthFirstIterator<AdjListVertex<String, String>, AdjListEdge<String, String>> a = graph.depthFirstIterator(null, 1);
 		
 		assertFalse(a.hasNext());
 	}
 
 	@Test
-	public void rootNodesShouldBeReturnedInOrder() {
+	public void rootNodesShouldBeReturnedInOrder() throws GraphException {
 		AdjListGraph<String, String> graph = new AdjListGraph<>();
-		graph.addRootNode("a");
-		graph.addRootNode("4");
-		graph.addRootNode("b");
+		AdjListVertex<String, String> a = new AdjListVertex<>("a");
+		graph.addRootVertex(a);
+		AdjListVertex<String, String> b = new AdjListVertex<>("4");
+		graph.addRootVertex(b);
+		AdjListVertex<String, String> c = new AdjListVertex<>("b");
+		graph.addRootVertex(c);
 		
-		AdjListDepthFirstIterator<String, String> a = graph.depthFirstIterator(1);
+		DepthFirstIterator<AdjListVertex<String, String>, AdjListEdge<String, String>> df = graph.depthFirstIterator(Arrays.asList(a, b, c), 1);
 		
-		assertTrue(a.hasNext());
-		assertEquals("a", a.next());
-		assertTrue(a.hasNext());
-		assertEquals("4", a.next());
-		assertTrue(a.hasNext());
-		assertEquals("b", a.next());
-		assertFalse(a.hasNext());
+		assertTrue(df.hasNext());
+		assertEquals("a", df.next());
+		assertTrue(df.hasNext());
+		assertEquals("4", df.next());
+		assertTrue(df.hasNext());
+		assertEquals("b", df.next());
+		assertFalse(df.hasNext());
 	}
 	
 	@Test
-	public void nextShouldReturnRootNodesInOrder() {
+	public void nextShouldReturnRootNodesInOrder() throws GraphException {
 		AdjListGraph<String, String> graph = new AdjListGraph<>();
-		graph.addRootNode("root1");
-		graph.addRootNode("root2");
-		graph.addRootNode("root3");
+		AdjListVertex<String, String> a = new AdjListVertex<>("root1");
+		graph.addRootVertex(a);
+		AdjListVertex<String, String> b = new AdjListVertex<>("root2");
+		graph.addRootVertex(b);
+		AdjListVertex<String, String> c = new AdjListVertex<>("root3");
+		graph.addRootVertex(c);
 		
-		DepthFirstIterator df = graph.depthFirstIterator(0);
+		DepthFirstIterator<AdjListVertex<String, String>, AdjListEdge<String, String>> df = graph.depthFirstIterator(Arrays.asList(a, b, c), 0);
 		
 		assertTrue(df.hasNext());
 		assertEquals("root1", df.next());

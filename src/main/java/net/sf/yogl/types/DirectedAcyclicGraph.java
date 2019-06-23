@@ -6,7 +6,6 @@ import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
-import net.sf.yogl.impl.DuplicateVertexException;
 
 /** 
  * Cannot be used in conjunction with DupNodesGraph
@@ -25,7 +24,7 @@ public final class DirectedAcyclicGraph<VK extends Comparable<VK>, VV, EK extend
 	public VK[] getSuccessorNodesKeys(VK nodeKeyFrom, int steps)
 		throws GraphException {
 
-		return graph.getSuccessorNodesKeys(nodeKeyFrom, steps);
+		return this.getSuccessorNodesKeys(nodeKeyFrom, steps);
 	}
 
 	/** @see graph.ComparableKeysGraph.getNeighbors
@@ -33,7 +32,7 @@ public final class DirectedAcyclicGraph<VK extends Comparable<VK>, VV, EK extend
 	public VK[] getSuccessorNodesKeys(VK nodeKeyFrom, EK linkKey)
 		throws GraphException {
 
-		return graph.getSuccessorNodesKeys(nodeKeyFrom, linkKey);
+		return this.getSuccessorNodesKeys(nodeKeyFrom, linkKey);
 	}
 
 	/** @see graph.ComparableKeysGraph.getLinks
@@ -41,7 +40,7 @@ public final class DirectedAcyclicGraph<VK extends Comparable<VK>, VV, EK extend
 	public EK[] getLinksKeysBetween(VK nodeKeyFrom, VK nodeKeyTo) throws NodeNotFoundException
 		{
 
-		return graph.getLinksKeysBetween(nodeKeyFrom, nodeKeyFrom);
+		return this.getLinksKeysBetween(nodeKeyFrom, nodeKeyFrom);
 	}
 
 
@@ -57,7 +56,7 @@ public final class DirectedAcyclicGraph<VK extends Comparable<VK>, VV, EK extend
 			DuplicateLinkException,
 			GraphCorruptedException {
 
-		graph.addLinkLast(nodeKeyFrom, nodeKeyTo, linkKey, linkValue);
+		this.addLinkLast(nodeKeyFrom, nodeKeyTo, linkKey, linkValue);
 	}
 
 	/** @see graph.ComparableKeysGraph.removeNode
@@ -74,6 +73,6 @@ public final class DirectedAcyclicGraph<VK extends Comparable<VK>, VV, EK extend
 	public void removeLink(VK nodeFrom, VK nodeTo, EK linkKey)
 		throws GraphException {
 
-		graph.removeLink(nodeFrom, nodeTo, linkKey);
+		this.removeLink(nodeFrom, nodeTo, linkKey);
 	}
 }

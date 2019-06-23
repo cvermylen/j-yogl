@@ -12,6 +12,7 @@ import net.sf.yogl.Graph;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
+import net.sf.yogl.types.VertexType;
 
 /**
  * Adjacency list-based graph. Vertices are stored in a resizeable
@@ -42,7 +43,7 @@ public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>, Ad
 
 	private int outCount = 0;
 	
-	public AdjListGraph() throws GraphCorruptedException {
+	public AdjListGraph() {
 	}
 
 	
@@ -211,5 +212,47 @@ public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>, Ad
 	@Override
 	public int getNodeCount() {
 		throw new RuntimeException("Not yet implemented");
+	}
+
+
+	@Override
+	public int getLinkCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+	@Override
+	public Collection<AdjListVertex<V, E>> getVertices(VertexType type) throws GraphException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Collection<AdjListVertex<V, E>> getPredecessorVertices(AdjListVertex<V, E> vertex) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public AdjListVertex<V, E> getPredecessorVertex(AdjListVertex<V, E> destVertex, AdjListEdge<V, E> edge) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Collection<AdjListVertex<V, E>> getSuccessorVertices(AdjListVertex<V, E> vertex) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public VertexType getVertexType(AdjListVertex<V, E> vertex) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

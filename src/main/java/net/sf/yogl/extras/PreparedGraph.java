@@ -8,9 +8,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import net.sf.yogl.Edge;
+import net.sf.yogl.EdgeIntf;
 import net.sf.yogl.Graph;
-import net.sf.yogl.Vertex;
+import net.sf.yogl.VertexIntf;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 
@@ -21,7 +21,7 @@ import net.sf.yogl.exceptions.NodeNotFoundException;
  *  the graph is populated. Local structures are used to determine the position
  *  of each node in the graph.
  */
-public class PreparedGraph<V extends Vertex<E>, E extends Edge<V>, VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> {
+public class PreparedGraph<V extends VertexIntf<V, E>, E extends EdgeIntf<E, V>, VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> {
     
     private BiFunction<VK, VV, V> vertexCtor;
     

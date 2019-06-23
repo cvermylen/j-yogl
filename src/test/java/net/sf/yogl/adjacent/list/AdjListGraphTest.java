@@ -1,16 +1,16 @@
 package net.sf.yogl.adjacent.list;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AdjListGraphTest {
 
 	@Test
-	public void graphShouldBotBeEmpty() {
+	public void graphShouldBotBeEmpty(){
 		AdjListGraph<String, String> ndg = new AdjListGraph<>();
-		
-		ndg.addRootNode("1");
+		AdjListVertex<String, String> v = new AdjListVertex<>("1");
+		ndg.addRootVertex(v);
 		
 		assertFalse(ndg.isEmpty());
 	}
@@ -18,10 +18,12 @@ public class AdjListGraphTest {
 	@Test
 	public void getRootsShouldReturnAllRootNodes() {
 		AdjListGraph<String, String> ndg = new AdjListGraph<>();
-		
-		ndg.addRootNode("1");
-		ndg.addRootNode("2");
-		ndg.addRootNode("A");
+		AdjListVertex<String, String> v1 = new AdjListVertex<>("1");
+		ndg.addRootVertex(v1);
+		AdjListVertex<String, String> v2 = new AdjListVertex<>("2");
+		ndg.addRootVertex(v2);
+		AdjListVertex<String, String> va = new AdjListVertex<>("A");
+		ndg.addRootVertex(va);
 		
 		assertEquals(3, ndg.getRoots().size());
 	}
@@ -29,10 +31,12 @@ public class AdjListGraphTest {
 	@Test
 	public void graphShouldAllowDuplicateNodes() {
 		AdjListGraph<String, String> ndg = new AdjListGraph<>();
-		
-		ndg.addRootNode("1");
-		ndg.addRootNode("1");
-		ndg.addRootNode("1");
+		AdjListVertex<String, String> v1 = new AdjListVertex<>("1");
+		ndg.addRootVertex(v1);
+		AdjListVertex<String, String> v2 = new AdjListVertex<>("2");
+		ndg.addRootVertex(v2);
+		AdjListVertex<String, String> v3 = new AdjListVertex<>("3");
+		ndg.addRootVertex(v3);
 		
 		assertEquals(3, ndg.getRoots().size());
 	}
@@ -40,11 +44,14 @@ public class AdjListGraphTest {
 	@Test
 	public void clearAllVisitCountsShouldClearRootNodes() {
 		AdjListGraph<String, String> ndg = new AdjListGraph<>();
-		AdjListVertex<String, String>one = ndg.addRootNode("1");
+		AdjListVertex<String, String> v1 = new AdjListVertex<>("1");
+		AdjListVertex<String, String>one = ndg.addRootVertex(v1);
 		one.incVisitCounts();
-		AdjListVertex<String, String>two = ndg.addRootNode("2");
+		AdjListVertex<String, String> v2 = new AdjListVertex<>("2");
+		AdjListVertex<String, String>two = ndg.addRootVertex(v2);
 		two.incVisitCounts();
-		AdjListVertex<String, String>a = ndg.addRootNode("A");
+		AdjListVertex<String, String> va = new AdjListVertex<>("A");
+		AdjListVertex<String, String>a = ndg.addRootVertex(va);
 		a.incVisitCounts();
 		a.incVisitCounts();
 		
@@ -58,19 +65,26 @@ public class AdjListGraphTest {
 	@Test
 	public void clearAllVisitCountsShouldClearVerticesAndEdges() {
 		AdjListGraph<String, String> ndg = new AdjListGraph<>();
-		AdjListVertex<String, String>root = ndg.addRootNode("1");
+		AdjListVertex<String, String> v1 = new AdjListVertex<>("1");
+		AdjListVertex<String, String> va = new AdjListVertex<>("A");
+		AdjListVertex<String, String> vb = new AdjListVertex<>("B");
+		AdjListVertex<String, String> vc = new AdjListVertex<>("C");
+		AdjListVertex<String, String>root = ndg.addRootVertex(v1);
 		root.incVisitCounts();
-		AdjListEdge<String, String>a = root.addLinkLast("A");
+		AdjListEdge<String, String>a = new AdjListEdge<>(va);
+		root.addEdgeLast(a);
 		a.incVisitCounts();
 		AdjListVertex<String, String>two = a.setNextNode("2");
 		a.setNextVertex(two);
 		two.incVisitCounts();
-		AdjListEdge<String, String>b = two.addLinkLast("B");
+		AdjListEdge<String, String>b = new AdjListEdge<>(vb);
+		two.addEdgeLast(b);
 		b.incVisitCounts();
 		AdjListVertex<String, String>three = b.setNextNode("3");
 		b.setNextVertex(three);
 		three.incVisitCounts();
-		AdjListEdge<String, String>c = root.addLinkLast("C");
+		AdjListEdge<String, String>c = new AdjListEdge<>(vc);
+		root.addEdgeLast(c);
 		c.setNextVertex(three);
 		c.incVisitCounts();
 		
@@ -87,14 +101,21 @@ public class AdjListGraphTest {
 	@Test
 	public void nodesShouldBePrintedInOrder() {
 		AdjListGraph<String, String> ndg = new AdjListGraph<>();
-		AdjListVertex<String, String>root = ndg.addRootNode("1");
-		AdjListEdge<String, String>a = root.addLinkLast("A");
+		AdjListVertex<String, String> v1 = new AdjListVertex<>("1");
+		AdjListVertex<String, String>root = ndg.addRootVertex(v1);
+		AdjListVertex<String, String> va = new AdjListVertex<>("A");
+		AdjListVertex<String, String> vb = new AdjListVertex<>("B");
+		AdjListVertex<String, String> vc = new AdjListVertex<>("C");
+		AdjListEdge<String, String>a = new AdjListEdge<>(va);
+		root.addEdgeLast(a);
 		AdjListVertex<String, String>two = a.setNextNode("2");
 		a.setNextVertex(two);
-		AdjListEdge<String, String>b = two.addLinkLast("B");
+		AdjListEdge<String, String>b = new AdjListEdge<>(vb);
+		two.addEdgeLast(b);
 		AdjListVertex<String, String>three = b.setNextNode("3");
 		b.setNextVertex(three);
-		AdjListEdge<String, String>c = root.addLinkLast("C");
+		AdjListEdge<String, String>c = new AdjListEdge<>(vc);
+		root.addEdgeLast(c);
 		c.setNextVertex(three);
 		System.out.println("A simple graph containing the nodes 1, 2 and 3, where 1 is the root"); 
 		System.out.println(ndg);
@@ -103,14 +124,21 @@ public class AdjListGraphTest {
 	@Test
 	public void shouldProcessNodesAndLinks() {
 		AdjListGraph<String, String> ndg = new AdjListGraph<>();
-		AdjListVertex<String, String>root = ndg.addRootNode("1");
-		AdjListEdge<String, String>a = root.addLinkLast("A");
+		AdjListVertex<String, String> v1 = new AdjListVertex<>("1");
+		AdjListVertex<String, String>root = ndg.addRootVertex(v1);
+		AdjListVertex<String, String> va = new AdjListVertex<>("A");
+		AdjListVertex<String, String> vb = new AdjListVertex<>("B");
+		AdjListVertex<String, String> vc = new AdjListVertex<>("C");
+		AdjListEdge<String, String>a = new AdjListEdge<>(va);
+		root.addEdgeLast(a);
 		AdjListVertex<String, String>two = a.setNextNode("2");
 		a.setNextVertex(two);
-		AdjListEdge<String, String>b = two.addLinkLast("B");
+		AdjListEdge<String, String>b = new AdjListEdge<>(vb);
+		two.addEdgeLast(b);
 		AdjListVertex<String, String>three = b.setNextNode("3");
 		b.setNextVertex(three);
-		AdjListEdge<String, String>c = root.addLinkLast("C");
+		AdjListEdge<String, String>c = new AdjListEdge<>(vc);
+		root.addEdgeLast(c);
 		c.setNextVertex(three);
 		StringBuilder nodeValues = new StringBuilder();
 		StringBuilder linkValues = new StringBuilder();
@@ -133,9 +161,12 @@ public class AdjListGraphTest {
 	@Test
 	public void graphWithNoEdgeShouldReturnOutDegreeOfZero(){
 		AdjListGraph<String, String> ndg = new AdjListGraph<>();
-		ndg.addRootNode("1");
-		ndg.addRootNode("2");
-		ndg.addRootNode("3");
+		AdjListVertex<String, String> v1 = new AdjListVertex<>("1");
+		ndg.addRootVertex(v1);
+		AdjListVertex<String, String> v2 = new AdjListVertex<>("2");
+		ndg.addRootVertex(v2);
+		AdjListVertex<String, String> v3 = new AdjListVertex<>("3");
+		ndg.addRootVertex(v3);
 		
 		int outDegree = ndg.getMaxOutDegree();
 		
@@ -145,14 +176,21 @@ public class AdjListGraphTest {
 	@Test
 	public void twoEdgesToSameVertexShouldReturnOutDegreeOfTwo() {
 		AdjListGraph<String, String> ndg = new AdjListGraph<>();
-		AdjListVertex<String, String>root = ndg.addRootNode("1");
-		AdjListEdge<String, String>a = root.addLinkLast("A");
+		AdjListVertex<String, String> v1 = new AdjListVertex<>("1");
+		AdjListVertex<String, String>root = ndg.addRootVertex(v1);
+		AdjListVertex<String, String> va = new AdjListVertex<>("A");
+		AdjListVertex<String, String> vb = new AdjListVertex<>("B");
+		AdjListVertex<String, String> vc = new AdjListVertex<>("C");
+		AdjListEdge<String, String>a = new AdjListEdge<>(va);
+		root.addEdgeLast(a);
 		AdjListVertex<String, String>two = a.setNextNode("2");
 		a.setNextVertex(two);
-		AdjListEdge<String, String>b = two.addLinkLast("B");
+		AdjListEdge<String, String>b = new AdjListEdge<>(vb);
+		two.addEdgeLast(b);
 		AdjListVertex<String, String>three = b.setNextNode("3");
 		b.setNextVertex(three);
-		AdjListEdge<String, String>c = root.addLinkLast("C");
+		AdjListEdge<String, String>c = new AdjListEdge<>(vc);
+		root.addEdgeLast(c);
 		c.setNextVertex(three);
 		
 		int outDegree = ndg.getMaxOutDegree();
@@ -163,14 +201,21 @@ public class AdjListGraphTest {
 	@Test
 	public void countingOutDegreeShouldClearVisitCounters() {
 		AdjListGraph<String, String> ndg = new AdjListGraph<>();
-		AdjListVertex<String, String>root = ndg.addRootNode("1");
-		AdjListEdge<String, String>a = root.addLinkLast("A");
+		AdjListVertex<String, String> v1 = new AdjListVertex<>("1");
+		AdjListVertex<String, String>root = ndg.addRootVertex(v1);
+		AdjListVertex<String, String> va = new AdjListVertex<>("A");
+		AdjListVertex<String, String> vb = new AdjListVertex<>("B");
+		AdjListVertex<String, String> vc = new AdjListVertex<>("C");
+		AdjListEdge<String, String>a = new AdjListEdge<>(va);
+		root.addEdgeLast(a);
 		AdjListVertex<String, String>two = a.setNextNode("2");
 		a.setNextVertex(two);
-		AdjListEdge<String, String>b = two.addLinkLast("B");
+		AdjListEdge<String, String>b = new AdjListEdge<>(vb);
+		two.addEdgeLast(b);
 		AdjListVertex<String, String>three = b.setNextNode("3");
 		b.setNextVertex(three);
-		AdjListEdge<String, String>c = root.addLinkLast("C");
+		AdjListEdge<String, String>c = new AdjListEdge<>(vc);
+		root.addEdgeLast(c);
 		c.setNextVertex(three);
 		
 		ndg.getMaxOutDegree();

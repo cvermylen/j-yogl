@@ -253,52 +253,46 @@ public final class GraphUtil {
 		dest.tryAddVertex(toVertex, subgraph.isStartVertex(endNodeKey));
 
 		//Insert all links from subgraph into dest graph
-		LinksIterator<V, E> allLinks = subgraph.edgesIterator();
+		/*LinksIterator<V, E> allLinks = subgraph.edgesIterator();
 		while (allLinks.hasNext()) {
 			E link = allLinks.next();
 			link.setToVertex(allLinks.getDestination());
 			allLinks.getOriginator().tryAddEdgeLast(link);
-		}
+		}*/
 
 		//Connect subgraph to dest graph
 
-		Collection<V> predecessors = null;
+/*		Collection<V> predecessors = null;
 		predecessors = dest.getPredecessorVertices(insertionPointVertex);
 		Iterator<V> predsIter = predecessors.iterator();
 		while (predsIter.hasNext()) {
-//		for(int j=0; j < predecessors.size(); j++) { //for each predecessor
 			V pred = predsIter.next();
 			Collection<E> links = null;
 			links = dest.getLinksKeysBetween(pred, insertionPointVertex);
 			Iterator<E> linksIter = links.iterator();
 			while (linksIter.hasNext()) {
 				E edge = linksIter.next();
-//			for(int i=0; i < links.length; i++) {
-				//remove existing link
 				dest.removeLink(pred, insertionPointVertex, edge);
-				//and connect new subgraph
 				edge.setToVertex(startNodeKey);
 				pred.tryAddEdgeLast(edge);
 			}
-		}
+		}*/
 
-		Collection<V> successors = null;
+/*		Collection<V> successors = null;
 		successors = dest.getSuccessorVertices(insertionPointVertex, 1);
 		Iterator<V> succIter = successors.iterator();
 		while (succIter.hasNext()) {
 			V succ = succIter.next();
-//		for(int i=0; i < successors.size(); i++) {
 			Collection<E> links = null;
 			links = dest.getLinksKeysBetween(insertionPointVertex, succ);
 			Iterator<E> linksIter = links.iterator();
 			while (linksIter.hasNext()) {
 				E edge = linksIter.next();
 			
-//			for(int j=0; j < links.length; j++) {
 				dest.removeLink(insertionPointVertex, succ, edge);
 				edge.setToVertex(succ);
 				endNodeKey.tryAddEdgeLast(edge);
 			}
-		}
+		}*/
 	}
 }

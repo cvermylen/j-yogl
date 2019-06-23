@@ -78,7 +78,7 @@ public class GraphBuilderArray {
 			if(srcData[i].length == 4){
 				AdjKeyVertex<String, String, String, String> fromVertex = pg.getVertex(srcData[i][0]);
 				AdjKeyVertex<String, String, String, String> toVertex = pg.getVertex(srcData[i][1]);
-				AdjKeyEdge<String, String, String, String> edge = new AdjKeyEdge<>(toVertex, srcData[i][2], srcData[i][3]);
+				AdjKeyEdge<String, String, String, String> edge = new AdjKeyEdge<String, String, String, String>(srcData[i][1], srcData[i][2], srcData[i][3]);
 				fromVertex.tryAddEdgeLast(edge);
 			}
 		}
