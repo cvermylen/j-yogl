@@ -10,7 +10,8 @@ import net.sf.yogl.uniqueElements.UniqueVertexIntf;
  *  STD, and the STD points at any time to one 'current State'.
  *  <SP> stands for 'State Parameter'
  */
-public interface StateIntf<SK extends Comparable<SK>, TK extends Comparable<TK>> extends UniqueVertexIntf<StateIntf<SK,TK>, TransitionIntf<TK,SK>, SK, TK>{
+public interface StateIntf<SK extends Comparable<SK>, TK extends Comparable<TK>, DS extends StateIntf<SK, TK, DS, TS, PAR>, TS extends TransitionIntf<TK, SK, TS, DS, PAR>, PAR> 
+		extends UniqueVertexIntf<DS, TS, SK, TK>{
 
 	public SK getKey();
 	
@@ -37,7 +38,7 @@ public interface StateIntf<SK extends Comparable<SK>, TK extends Comparable<TK>>
 	 *         given parameter values.
 	 * @throws Exception
 	 */
-	public <SP> boolean checkBeforeEntry(StateIntf<SK, TK> comingFrom, TransitionIntf<TK, SK> using, SP parameter)
+	public boolean checkBeforeEntry(DS comingFrom, TS using, PAR parameter)
 			throws StdExecutionException;
 
 	/** The method is called when this state is set as the new 'current state'.
@@ -66,7 +67,7 @@ public interface StateIntf<SK extends Comparable<SK>, TK extends Comparable<TK>>
 	 * @throws Exception if thrown, the STD automaticall backtracks to the
 	 *         previous node.
 	 */
-	public <SP> boolean onEntry(StateIntf<SK, TK> comingFrom, TransitionIntf<TK, SK> using, SP parameter)
+	public boolean onEntry(DS comingFrom, TS using, PAR parameter)
 		throws StdExecutionException;
 
 	/** This method is called by the backtrack method on the previous state
@@ -92,7 +93,7 @@ public interface StateIntf<SK extends Comparable<SK>, TK extends Comparable<TK>>
 	 * @throws Exception even if an exception is raised, this state is the 
 	 *         'current state'.
 	 */
-	public <SP> boolean reEntryAfterBacktrack(StateIntf<SK, TK> from, TransitionIntf<TK, SK> using, SP parameter, Exception e)
+	public boolean reEntryAfterBacktrack(DS from, TS using, PAR parameter, Exception e)
 		throws StdExecutionException;
 
 	/** The method is called to check if this state can be left.
@@ -112,7 +113,7 @@ public interface StateIntf<SK extends Comparable<SK>, TK extends Comparable<TK>>
 	 *         according to the values in the context.
 	 * @throws Exception
 	 */
-	public <SP> boolean checkBeforeExit(StateIntf<SK, TK> navigatingTo, TransitionIntf<TK, SK> using, SP parameter)
+	public boolean checkBeforeExit(DS navigatingTo, TS using, PAR parameter)
 		throws StdExecutionException;
 
 	/** This method is executed when the STD leaves this state (identified
@@ -132,7 +133,7 @@ public interface StateIntf<SK extends Comparable<SK>, TK extends Comparable<TK>>
 	 *         on any other states or transitions. The STD ermains in its
 	 *         current state.
 	 */
-	public <SP> boolean onExit(StateIntf<SK, TK> navigatingTo, TransitionIntf<TK, SK> using, SP parameter)
+	public boolean onExit(DS navigatingTo, TS using, PAR parameter)
 		throws StdExecutionException;
 
 	/** This method is called by the backtrack method on the current state.
@@ -145,7 +146,7 @@ public interface StateIntf<SK extends Comparable<SK>, TK extends Comparable<TK>>
 	 * @return if the state can be left using this method
 	 * @throws Exception
 	 */
-	public <SP> boolean exitAfterBacktrack(StateIntf<SK, TK> navigatingTo, TransitionIntf<TK, SK> using, SP parameter)
+	public boolean exitAfterBacktrack(DS navigatingTo, TS using, PAR parameter)
 		throws StdExecutionException;
 
 	//public abstract Transition<TK, SK> getOutgoingEdge(TK nextTransitionKey);

@@ -9,7 +9,8 @@ import net.sf.yogl.uniqueElements.UniqueEdgeIntf;
  *  Before the link can be traversed, the 'testAction' can be triggered.
  *  In a STD, a node that does not implements this interface is a 'nil' node.
  */
-public interface TransitionIntf<TK extends Comparable<TK>, SK extends Comparable<SK>> extends UniqueEdgeIntf<TransitionIntf<TK, SK>, StateIntf<SK, TK>, TK, SK>{
+public interface TransitionIntf<TK extends Comparable<TK>, SK extends Comparable<SK>, TS extends TransitionIntf<TK, SK, TS, DS, PAR>, DS extends StateIntf<SK, TK, DS, TS, PAR>, PAR> 
+		extends UniqueEdgeIntf<TS, DS, TK, SK>{
 
 	public TK getKey();
 	
@@ -28,7 +29,7 @@ public interface TransitionIntf<TK extends Comparable<TK>, SK extends Comparable
 	 *         is 'false', there will be no backtrack operation on the from
 	 *         state.
 	 */
-	public <SP> boolean doTransition(StateIntf<SK, TK> from, SP parameter, StateIntf<SK, TK> to)
+	public boolean doTransition(DS from, PAR parameter)
 		throws StdExecutionException;
 
 	/** The method is called during a backtrack operation.
@@ -42,7 +43,7 @@ public interface TransitionIntf<TK extends Comparable<TK>, SK extends Comparable
 	 * @return
 	 * @throws Exception
 	 */
-	public <SP> boolean actionAfterBacktrack(StateIntf<SK, TK> from, SP parameter, StateIntf<SK, TK> to, Exception e)
+	public boolean actionAfterBacktrack(DS from, PAR parameter, Exception e)
 		throws StdExecutionException;
 
 	/** returns a predictable value of the action. It is used to determine
@@ -57,6 +58,6 @@ public interface TransitionIntf<TK extends Comparable<TK>, SK extends Comparable
 	 *          will not be performed.
 	 *  @exception Exception 
 	 */
-	public <SP> boolean testAction(StateIntf<SK, TK> from, SP parameter, StateIntf<SK, TK> to)
+	public boolean testAction(DS from, PAR parameter)
 		throws StdExecutionException;
 }
