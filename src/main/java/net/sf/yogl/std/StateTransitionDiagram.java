@@ -11,9 +11,7 @@ import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.LinkNotFoundException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.exceptions.StdExecutionException;
-import net.sf.yogl.uniqueElements.UniqueEdgeIntf;
 import net.sf.yogl.uniqueElements.UniqueElementsGraph;
-import net.sf.yogl.uniqueElements.UniqueVertex;
 
 /** The STD implementation is based on a directed graph with the following
  *  restrictions:
@@ -29,7 +27,7 @@ import net.sf.yogl.uniqueElements.UniqueVertex;
  *  error in the Std (Std damaged, not usable anymore). 
  */
 
-public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Comparable<TK>> extends UniqueElementsGraph <SK, TK>{
+public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Comparable<TK>> extends UniqueElementsGraph <StateIntf<SK, TK>, TransitionIntf<TK, SK>, SK, TK>{
 	/** current graph the iterator is pointing to
 	 */
 //	private Graph<SK extends Comparable<SK>,TK extends Comparable<TK>, X extends UniqueVertex<SK, TK> & State<SK, TK>, Y extends UniqueEdge<TK, SK> & Transition<TK, SK>> graph = null;
@@ -39,8 +37,8 @@ public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Compar
 	 *  The top value (peek) contains the 'current' value.
 	 *  The vector element 0 refers to the initial value.
 	 */
-	private Stack<State<SK, TK>> vertexKeysPath = new Stack<>();
-	private Stack<Transition<TK, SK>> transitionPath = new Stack<>();
+	private Stack<StateIntf<SK, TK>> vertexKeysPath = new Stack<>();
+	private Stack<TransitionIntf<TK, SK>> transitionPath = new Stack<>();
 
 	/** Builds up the state transition diagram with the given graph.
 	 *  Checks that each node is a State and each link is a Transition.
@@ -71,10 +69,10 @@ public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Compar
 	 *  @exception LinkNotFoundException if the transition identified by 'key'
 	 *             is not attached to the current state
 	 */
-	public <SP, T extends Transition<TK, SK>> boolean doActiveTransition(T transition, SP parameter)
+	public <SP, T extends TransitionIntf<TK, SK>> boolean doActiveTransition(T transition, SP parameter)
 		throws StdExecutionException, NodeNotFoundException, LinkNotFoundException {
 
-		State<SK, TK> currentState = vertexKeysPath.peek();
+		StateIntf<SK, TK> currentState = vertexKeysPath.peek();
 		if (transition == null) {
 			LinkNotFoundException e =
 				new LinkNotFoundException(
@@ -82,7 +80,7 @@ public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Compar
 			e.setLink(null);
 			throw e;
 		}
-		State<SK, TK> nextState = transition.getToVertex();
+		StateIntf<SK, TK> nextState = transition.getToVertex();
 		//check the path
 		if ((currentState.checkBeforeExit(nextState, transition, parameter))
 			&& (transition.testAction(currentState, parameter, nextState))
@@ -129,7 +127,7 @@ public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Compar
 	 *  @exception LinkNotFoundException if the transition identified by 'key'
 	 *             is not attached to the current state
 	 */
-	public <SP> boolean doTransition(Transition<TK, SK> useThisTransition)
+	public <SP> boolean doTransition(TransitionIntf<TK, SK> useThisTransition)
 		throws StdExecutionException, NodeNotFoundException, LinkNotFoundException {
 
 		return doActiveTransition(useThisTransition, null);
@@ -143,10 +141,10 @@ public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Compar
 	 *         identification of the current node does not match any valid
 	 *         state in the graph).
 	 */
-	public Collection<Transition<TK, SK>> getTransitions() throws NodeNotFoundException {
-		Collection<Transition<TK, SK>> list = new ArrayList<>();
+	public Collection<TransitionIntf<TK, SK>> getTransitions() throws NodeNotFoundException {
+		Collection<TransitionIntf<TK, SK>> list = new ArrayList<>();
 		if (vertexKeysPath.size() > 0) {
-			State<SK, TK> currentState = vertexKeysPath.peek();
+			StateIntf<SK, TK> currentState = vertexKeysPath.peek();
 			list = currentState.getOutgoingEdges();
 		}
 		return list;
@@ -155,7 +153,7 @@ public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Compar
 	/** Return the Transition object attached to the current node and
 	 *  identified by the given key.
 	 */
-	public Transition<TK, SK> getTransition(TK transitionKey) throws NodeNotFoundException {
+	public TransitionIntf<TK, SK> getTransition(TK transitionKey) throws NodeNotFoundException {
 		return vertexKeysPath.peek().getOutgoingEdge(transitionKey);
 	}
 
@@ -170,7 +168,7 @@ public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Compar
 	/** Returns the a list of all transition keys going out from the current node
 	 */
 	public Collection<TK> getTransitionKeys() throws GraphCorruptedException {
-		Collection<Transition<TK, SK>> transitions = vertexKeysPath.peek().getOutgoingEdges();
+		Collection<TransitionIntf<TK, SK>> transitions = vertexKeysPath.peek().getOutgoingEdges();
 		return transitions.stream().map(transition -> {return transition.getKey();})
 				.collect(Collectors.toList());
 	}
@@ -178,7 +176,7 @@ public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Compar
 	/** Returns the value of all states that are accessible from the current
 	 *  state, or <null> if the if the current state is an end state. 
 	 */
-	public Collection<State<SK, TK>> getNextStates() throws GraphCorruptedException {
+	public Collection<StateIntf<SK, TK>> getNextStates() throws GraphCorruptedException {
 		return vertexKeysPath.peek().getOutgoingEdges().stream().map(transition ->transition.getToVertex()).collect(Collectors.toList());
 	}
 
@@ -188,7 +186,7 @@ public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Compar
 	 *         identification of the current node does not match any valid
 	 *         state in the graph).
 	 */
-	public State<SK, TK> getCurrentState() {
+	public StateIntf<SK, TK> getCurrentState() {
 
 		return vertexKeysPath.peek();
 	}
@@ -197,7 +195,7 @@ public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Compar
 	 * @return the value of the currentState key value. This key is unique in
 	 *  the STD.
 	 */
-	public State<SK, TK> getCurrentStateKey(){
+	public StateIntf<SK, TK> getCurrentStateKey(){
 		return vertexKeysPath.peek();
 	}
 	
@@ -230,9 +228,9 @@ public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Compar
 		if (vertexKeysPath.size() < 1)
 			return false;
 
-		State<SK, TK> currentState = vertexKeysPath.pop();
-		Transition<TK, SK> t = transitionPath.peek();
-		State<SK, TK> previousState = vertexKeysPath.peek();
+		StateIntf<SK, TK> currentState = vertexKeysPath.pop();
+		TransitionIntf<TK, SK> t = transitionPath.peek();
+		StateIntf<SK, TK> previousState = vertexKeysPath.peek();
 		vertexKeysPath.push(currentState);
 		if (!currentState.exitAfterBacktrack(previousState, t, parameter))
 			return false;
@@ -252,11 +250,11 @@ public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Compar
 	 *  @exception StdExecutionException if an error occured during the
 	 *  execution of one of the 3 methods.
 	 */
-	public <SP> boolean testActiveTransition(Transition<TK, SK> transition, SP parameter)
+	public <SP> boolean testActiveTransition(TransitionIntf<TK, SK> transition, SP parameter)
 		throws StdExecutionException, NodeNotFoundException, LinkNotFoundException {
 
 		boolean found = false;
-		State<SK, TK> currentState = vertexKeysPath.peek();
+		StateIntf<SK, TK> currentState = vertexKeysPath.peek();
 		if (transition == null) {
 			LinkNotFoundException e =
 				new LinkNotFoundException(
@@ -265,7 +263,7 @@ public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Compar
 			e.setLink(null);
 			throw e;
 		}
-		State<SK, TK> nextState = transition.getToVertex();
+		StateIntf<SK, TK> nextState = transition.getToVertex();
 		found =
 			(currentState.checkBeforeExit(nextState, transition, parameter)
 				& transition.testAction(currentState, parameter, nextState)
@@ -278,16 +276,16 @@ public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Compar
 	 *  @Return the Transition object that has been used to go to the next State
 	 *          or null if the Std remains in the same state.
 	 */
-	public <SP> Transition<TK, SK> doAutoTransition(SP parameter)
+	public <SP> TransitionIntf<TK, SK> doAutoTransition(SP parameter)
 		throws
 			StdExecutionException,
 			NodeNotFoundException,
 			LinkNotFoundException,
 			GraphCorruptedException {
-		State<SK, TK> currentState = vertexKeysPath.peek();
-		Iterator<Transition<TK, SK>> possibleTransitionIter = currentState.getOutgoingEdges().iterator();
+		StateIntf<SK, TK> currentState = vertexKeysPath.peek();
+		Iterator<TransitionIntf<TK, SK>> possibleTransitionIter = currentState.getOutgoingEdges().iterator();
 		while (possibleTransitionIter.hasNext()) {
-			Transition<TK, SK> possibleTransition = possibleTransitionIter.next();
+			TransitionIntf<TK, SK> possibleTransition = possibleTransitionIter.next();
 			if (possibleTransition.testAction(currentState, parameter, possibleTransition.getToVertex())) {
 				doActiveTransition(possibleTransition, parameter);
 				return possibleTransition;
@@ -302,7 +300,7 @@ public class StateTransitionDiagram<SK extends Comparable<SK>, TK extends Compar
 	 *  @return true if the transition is possible, false otherwise
 	 */
 
-	public boolean testTransition(Transition<TK, SK> transition)
+	public boolean testTransition(TransitionIntf<TK, SK> transition)
 		throws StdExecutionException, NodeNotFoundException, LinkNotFoundException {
 		return testActiveTransition(transition, null);
 	}

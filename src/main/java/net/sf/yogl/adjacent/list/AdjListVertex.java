@@ -19,7 +19,7 @@ import net.sf.yogl.exceptions.GraphCorruptedException;
  *  V = user value Object
  */
 
-public class AdjListVertex <VV, EV> extends Vertex<AdjListEdge<VV, EV>> {
+public class AdjListVertex <VV, EV> extends Vertex<AdjListVertex<VV, EV>, AdjListEdge<VV, EV>> {
         
     private ArrayList<AdjListEdge<VV, EV>> outgoingEdges = new ArrayList<>();
     
@@ -53,7 +53,7 @@ public class AdjListVertex <VV, EV> extends Vertex<AdjListEdge<VV, EV>> {
     	return this.outgoingEdges;
     }
     
-    public AdjListEdge<VV, EV> addLinkLast(EV value) {
+    public AdjListEdge<VV, EV> addLinkLast(EV value) throws GraphCorruptedException {
     	return this.addEdgeLast(new AdjListEdge<>(value));
     }
     
@@ -64,7 +64,7 @@ public class AdjListVertex <VV, EV> extends Vertex<AdjListEdge<VV, EV>> {
         return newEdge;
     }
     
-    public AdjListEdge<VV, EV> addLinkFirst(EV value){
+    public AdjListEdge<VV, EV> addLinkFirst(EV value) throws GraphCorruptedException{
     	return this.addEdgeFirst(new AdjListEdge<>(value));
     }
     
@@ -98,4 +98,16 @@ public class AdjListVertex <VV, EV> extends Vertex<AdjListEdge<VV, EV>> {
     	
     	return result;
     }
+
+	@Override
+	public void tryAddEdgeFirst(AdjListEdge<VV, EV> edge) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void tryAddEdgeLast(AdjListEdge<VV, EV> edge) {
+		// TODO Auto-generated method stub
+		
+	}
 }

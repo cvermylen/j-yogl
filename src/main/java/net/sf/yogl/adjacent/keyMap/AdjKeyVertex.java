@@ -19,7 +19,7 @@ import net.sf.yogl.exceptions.GraphCorruptedException;
  *  V = user value Object
  */
 
-public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV >  extends Vertex<AdjKeyEdge<VK, VV, EK, EV>>{
+public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV >  extends Vertex<AdjKeyVertex<VK, VV, EK, EV>, AdjKeyEdge<VK, VV, EK, EV>>{
         
     /** contains the list of all adjacent vertices.
      */

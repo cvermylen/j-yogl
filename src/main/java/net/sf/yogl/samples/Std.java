@@ -1,19 +1,14 @@
    
 package net.sf.yogl.samples;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.sf.yogl.adjacent.keyMap.AdjKeyGraph;
 import net.sf.yogl.exceptions.StdExecutionException;
 import net.sf.yogl.samples.Std.MyObject;
-import net.sf.yogl.samples.Std.MyState;
-import net.sf.yogl.samples.Std.MyTransition;
 import net.sf.yogl.std.State;
+import net.sf.yogl.std.StateIntf;
 import net.sf.yogl.std.StateTransitionDiagram;
 import net.sf.yogl.std.Transition;
-import net.sf.yogl.uniqueElements.UniqueEdge;
-import net.sf.yogl.uniqueElements.UniqueVertex;
+import net.sf.yogl.std.TransitionIntf;
 
 /** Example with StateTransitionDiagram
  */
@@ -30,53 +25,53 @@ public class Std {
 		}
 
 	}
-	class MyState extends UniqueVertex<String, String> implements State<String, String> {
+	class MyState extends State<String, String> {
 		
 		public MyState (String key){
 			super(key);
 		}
 		
-		public boolean onEntry(Transition<String, String> using, MyObject parameter) throws StdExecutionException {
+		public boolean onEntry(TransitionIntf<String, String> using, MyObject parameter) throws StdExecutionException {
 			return true;
 		}
 
 		@Override
-		public <SP> boolean checkBeforeEntry(State<String, String> comingFrom, Transition<String, String> using,
+		public <SP> boolean checkBeforeEntry(StateIntf<String, String> comingFrom, TransitionIntf<String, String> using,
 				SP parameter) throws StdExecutionException {
 			// TODO Auto-generated method stub
 			return false;
 		}
 
 		
-		public <MyObject> boolean onEntry(State<String, String> comingFrom, Transition<String, String> using, MyObject parameter)
+		public <MyObject> boolean onEntry(StateIntf<String, String> comingFrom, TransitionIntf<String, String> using, MyObject parameter)
 				throws StdExecutionException {
 			// TODO Auto-generated method stub
 			return false;
 		}
 
 		@Override
-		public <SP> boolean reEntryAfterBacktrack(State<String, String> from, Transition<String, String> using,
+		public <SP> boolean reEntryAfterBacktrack(StateIntf<String, String> from, TransitionIntf<String, String> using,
 				SP parameter, Exception e) throws StdExecutionException {
 			// TODO Auto-generated method stub
 			return false;
 		}
 
 		@Override
-		public <SP> boolean checkBeforeExit(State<String, String> navigatingTo, Transition<String, String> using,
+		public <SP> boolean checkBeforeExit(StateIntf<String, String> navigatingTo, TransitionIntf<String, String> using,
 				SP parameter) throws StdExecutionException {
 			// TODO Auto-generated method stub
 			return false;
 		}
 
 		@Override
-		public <SP> boolean onExit(State<String, String> navigatingTo, Transition<String, String> using, SP parameter)
+		public <SP> boolean onExit(StateIntf<String, String> navigatingTo, TransitionIntf<String, String> using, SP parameter)
 				throws StdExecutionException {
 			// TODO Auto-generated method stub
 			return false;
 		}
 
 		@Override
-		public <SP> boolean exitAfterBacktrack(State<String, String> navigatingTo, Transition<String, String> using,
+		public <SP> boolean exitAfterBacktrack(StateIntf<String, String> navigatingTo, TransitionIntf<String, String> using,
 				SP parameter) throws StdExecutionException {
 			// TODO Auto-generated method stub
 			return false;
@@ -85,7 +80,7 @@ public class Std {
 
 	}
 
-	class MyTransition extends UniqueEdge<String, String> implements Transition<String, String>{
+	class MyTransition extends Transition<String, String>{
 		
 		public MyTransition(String key) {
 			super(key);
@@ -99,7 +94,7 @@ public class Std {
 
 
 		@Override
-		public <SP> boolean doTransition(State<String, String> from, SP parameter, State<String, String> to)
+		public <SP> boolean doTransition(StateIntf<String, String> from, SP parameter, StateIntf<String, String> to)
 				throws StdExecutionException {
 			// TODO Auto-generated method stub
 			return false;
@@ -107,7 +102,7 @@ public class Std {
 
 
 		@Override
-		public <SP> boolean actionAfterBacktrack(State<String, String> from, SP parameter, State<String, String> to,
+		public <SP> boolean actionAfterBacktrack(StateIntf<String, String> from, SP parameter, StateIntf<String, String> to,
 				Exception e) throws StdExecutionException {
 			// TODO Auto-generated method stub
 			return false;
@@ -115,7 +110,7 @@ public class Std {
 
 
 		@Override
-		public <SP> boolean testAction(State<String, String> from, SP parameter, State<String, String> to)
+		public <SP> boolean testAction(StateIntf<String, String> from, SP parameter, StateIntf<String, String> to)
 				throws StdExecutionException {
 			// TODO Auto-generated method stub
 			return false;

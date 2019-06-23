@@ -11,8 +11,10 @@ import java.util.function.Function;
 
 import net.sf.yogl.DepthFirstIterator;
 import net.sf.yogl.Edge;
+import net.sf.yogl.EdgeIntf;
 import net.sf.yogl.Graph;
 import net.sf.yogl.Vertex;
+import net.sf.yogl.VertexIntf;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.types.VertexType;
@@ -31,7 +33,7 @@ public final class GraphUtil {
 	 *  The resulting subgraph is a new graph, with new vertices and edges, will contain one entry point
 	 *  and one exit point.
 	 */
-	public static <V extends Vertex<E>, E extends Edge<V>> void subgraph(Graph<V, E> graph, Graph<V, E> result,
+	public static <V extends VertexIntf<V, E>, E extends EdgeIntf<E, V>> void subgraph(Graph<V, E> graph, Graph<V, E> result,
 			V startNode, V endNodeKey, Function<V, V> vertexCtor, BiFunction<V, E, E> edgeCtor) throws GraphException {
 
 		if (graph == null) {
@@ -76,7 +78,7 @@ public final class GraphUtil {
 						result.tryAddVertex(rightDup, graph.isStartVertex(rightNodeKey));
 					}
 					
-					result.tryAddLinkLast(leftDup, edgeCtor.apply(rightDup, link));
+					leftDup.tryAddEdgeLast(edgeCtor.apply(rightDup, link));
 					leftNodeKey = rightNodeKey;
 				}
 			}
@@ -86,7 +88,7 @@ public final class GraphUtil {
 
 	/** Returns the part of the graph that is above the given node
 	 */
-	public static <V extends Vertex<E>, E extends Edge<V>> void headgraph(Graph<V, E> source, Graph<V, E> destination, V endNodeKey,
+	public static <V extends VertexIntf<V, E>, E extends EdgeIntf<E, V>> void headgraph(Graph<V, E> source, Graph<V, E> destination, V endNodeKey,
 			Function<V, V> vertexCtor, BiFunction<V, E, E> edgeCtor)
 			throws GraphException {
 
@@ -110,7 +112,7 @@ public final class GraphUtil {
 	/** Returns the part of the graph that is underneath the given node.
 	 *
 	 */
-	public static <V extends Vertex<E>, E extends Edge<V>> void tailgraph(Graph<V, E> source, Graph<V, E> destination, V startNodeKey,
+	public static <V extends VertexIntf<V, E>, E extends EdgeIntf<E, V>> void tailgraph(Graph<V, E> source, Graph<V, E> destination, V startNodeKey,
 			Function<V, V> vertexCtor, BiFunction<V, E, E> edgeCtor)
 			throws GraphException {
 
@@ -149,7 +151,7 @@ public final class GraphUtil {
 	 *  @param graph the whole graph to be stringified
 	     *  @param indent justify some tabs from the left
 	 */
-	public static <V extends Vertex<E>, E extends Edge<V>> String depthFirstToString(Graph<V, E> graph, int indent)
+	public static <V extends VertexIntf<V, E>, E extends EdgeIntf<E, V>> String depthFirstToString(Graph<V, E> graph, int indent)
 		throws GraphException {
 
 		StringBuffer result = new StringBuffer();
@@ -209,7 +211,7 @@ public final class GraphUtil {
 	 *  @param insertionPoint node to be replaced by the subgraph
 	 *  @param subgraph to be inserted at 'insertion point'
 	 */
-	public static <V extends Vertex<E>, E extends Edge<V>> void insertSubgraph(Graph<V, E> dest,
+	public static <V extends VertexIntf<V, E>, E extends EdgeIntf<E, V>> void insertSubgraph(Graph<V, E> dest,
 			V insertionPointVertex, Graph<V, E> subgraph, Function<V, V> vertexCtor) throws GraphException {
 
 		/* Do the following validation:
@@ -254,7 +256,8 @@ public final class GraphUtil {
 		LinksIterator<V, E> allLinks = subgraph.edgesIterator();
 		while (allLinks.hasNext()) {
 			E link = allLinks.next();
-			dest.tryAddLinkLast(allLinks.getOriginator(), allLinks.getDestination(), link, null);
+			link.setToVertex(allLinks.getDestination());
+			allLinks.getOriginator().tryAddEdgeLast(link);
 		}
 
 		//Connect subgraph to dest graph
@@ -274,7 +277,8 @@ public final class GraphUtil {
 				//remove existing link
 				dest.removeLink(pred, insertionPointVertex, edge);
 				//and connect new subgraph
-				dest.addLinkLast(pred, startNodeKey, edge, null);
+				edge.setToVertex(startNodeKey);
+				pred.tryAddEdgeLast(edge);
 			}
 		}
 
@@ -292,7 +296,8 @@ public final class GraphUtil {
 			
 //			for(int j=0; j < links.length; j++) {
 				dest.removeLink(insertionPointVertex, succ, edge);
-				dest.addLinkLast(endNodeKey, succ, edge, null);
+				edge.setToVertex(succ);
+				endNodeKey.tryAddEdgeLast(edge);
 			}
 		}
 	}

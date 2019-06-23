@@ -14,7 +14,7 @@ import net.sf.yogl.Edge;
  *  - the interger 'vertex' value points to the destination vertex.
  */
 
-public class AdjKeyEdge <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Edge<AdjKeyVertex<VK, VV, EK, EV>>{
+public class AdjKeyEdge <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Edge<AdjKeyEdge<VK, VV, EK, EV>, AdjKeyVertex<VK, VV, EK, EV>>{
 	
 	private AdjKeyGraph<VK, VV, EK, EV> graph;
 	

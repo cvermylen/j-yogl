@@ -9,9 +9,9 @@ import java.util.function.Consumer;
 import net.sf.yogl.BreadthFirstIterator;
 import net.sf.yogl.DepthFirstIterator;
 import net.sf.yogl.Graph;
-import net.sf.yogl.adjacent.keyMap.ComparableKeysGraph;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
+import net.sf.yogl.exceptions.NodeNotFoundException;
 
 /**
  * Adjacency list-based graph. Vertices are stored in a resizeable
@@ -45,17 +45,24 @@ public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>, Ad
 	public AdjListGraph() throws GraphCorruptedException {
 	}
 
-	@Override
+	
 	public AdjListVertex<V, E> addRootVertex(AdjListVertex<V, E> v) {
 		this.roots.add(v);
 		return v;
 	}
 
-	public AdjListVertex<V, E> addRootNode(V v) {
-		AdjListVertex<V, E> result = new AdjListVertex<>(v);
-		this.roots.add(result);
-		return result;
+	@Override
+	public AdjListVertex<V, E> tryAddVertex(AdjListVertex<V, E> vertex, boolean isRoot) {
+		if (isRoot)
+			this.roots.add(vertex);
+		return vertex;
 	}
+	
+	@Override
+	public boolean isStartVertex (AdjListVertex<V, E> vertex) {
+		return roots.contains(vertex);
+	}
+	
 	/**
 	 * @param maxCycles fixes the number of times each node can be
 	 *        visited. A value of 1 indicates that each node will be
@@ -64,11 +71,11 @@ public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>, Ad
 	 *        an infinite value.
 	 * @param startingNodeKey is the entry point used for the traversal. 
 	 * 		If null, the algorithm will use all nodes marked as 'START'.
+	 * @throws NodeNotFoundException 
 	 */
 	@Override
 	public BreadthFirstIterator<AdjListVertex<V, E>, AdjListEdge<V, E>> breadthFirstIterator(
-		int maxCycles)
-		throws GraphException {
+		int maxCycles) throws NodeNotFoundException{
 		return new BreadthFirstIterator<AdjListVertex<V, E>, AdjListEdge<V, E>>(this, maxCycles);
 	}
 
@@ -83,19 +90,17 @@ public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>, Ad
 	public void deepCopy(Graph<AdjListVertex<V, E>, AdjListEdge<V, E>> dest) throws GraphException {
 
 		for(AdjListVertex<V, E> root: roots){
-			dest.addRootVertex(root.deepCopy());
+			dest.tryAddVertex(root.deepCopy(), true);
 		}
 	}
 
 	/** @see ComparableKeysGraph#depthFirstIterator
 	 */
-	public DepthFirstIterator<AdjListVertex<V, E>, AdjListEdge<V, E>> depthFirstIterator(int maxCycling)
+	@Override
+	public DepthFirstIterator<AdjListVertex<V, E>, AdjListEdge<V, E>> depthFirstIterator(Collection<AdjListVertex<V, E>> startVertices, int maxCycling)
 		throws GraphException {
 		
-		AdjListVertex<V, E> artificialRoot = new AdjListVertex<>();
-		roots.stream().forEach(r -> {artificialRoot.addEdgeLast(new AdjListEdge<V, E>(r));});
-		
-		return new DepthFirstIterator<AdjListVertex<V, E>, AdjListEdge<V, E>>(this, maxCycling);
+		return new DepthFirstIterator<AdjListVertex<V, E>, AdjListEdge<V, E>>(startVertices, maxCycling);
 	}
 
 	@Override
