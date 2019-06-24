@@ -17,7 +17,7 @@ public final class NoDataGraph extends KeyValueGraph<String, Object, String, Obj
 	}
 
 	public void tryAddNode(String nodeKey, boolean isRoot) throws GraphException{
-		super.tryAddVertex(new KeyValueVertex<String, Object, String, Object>(nodeKey, null), isRoot);
+		super.addRootVertex(new KeyValueVertex<String, Object, String, Object>(nodeKey, null), isRoot);
 	}
 	
 	public void tryAddLinkFirst(String fromVertexKey, String toVertexKey, String edgeKey) {

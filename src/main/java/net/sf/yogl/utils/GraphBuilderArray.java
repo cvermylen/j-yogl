@@ -71,7 +71,7 @@ public class GraphBuilderArray {
 		for (int i = 0; i < srcData.length; i++) {
 			if(srcData[i].length == 2){
 				KeyValueVertex<String, String, String, String> vertex = new KeyValueVertex<>(srcData[i][0], srcData[i][1]);
-				pg.tryAddVertex(vertex, nonRootVerticeKeys.contains(srcData[i][0]));
+				pg.addRootVertex(vertex, nonRootVerticeKeys.contains(srcData[i][0]));
 			}
 		}
 		for (int i = 0; i < srcData.length; i++) {

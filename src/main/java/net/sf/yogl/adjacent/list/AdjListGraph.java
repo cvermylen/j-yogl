@@ -53,7 +53,7 @@ public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>, Ad
 	}
 
 	@Override
-	public AdjListVertex<V, E> tryAddVertex(AdjListVertex<V, E> vertex, boolean isRoot) {
+	public AdjListVertex<V, E> addRootVertex(AdjListVertex<V, E> vertex, boolean isRoot) {
 		if (isRoot)
 			this.roots.add(vertex);
 		return vertex;
@@ -91,7 +91,7 @@ public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>, Ad
 	public void deepCopy(Graph<AdjListVertex<V, E>, AdjListEdge<V, E>> dest) throws GraphException {
 
 		for(AdjListVertex<V, E> root: roots){
-			dest.tryAddVertex(root.deepCopy(), true);
+			dest.addRootVertex(root.deepCopy(), true);
 		}
 	}
 

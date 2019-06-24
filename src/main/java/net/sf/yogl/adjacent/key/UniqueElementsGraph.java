@@ -44,7 +44,7 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 	/** Will duplicate the content of the vertex and insert it into this graph.
 	 * Method is used to copy vertices from graph to graph
 	 */
-	public VC tryAddVertex (VC vertex, boolean isRoot) {
+	public VC addRootVertex (VC vertex, boolean isRoot) {
 		VC result = null;
 		if(!existsNode(vertex.getKey())) {
 			this.vertices.put(vertex.getKey(), vertex);

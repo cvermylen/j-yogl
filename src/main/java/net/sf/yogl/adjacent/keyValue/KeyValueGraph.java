@@ -64,7 +64,7 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	/** Will duplicate the content of the vertex and insert it into this graph.
 	 * Method is used to copy vertices from graph to graph
 	 */
-	public KeyValueVertex<VK, VV, EK, EV> tryAddVertex (KeyValueVertex<VK, VV, EK, EV> vertex, boolean isRoot) {
+	public KeyValueVertex<VK, VV, EK, EV> addRootVertex (KeyValueVertex<VK, VV, EK, EV> vertex, boolean isRoot) {
 		KeyValueVertex<VK, VV, EK, EV> result = null;
 		if(!existsNode(vertex.getKey())) {
 			this.vertices.put(vertex.getKey(), vertex);

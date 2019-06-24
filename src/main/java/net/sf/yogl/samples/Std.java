@@ -121,7 +121,7 @@ public class Std {
 			MyState[] stateArr = new MyState[4];
 			if(stdDes[i].length == 2){
 				stateArr[i] = new MyState(stdDes[i][0]);
-				std.tryAddVertex(stateArr[i], i == 0);
+				std.addRootVertex(stateArr[i], i == 0);
 			}else if(stdDes[i].length == 3){
 				MyTransition transition = new MyTransition(stdDes[i][2]);
 				transition.setToVertex(std.findVertexByKey(stdDes[1][1]));

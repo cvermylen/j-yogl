@@ -98,7 +98,7 @@ public interface Graph<VC extends Vertex<VC, TC>, TC extends Edge<TC, VC>> {
 	public DepthFirstIterator<VC, TC> depthFirstIterator(Collection<VC> startVertex, int maxCycling)
 		throws GraphException;
 	
-	public VC tryAddVertex(VC vertex, boolean isRoot);
+	public VC addRootVertex(VC vertex, boolean isRoot);
 	
 	/** Returns the type associated to the node.
 	 *  The type is specified by a value defined in VertexType.

@@ -70,7 +70,7 @@ public class PreparedGraph<V extends Vertex<V, E>, E extends Edge<E, V>, VK exte
     	Iterator<V> allVertexIter = nodes.values().iterator();
     	while (allVertexIter.hasNext()) {
     		V vertex = allVertexIter.next();
-    		destGraph.tryAddVertex(vertex, heads.contains(vertex));
+    		destGraph.addRootVertex(vertex, heads.contains(vertex));
     	}
     }
 }

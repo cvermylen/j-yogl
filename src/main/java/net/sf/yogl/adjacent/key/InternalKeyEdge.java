@@ -6,7 +6,8 @@ public class InternalKeyEdge<TC extends InternalKeyEdge<TC, VC, EK, VK>, VC exte
 		extends Edge<TC, VC>{
 	private EK key;
 	
-	public InternalKeyEdge(EK key) {
+	public InternalKeyEdge(EK key, VC toVertex) {
+		super(toVertex);
 		this.key = key;
 	}
 	

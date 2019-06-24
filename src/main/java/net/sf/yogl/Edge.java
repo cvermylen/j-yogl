@@ -6,6 +6,10 @@ public abstract class Edge<TC extends Edge<TC, VC>, VC extends Vertex<VC, TC>> {
 	
 	private int visitCounts = 0;
 	
+	public Edge(VC toVertex) {
+		this.toVertex = toVertex;
+	}
+	
 	public VC getToVertex() {
 		return toVertex;
 	}
