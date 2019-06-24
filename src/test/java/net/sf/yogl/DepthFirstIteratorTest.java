@@ -28,13 +28,7 @@ public class DepthFirstIteratorTest {
 		}
 
 		@Override
-		public void tryAddEdgeFirst(E edge) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void tryAddEdgeLast(E edge) {
+		public void tryAddEdge(E edge) {
 			// TODO Auto-generated method stub
 			
 		}

@@ -59,7 +59,7 @@ public class PreparedGraph<V extends Vertex<V, E>, E extends Edge<E, V>, VK exte
     	V toVertex = nodes.get(nodeKeyTo);
     	if (fromVertex == null || toVertex == null) throw new NodeNotFoundException((fromVertex == null)?(nodeKeyFrom.toString()):(nodeKeyTo.toString()));
     	E edge = edgeCtor.apply(edgeKey, edgeValue);
-    	fromVertex.tryAddEdgeLast(edge);
+    	fromVertex.tryAddEdge(edge);
     	edge.setToVertex(toVertex);
     	links.add(edge);
     }

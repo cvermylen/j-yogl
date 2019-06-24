@@ -76,7 +76,7 @@ public final class GraphUtil {
 						result.tryAddVertex(rightDup, graph.isStartVertex(rightNodeKey));
 					}
 					
-					leftDup.tryAddEdgeLast(edgeCtor.apply(rightDup, link));
+					leftDup.tryAddEdge(edgeCtor.apply(rightDup, link));
 					leftNodeKey = rightNodeKey;
 				}
 			}
@@ -140,7 +140,7 @@ public final class GraphUtil {
 			V predKey = path.get(path.size() -1);
 			V v = vertexCtor.apply(refKey);
 			destination.tryAddVertex(v, source.isStartVertex(refKey));
-			predKey.tryAddEdgeLast(edgeCtor.apply(v, null));
+			predKey.tryAddEdge(edgeCtor.apply(v, null));
 		}
 	}
 

@@ -25,14 +25,7 @@ public class UniqueVertex<VC extends UniqueVertex<VC, TC, VK, EK>, TC extends Un
 	}
 	
 	@Override
-	public void tryAddEdgeFirst(TC edge) {
-		if (!edges.containsKey(edge.getKey())) {
-			edges.put(edge.getKey(), edge);
-		}
-	}
-
-	@Override
-	public void tryAddEdgeLast(TC edge) {
+	public void tryAddEdge(TC edge) {
 		if (!edges.containsKey(edge.getKey())) {
 			edges.put(edge.getKey(), edge);
 		}

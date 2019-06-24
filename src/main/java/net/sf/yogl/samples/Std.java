@@ -125,7 +125,7 @@ public class Std {
 			}else if(stdDes[i].length == 3){
 				MyTransition transition = new MyTransition(stdDes[i][2]);
 				transition.setToVertex(std.findVertexByKey(stdDes[1][1]));
-				stateArr[i].tryAddEdgeLast(transition);
+				stateArr[i].tryAddEdge(transition);
 			}
 		}
 		MyParameter myObject = new MyParameter();

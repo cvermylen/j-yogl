@@ -99,13 +99,17 @@ public class AdjListVertex <VV, EV> extends Vertex<AdjListVertex<VV, EV>, AdjLis
     	return result;
     }
 
-	@Override
 	public void tryAddEdgeFirst(AdjListEdge<VV, EV> edge) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
+	public void tryAddEdge(AdjListEdge<VV, EV> edge) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	public void tryAddEdgeLast(AdjListEdge<VV, EV> edge) {
 		// TODO Auto-generated method stub
 		

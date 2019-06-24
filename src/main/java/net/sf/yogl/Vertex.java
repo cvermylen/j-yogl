@@ -68,10 +68,12 @@ public abstract class Vertex<VC extends Vertex<VC, TC>, TC extends Edge<TC, VC>>
     	return --this.incomingEdges;
     }
     
+    /**
+     * The underlying implementation of the collection is left to the type of the graph.
+     * @return All edges from this vertex. If the collection is 0, this is a 'sink' vertex
+     */
     public abstract Collection<TC> getOutgoingEdges();
     
-    public abstract void tryAddEdgeFirst(TC edge);
-    
-    public abstract void tryAddEdgeLast(TC edge);
+    public abstract void tryAddEdge(TC edge);
     
 }

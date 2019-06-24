@@ -154,7 +154,7 @@ public class AdjKeyVertex <VK extends Comparable<VK>, VV, EK extends Comparable<
      * @exception GraphCorruptedException if 'edge' cannot
      *            be inserted in the neighbors list.
      */
-    public void tryAddEdgeLast(AdjKeyEdge<VK, VV, EK, EV> newEdge) {
+    public void tryAddEdge(AdjKeyEdge<VK, VV, EK, EV> newEdge) {
         if (newEdge != null){
         	outgoingEdges.addLast(newEdge.getEdgeKey(), newEdge);
         }

@@ -20,6 +20,9 @@ public interface Graph<VC extends Vertex<VC, TC>, TC extends Edge<TC, VC>> {
 
 	public int getMaxInDegree();
 	
+	/** Return the number of vertices in this graph
+	 * @return
+	 */
 	public int getNodeCount();
 	
 	public int getLinkCount();
@@ -35,6 +38,10 @@ public interface Graph<VC extends Vertex<VC, TC>, TC extends Edge<TC, VC>> {
 	 */
 	public boolean isStartVertex(VC vertex);
 	
+	/** Get all vertices that have no predecessors.
+	 * 
+	 * @return
+	 */
 	public Collection<VC>getRoots();
 	
 	/** Return the list of nodes of a particular type
