@@ -22,10 +22,6 @@ public class KeyValueEdge <VK extends Comparable<VK>, VV, EK extends Comparable<
 	 */
 	private int traversals = 0;
 
-	// index in the vertices vector. Is used as a pointer
-	// to the 'next' vertex.
-	private VK nextVertexKey = null;
-	
 	//Unique identifier for this edge. Uniqueness is applicable to
 	//edges contained in the outgoing list of the Vertex.
 	private EK edgeKey = null;
@@ -39,10 +35,9 @@ public class KeyValueEdge <VK extends Comparable<VK>, VV, EK extends Comparable<
 	 * @param rValue refers to an object that is of the type used
 	 * to define all edges in the graph.
 	 */
-	public KeyValueEdge(VK nextVertexKey, EK edgeKey, EV userValue, KeyValueVertex<VK, VV, EK, EV> toVertex) {
+	public KeyValueEdge(EK edgeKey, EV userValue, KeyValueVertex<VK, VV, EK, EV> toVertex) {
 		super(toVertex);
 		this.edgeKey = edgeKey;
-		this.nextVertexKey = nextVertexKey;
 		this.userValue = userValue;
 	}
 
@@ -50,7 +45,7 @@ public class KeyValueEdge <VK extends Comparable<VK>, VV, EK extends Comparable<
 	 * @return a copy of this Edge
 	 */
 	public KeyValueEdge<VK, VV, EK, EV> clone() {
-		KeyValueEdge<VK, VV, EK, EV> dup = new KeyValueEdge<VK, VV, EK, EV>(this.nextVertexKey, this.edgeKey, this.userValue, super.getToVertex());
+		KeyValueEdge<VK, VV, EK, EV> dup = new KeyValueEdge<VK, VV, EK, EV>(this.edgeKey, this.userValue, super.getToVertex());
 		return dup;
 	}
 
@@ -103,20 +98,6 @@ public class KeyValueEdge <VK extends Comparable<VK>, VV, EK extends Comparable<
 		traversals++;
 	}
 
-	/** setter method
-	 * @param vertex is the new Vertex this edge points to
-	 */
-	public void setNextVertexKey(VK nextVertexKey) {
-		this.nextVertexKey = nextVertexKey;
-	}
-
-	/** getter method
-	 * @ return the vertex this edge points to
-	 */
-	public VK getNextVertexKey() {
-		return nextVertexKey;
-	}
-
 	/** Stringified version of Edge
 	 *  @return a string describing the contents of the Edge
 	 */
@@ -125,7 +106,7 @@ public class KeyValueEdge <VK extends Comparable<VK>, VV, EK extends Comparable<
 		return "traversals("
 			+ traversals
 			+ ")vertex("
-			+ nextVertexKey.toString()
+			+ super.getToVertex().toString()
 			+ ")key("
 			+ edgeKey.toString()
 			+ ")value("

@@ -89,7 +89,7 @@ public class KeyValueVertex <VK extends Comparable<VK>, VV, EK extends Comparabl
         Iterator<KeyValueEdge<VK, VV, EK, EV>> iter = outgoingEdges.values().iterator();
         while(iter.hasNext()){
             KeyValueEdge<VK, VV, EK, EV> edge = iter.next();
-            if(edge.getNextVertexKey().equals(key)){
+            if(edge.getToVertex().equals(key)){
                 result.add(edge);
                 break;
             }
@@ -139,9 +139,9 @@ public class KeyValueVertex <VK extends Comparable<VK>, VV, EK extends Comparabl
 		return outgoingEdges.values();
 	}
     
-    public VK getNextVertexKey(EK edgeKey){
+    public KeyValueVertex<VK, VV, EK, EV> getNextVertexKey(EK edgeKey){
     	KeyValueEdge<VK, VV, EK, EV> edge = getEdgeByKey(edgeKey);
-    	return edge.getNextVertexKey();
+    	return edge.getToVertex();
     }
     
     public KeyValueEdge<VK, VV, EK, EV> getEdgeByKey(EK edgeKey){

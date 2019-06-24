@@ -160,7 +160,7 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 		while (entriesIter.hasNext()) {
 			Iterator<KeyValueEdge<VK, VV, EK, EV>> successorsIter = entriesIter.next().getNeighbors().iterator();
 			while (successorsIter.hasNext()) {
-				VK next = successorsIter.next().getNextVertexKey();
+				KeyValueVertex<VK, VV, EK, EV> next = successorsIter.next().getToVertex();
 				if (allStartNodeKeys.contains(next)) {
 					allStartNodeKeys.remove(next);
 				}
@@ -481,15 +481,15 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 			KeyValueVertex<VK, VV, EK, EV> vertex = verticesIter.next();
 			Iterator<KeyValueEdge<VK, VV, EK, EV>>edgesIter = vertex.getNeighbors().iterator();
 			while(edgesIter.hasNext()){
-				VK vertexKey = edgesIter.next().getNextVertexKey();
-				if(!counts.containsKey(vertexKey)){
-					counts.put(vertexKey, new Integer(1));
+				KeyValueVertex<VK, VV, EK, EV> vertex2 = edgesIter.next().getToVertex();
+				if(!counts.containsKey(vertex2)){
+					counts.put(vertex2.getKey(), new Integer(1));
 					max = Math.max(max, 1);
 				}else{
-					Integer val = (Integer)counts.get(vertexKey);
+					Integer val = (Integer)counts.get(vertex2.getKey());
 					int temp = val.intValue() + 1;
 					max = Math.max(max, temp);
-					counts.put(vertexKey, new Integer(temp));
+					counts.put(vertex2.getKey(), new Integer(temp));
 				}
 			}
 		}
