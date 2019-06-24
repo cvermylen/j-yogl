@@ -30,14 +30,11 @@ public class AdjListEdge <VV, EV> extends Edge<AdjListEdge<VV, EV>, AdjListVerte
 	 * @param rValue refers to an object that is of the type used
 	 * to define all edges in the graph.
 	 */
-	public AdjListEdge(EV userValue) {
+	public AdjListEdge(EV userValue, AdjListVertex<VV, EV> toVertex) {
+		super(toVertex);
 		this.userValue = userValue;
 	}
 
-	public AdjListEdge(AdjListVertex<VV, EV> v) {
-		this.nextVertex = v;
-	}
-	
 	public AdjListVertex<VV, EV> setNextNode(VV value) {
 		AdjListVertex<VV, EV> result = new AdjListVertex<>(value);
 		return this.setNextVertex(result);
@@ -52,7 +49,7 @@ public class AdjListEdge <VV, EV> extends Edge<AdjListEdge<VV, EV>, AdjListVerte
 	 * @return a copy of this Edge
 	 */
 	public AdjListEdge<VV, EV> clone() {
-		AdjListEdge<VV, EV> dup = new AdjListEdge<>(this.userValue);
+		AdjListEdge<VV, EV> dup = new AdjListEdge<>(this.userValue, super.getToVertex());
 		dup.setNextVertex(this.nextVertex);
 		return dup;
 	}

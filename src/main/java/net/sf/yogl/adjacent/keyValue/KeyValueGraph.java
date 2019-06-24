@@ -180,7 +180,7 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	 * @param nodeKey identify the node.
 	 */
 	@Override
-	public boolean isStartVertex(KeyValueVertex<VK, VV, EK, EV> nodeKey) {
+	public boolean isRootVertex(KeyValueVertex<VK, VV, EK, EV> nodeKey) {
 		return allStartNodeKeys.contains(nodeKey.getKey());
 	}
 

@@ -53,8 +53,8 @@ public class AdjListVertex <VV, EV> extends Vertex<AdjListVertex<VV, EV>, AdjLis
     	return this.outgoingEdges;
     }
     
-    public AdjListEdge<VV, EV> addLinkLast(EV value) {
-    	return this.addEdgeLast(new AdjListEdge<>(value));
+    public AdjListEdge<VV, EV> addLinkLast(AdjListEdge<VV, EV> edge) {
+    	return this.addEdgeLast(edge);
     }
     
     public AdjListEdge<VV, EV> addEdgeLast(AdjListEdge<VV, EV> newEdge){
@@ -64,8 +64,8 @@ public class AdjListVertex <VV, EV> extends Vertex<AdjListVertex<VV, EV>, AdjLis
         return newEdge;
     }
     
-    public AdjListEdge<VV, EV> addLinkFirst(EV value) {
-    	return this.addEdgeFirst(new AdjListEdge<>(value));
+    public AdjListEdge<VV, EV> addLinkFirst(AdjListEdge<VV, EV> edge) {
+    	return this.addEdgeFirst(edge);
     }
     
     public AdjListEdge<VV, EV> addEdgeFirst(AdjListEdge<VV, EV> newEdge){

@@ -38,7 +38,7 @@ public interface Graph<VC extends Vertex<VC, TC>, TC extends Edge<TC, VC>> {
 	 * @param nodeKey node identifier
 	 * @return true if is an entry point
 	 */
-	public boolean isStartVertex(VC vertex);
+	public boolean isRootVertex(VC vertex);
 	
 	/** Get all vertices that have no predecessors.
 	 * 

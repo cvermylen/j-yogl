@@ -76,8 +76,8 @@ class MyState extends State<String, String, MyState, MyTransition, MyParameter> 
 
 class MyTransition extends Transition<String, String, MyTransition, MyState, MyParameter>{
 	
-	public MyTransition(String key) {
-		super(key);
+	public MyTransition(String key, MyState toState) {
+		super(key, toState);
 	}
 
 	@Override
@@ -123,8 +123,7 @@ public class Std {
 				stateArr[i] = new MyState(stdDes[i][0]);
 				std.addRootVertex(stateArr[i], i == 0);
 			}else if(stdDes[i].length == 3){
-				MyTransition transition = new MyTransition(stdDes[i][2]);
-				transition.setToVertex(std.findVertexByKey(stdDes[1][1]));
+				MyTransition transition = new MyTransition(stdDes[i][2], std.findVertexByKey(stdDes[1][1]));
 				stateArr[i].tryAddEdge(transition);
 			}
 		}

@@ -160,7 +160,7 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 	 * @param vertex identify the node.
 	 */
 	@Override
-	public boolean isStartVertex(VC vertex) {
+	public boolean isRootVertex(VC vertex) {
 		return allStartNodeKeys.contains(vertex.getKey());
 	}
 

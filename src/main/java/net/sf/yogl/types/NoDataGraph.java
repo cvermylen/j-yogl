@@ -22,6 +22,7 @@ public final class NoDataGraph extends KeyValueGraph<String, Object, String, Obj
 	
 	public void tryAddLinkFirst(String fromVertexKey, String toVertexKey, String edgeKey) {
 		KeyValueVertex<String, Object, String, Object> fromVertex = super.vertices.get(fromVertexKey);
-		fromVertex.tryAddEdgeFirst(new KeyValueEdge<String, Object, String, Object>(toVertexKey, edgeKey, null));
+		KeyValueVertex<String, Object, String, Object> toVertex = super.vertices.get(toVertexKey);
+		fromVertex.tryAddEdgeFirst(new KeyValueEdge<String, Object, String, Object>(toVertexKey, edgeKey, null, toVertex));
 	}
 }

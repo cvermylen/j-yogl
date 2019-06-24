@@ -14,7 +14,8 @@ import net.sf.yogl.Edge;
  *  - the interger 'vertex' value points to the destination vertex.
  */
 
-public class KeyValueEdge <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Edge<KeyValueEdge<VK, VV, EK, EV>, KeyValueVertex<VK, VV, EK, EV>>{
+public class KeyValueEdge <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> 
+		extends Edge<KeyValueEdge<VK, VV, EK, EV>, KeyValueVertex<VK, VV, EK, EV>>{
 	
 	/** used by traversal algorithms to indicate the number
 	 * of times the edge has been visited.
@@ -24,7 +25,7 @@ public class KeyValueEdge <VK extends Comparable<VK>, VV, EK extends Comparable<
 	// index in the vertices vector. Is used as a pointer
 	// to the 'next' vertex.
 	private VK nextVertexKey = null;
-
+	
 	//Unique identifier for this edge. Uniqueness is applicable to
 	//edges contained in the outgoing list of the Vertex.
 	private EK edgeKey = null;
@@ -38,7 +39,8 @@ public class KeyValueEdge <VK extends Comparable<VK>, VV, EK extends Comparable<
 	 * @param rValue refers to an object that is of the type used
 	 * to define all edges in the graph.
 	 */
-	public KeyValueEdge(VK nextVertexKey, EK edgeKey, EV userValue) {
+	public KeyValueEdge(VK nextVertexKey, EK edgeKey, EV userValue, KeyValueVertex<VK, VV, EK, EV> toVertex) {
+		super(toVertex);
 		this.edgeKey = edgeKey;
 		this.nextVertexKey = nextVertexKey;
 		this.userValue = userValue;
@@ -48,7 +50,7 @@ public class KeyValueEdge <VK extends Comparable<VK>, VV, EK extends Comparable<
 	 * @return a copy of this Edge
 	 */
 	public KeyValueEdge<VK, VV, EK, EV> clone() {
-		KeyValueEdge<VK, VV, EK, EV> dup = new KeyValueEdge<VK, VV, EK, EV>(this.nextVertexKey, this.edgeKey, this.userValue);
+		KeyValueEdge<VK, VV, EK, EV> dup = new KeyValueEdge<VK, VV, EK, EV>(this.nextVertexKey, this.edgeKey, this.userValue, super.getToVertex());
 		return dup;
 	}
 

@@ -60,7 +60,7 @@ public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>, Ad
 	}
 	
 	@Override
-	public boolean isStartVertex (AdjListVertex<V, E> vertex) {
+	public boolean isRootVertex (AdjListVertex<V, E> vertex) {
 		return roots.contains(vertex);
 	}
 	

@@ -14,10 +14,6 @@ public abstract class Edge<TC extends Edge<TC, VC>, VC extends Vertex<VC, TC>> {
 		return toVertex;
 	}
 	
-	public void setToVertex(VC vertex) {
-		this.toVertex = vertex;
-	}
-	
 	public void incVisitCounts() {
 		visitCounts++;
 	}

@@ -78,7 +78,7 @@ public class GraphBuilderArray {
 			if(srcData[i].length == 4){
 				KeyValueVertex<String, String, String, String> fromVertex = pg.getVertex(srcData[i][0]);
 				KeyValueVertex<String, String, String, String> toVertex = pg.getVertex(srcData[i][1]);
-				KeyValueEdge<String, String, String, String> edge = new KeyValueEdge<String, String, String, String>(srcData[i][1], srcData[i][2], srcData[i][3]);
+				KeyValueEdge<String, String, String, String> edge = new KeyValueEdge<String, String, String, String>(srcData[i][1], srcData[i][2], srcData[i][3], toVertex);
 				fromVertex.tryAddEdge(edge);
 			}
 		}
