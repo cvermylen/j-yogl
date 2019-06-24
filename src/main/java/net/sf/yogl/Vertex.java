@@ -2,7 +2,7 @@ package net.sf.yogl;
 
 import java.util.Collection;
 
-public abstract class Vertex<VC extends Vertex<VC, TC>, TC extends Edge<TC, VC>>{
+public abstract class Vertex<VERTEX extends Vertex<VERTEX, EDGE>, EDGE extends Edge<EDGE, VERTEX>>{
 
 	/** Depending on the graph implementation, entries may not be deleted. They are
      * just market as 'free'.
@@ -72,8 +72,8 @@ public abstract class Vertex<VC extends Vertex<VC, TC>, TC extends Edge<TC, VC>>
      * The underlying implementation of the collection is left to the type of the graph.
      * @return All edges from this vertex. If the collection is 0, this is a 'sink' vertex
      */
-    public abstract Collection<TC> getOutgoingEdges();
+    public abstract Collection<EDGE> getOutgoingEdges();
     
-    public abstract void tryAddEdge(TC edge);
+    public abstract void tryAddEdge(EDGE edge);
     
 }

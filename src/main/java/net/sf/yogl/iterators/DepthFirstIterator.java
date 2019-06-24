@@ -19,7 +19,7 @@ import net.sf.yogl.exceptions.NodeNotFoundException;
  * being modified during the traversal.
  */
 
-public class DepthFirstIterator<VC extends Vertex<VC, TC>, TC extends Edge<TC, VC>> implements Iterator<VC> {
+public class DepthFirstIterator<VERTEX extends Vertex<VERTEX, EDGE>, EDGE extends Edge<EDGE, VERTEX>> implements Iterator<VERTEX> {
     
 	protected class LinearEdgesIterator<V1 extends Vertex<V1, E1>, E1 extends Edge<E1, V1>>{
 		
@@ -60,17 +60,17 @@ public class DepthFirstIterator<VC extends Vertex<VC, TC>, TC extends Edge<TC, V
 		
 	}
 	
-	protected VC currentVertex;
+	protected VERTEX currentVertex;
 	
-	protected TC traversedEdge;
+	protected EDGE traversedEdge;
 	
-	public DepthFirstIterator(Collection<VC> startNodes, int maxCycling) throws GraphException{
+	public DepthFirstIterator(Collection<VERTEX> startNodes, int maxCycling) throws GraphException{
 		this.maxCycling = maxCycling;
 		startNodes.forEach(vertex -> pushVertex (vertex));
 		moveToNextVertex();
 	}
 	
-	public VC next() throws NoSuchElementException {
+	public VERTEX next() throws NoSuchElementException {
 		if (currentVertex == null)
 			throw new NoSuchElementException();
 		moveToNextVertex();
@@ -82,7 +82,7 @@ public class DepthFirstIterator<VC extends Vertex<VC, TC>, TC extends Edge<TC, V
      * This stack is used to simulate the recursivity.
      * The Objects contained in the stack will be of type 'Vertex'
      */
-    protected LinkedList<LinearEdgesIterator<VC, TC>> vStack = new LinkedList<>();
+    protected LinkedList<LinearEdgesIterator<VERTEX, EDGE>> vStack = new LinkedList<>();
     
     /** Maximum number of times a node can be visited
      */
@@ -124,16 +124,16 @@ public class DepthFirstIterator<VC extends Vertex<VC, TC>, TC extends Edge<TC, V
     	
     }
     
-    protected void pushVertex(VC v) {
+    protected void pushVertex(VERTEX v) {
     	if(v == null) throw new IllegalArgumentException("Cannot add null vertex to the graph");
-    	vStack.addLast(new LinearEdgesIterator<VC, TC>(v));
+    	vStack.addLast(new LinearEdgesIterator<VERTEX, EDGE>(v));
     }
     
-    private boolean vertexHasOutgoingEdges(TC e) {
+    private boolean vertexHasOutgoingEdges(EDGE e) {
     	return e != null && e.getToVertex() != null && e.getToVertex().getOutgoingEdges().size() > 0;
     }
     
-    private boolean vertexCanBeVisited(TC e){
+    private boolean vertexCanBeVisited(EDGE e){
     	return e != null && e.getToVertex() != null && e.getToVertex().getVisitsCount() >= maxCycling;
     }
     
@@ -149,7 +149,7 @@ public class DepthFirstIterator<VC extends Vertex<VC, TC>, TC extends Edge<TC, V
     	}
     }
     
-    private TC getNextEdge() {
+    private EDGE getNextEdge() {
     	return vStack.getLast().peekEdge();
     }
     
@@ -167,14 +167,14 @@ public class DepthFirstIterator<VC extends Vertex<VC, TC>, TC extends Edge<TC, V
      * and the graph root
      * @throws NodeNotFoundException 
      */
-    public List<VC>nodePath() {
+    public List<VERTEX>nodePath() {
         
         return vStack.stream().map(r -> r.getVertex()).collect(Collectors.toList());
     }
     
     /** @return the list of all links used to access the current vertex
      */
-    public List<TC>linkPath() {
+    public List<EDGE>linkPath() {
         
     	return vStack.stream().map(r -> r.peekEdge()).collect(Collectors.toList());
     }

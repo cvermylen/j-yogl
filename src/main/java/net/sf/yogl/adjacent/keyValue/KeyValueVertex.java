@@ -20,36 +20,37 @@ import net.sf.yogl.exceptions.GraphCorruptedException;
  *  V = user value Object
  */
 
-public class KeyValueVertex <VK extends Comparable<VK>, VV, EV >  extends Vertex<KeyValueVertex<VK, VV, EV>, ValueEdge<VK, VV, EV>>{
+public class KeyValueVertex <VERTEX_KEY extends Comparable<VERTEX_KEY>, VERTEX_VALUE, EDGE_VALUE >  
+	extends Vertex<KeyValueVertex<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE>, ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE>>{
         
     /** contains the list of all adjacent vertices.
      */
-//    private KeyMap<VK, VV, EK, EV> outgoingEdges = new KeyMap<VK, VV, EK, EV>();
-    private List<ValueEdge<VK, VV, EV>> outgoingEdges = new ArrayList<>();
+//    private KeyMap<VERTEX_KEY, VERTEX_VALUE, EK, EDGE_VALUE> outgoingEdges = new KeyMap<VERTEX_KEY, VERTEX_VALUE, EK, EDGE_VALUE>();
+    private List<ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE>> outgoingEdges = new ArrayList<>();
     
     /** Key must be comparable
      * 
      */
-    VK key;
+    VERTEX_KEY key;
     
     /** Application class data. Refers to an object having the
      * 'equals' method defined.
      */
-    VV userValue = null;
+    VERTEX_VALUE userValue = null;
     
     /** ctor with initialisation
      * @param type associates a type to the contents ofthe vertex
      * @param userValue refers to the node object
      */
-    public KeyValueVertex(VK key, VV userValue){
+    public KeyValueVertex(VERTEX_KEY key, VERTEX_VALUE userValue){
     	super();
     	this.key = key;
         this.userValue = userValue;
     }
     
-    public KeyValueVertex<VK, VV, EV> clone(){
+    public KeyValueVertex<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> clone(){
         
-        KeyValueVertex<VK, VV, EV> cloned = new KeyValueVertex<VK, VV, EV>(key, userValue);
+        KeyValueVertex<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> cloned = new KeyValueVertex<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE>(key, userValue);
         cloned.setFreeEntry(isFreeEntry());
         cloned.setVisitCounts(getVisitsCount());
         cloned.outgoingEdges = outgoingEdges;
@@ -63,12 +64,12 @@ public class KeyValueVertex <VK extends Comparable<VK>, VV, EV >  extends Vertex
      * @return a boolean userValue indicating if the user defined node
      * matches or not.
      */
-    public boolean equals(KeyValueVertex<VK, VV, EV> vertex){
+    public boolean equals(KeyValueVertex<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> vertex){
         
         return this.compareTo(vertex) == 0;
     }
     
-    public int compareTo(KeyValueVertex<VK, VV, EV> v){
+    public int compareTo(KeyValueVertex<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> v){
     	return this.key.compareTo(v.getKey());
     }
     
@@ -76,7 +77,7 @@ public class KeyValueVertex <VK extends Comparable<VK>, VV, EV >  extends Vertex
     /** getter method
      * @return the object userValue associated to the vertex.
      */
-    public VV getUserValue(){
+    public VERTEX_VALUE getUserValue(){
         return userValue;
     }
     
@@ -85,12 +86,12 @@ public class KeyValueVertex <VK extends Comparable<VK>, VV, EV >  extends Vertex
      *  @return an edge or null if both vertex (this & to)
      *          are not connected.
      */
-    public Collection<ValueEdge<VK, VV, EV>> getEdgeTo(VK key){
+    public Collection<ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE>> getEdgeTo(VERTEX_KEY key){
         
-        ArrayList<ValueEdge<VK, VV, EV>> result = new ArrayList<>();
-        Iterator<ValueEdge<VK, VV, EV>> iter = outgoingEdges.iterator();
+        ArrayList<ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE>> result = new ArrayList<>();
+        Iterator<ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE>> iter = outgoingEdges.iterator();
         while(iter.hasNext()){
-            ValueEdge<VK, VV, EV> edge = iter.next();
+            ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> edge = iter.next();
             if(edge.getToVertex().equals(key)){
                 result.add(edge);
                 break;
@@ -131,8 +132,8 @@ public class KeyValueVertex <VK extends Comparable<VK>, VV, EV >  extends Vertex
      *    removing elements
      * @return the list of outgoing edges
      */
-    public Collection<ValueEdge<VK, VV, EV>> getOutgoingEdges(){
-    	ArrayList<ValueEdge<VK, VV, EV>> result = new ArrayList<>(outgoingEdges);
+    public Collection<ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE>> getOutgoingEdges(){
+    	ArrayList<ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE>> result = new ArrayList<>(outgoingEdges);
         return result;
     }
     
@@ -142,7 +143,7 @@ public class KeyValueVertex <VK extends Comparable<VK>, VV, EV >  extends Vertex
      * @exception GraphCorruptedException if 'edge' cannot
      *            be inserted in the neighbors list.
      */
-    public void tryAddEdge(ValueEdge<VK, VV, EV> newEdge) {
+    public void tryAddEdge(ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> newEdge) {
         if (newEdge != null){
         	outgoingEdges.add(newEdge);
         }
@@ -155,7 +156,7 @@ public class KeyValueVertex <VK extends Comparable<VK>, VV, EV >  extends Vertex
      * @exception InvalidVertexException if 'edge' cannot
      *            be inserted in the neighbors list.
      */
-    public void tryAddEdgeFirst(ValueEdge<VK, VV, EV> newEdge) {
+    public void tryAddEdgeFirst(ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> newEdge) {
         if (newEdge != null){
             outgoingEdges.add(0, newEdge);
         }
@@ -163,7 +164,7 @@ public class KeyValueVertex <VK extends Comparable<VK>, VV, EV >  extends Vertex
     /** Removes from the neighbors list the edge given as parameter
      * @param edge to be removed
      */
-    public void removeEdge(ValueEdge<VK, VV, EV> edge){
+    public void removeEdge(ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> edge){
         if (edge != null){
             outgoingEdges.remove(edge);
         }
@@ -178,7 +179,7 @@ public class KeyValueVertex <VK extends Comparable<VK>, VV, EV >  extends Vertex
         outgoingEdges.clear();
     }
     
-    public VK getKey(){
+    public VERTEX_KEY getKey(){
     	return key;
     }
 
