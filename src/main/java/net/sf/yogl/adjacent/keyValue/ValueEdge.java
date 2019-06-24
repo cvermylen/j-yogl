@@ -14,38 +14,33 @@ import net.sf.yogl.Edge;
  *  - the interger 'vertex' value points to the destination vertex.
  */
 
-public class KeyValueEdge <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> 
-		extends Edge<KeyValueEdge<VK, VV, EK, EV>, KeyValueVertex<VK, VV, EK, EV>>{
+public class ValueEdge <VK extends Comparable<VK>, VV, EV> 
+		extends Edge<ValueEdge<VK, VV, EV>, KeyValueVertex<VK, VV, EV>>{
 	
 	/** used by traversal algorithms to indicate the number
 	 * of times the edge has been visited.
 	 */
 	private int traversals = 0;
 
-	//Unique identifier for this edge. Uniqueness is applicable to
-	//edges contained in the outgoing list of the Vertex.
-	private EK edgeKey = null;
-	
 	// Value associated to the edge. It is assumed that the 'equals' 
 	// function is defined on the user object.
-	private EV userValue = null;
+	private EV value = null;
 
 	/** 
 	 * @param v points to the destination vertex. 
 	 * @param rValue refers to an object that is of the type used
 	 * to define all edges in the graph.
 	 */
-	public KeyValueEdge(EK edgeKey, EV userValue, KeyValueVertex<VK, VV, EK, EV> toVertex) {
+	public ValueEdge(EV userValue, KeyValueVertex<VK, VV, EV> toVertex) {
 		super(toVertex);
-		this.edgeKey = edgeKey;
-		this.userValue = userValue;
+		this.value = userValue;
 	}
 
 	/** duplicate referenced edge
 	 * @return a copy of this Edge
 	 */
-	public KeyValueEdge<VK, VV, EK, EV> clone() {
-		KeyValueEdge<VK, VV, EK, EV> dup = new KeyValueEdge<VK, VV, EK, EV>(this.edgeKey, this.userValue, super.getToVertex());
+	public ValueEdge<VK, VV, EV> clone() {
+		ValueEdge<VK, VV, EV> dup = new ValueEdge<VK, VV, EV>(this.value, super.getToVertex());
 		return dup;
 	}
 
@@ -60,8 +55,8 @@ public class KeyValueEdge <VK extends Comparable<VK>, VV, EK extends Comparable<
 	public boolean equals(Object rhs) {
 		boolean result = false;
 
-		if (rhs instanceof KeyValueEdge) {
-			result = edgeKey.equals(((KeyValueEdge<VK, VV, EK, EV>) rhs).edgeKey);
+		if (rhs instanceof ValueEdge) {
+			result = this.value.equals(((ValueEdge<VK, VV, EV>) rhs).value);
 		}
 		return result;
 	}
@@ -70,7 +65,7 @@ public class KeyValueEdge <VK extends Comparable<VK>, VV, EK extends Comparable<
 	 * @return the 'value' referred to
 	 */
 	public EV getUserValue() {
-		return userValue;
+		return value;
 	}
 
 	/** setter method
@@ -80,9 +75,9 @@ public class KeyValueEdge <VK extends Comparable<VK>, VV, EK extends Comparable<
 		this.traversals = traversals;
 	}
 
-	public void setUserValue(EV userValue) {
+	public void setUserValue(EV value) {
 
-		this.userValue = userValue;
+		this.value = value;
 	}
 
 	/** getter method
@@ -107,18 +102,9 @@ public class KeyValueEdge <VK extends Comparable<VK>, VV, EK extends Comparable<
 			+ traversals
 			+ ")vertex("
 			+ super.getToVertex().toString()
-			+ ")key("
-			+ edgeKey.toString()
 			+ ")value("
-			+ userValue.toString()
+			+ value.toString()
 			+ ")";
-	}
-
-	/**
-	 * @return
-	 */
-	public EK getEdgeKey() {
-		return edgeKey;
 	}
 
 }

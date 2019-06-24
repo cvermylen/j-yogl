@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.sf.yogl.Graph;
-import net.sf.yogl.adjacent.keyValue.KeyValueEdge;
+import net.sf.yogl.adjacent.keyValue.ValueEdge;
 import net.sf.yogl.adjacent.keyValue.KeyValueGraph;
 import net.sf.yogl.adjacent.keyValue.KeyValueVertex;
 import net.sf.yogl.exceptions.GraphCorruptedException;
@@ -78,7 +78,7 @@ public class GraphBuilderArray {
 			if(srcData[i].length == 4){
 				KeyValueVertex<String, String, String, String> fromVertex = pg.getVertex(srcData[i][0]);
 				KeyValueVertex<String, String, String, String> toVertex = pg.getVertex(srcData[i][1]);
-				KeyValueEdge<String, String, String, String> edge = new KeyValueEdge<String, String, String, String>(srcData[i][2], srcData[i][3], toVertex);
+				ValueEdge<String, String, String, String> edge = new ValueEdge<String, String, String, String>(srcData[i][2], srcData[i][3], toVertex);
 				fromVertex.tryAddEdge(edge);
 			}
 		}

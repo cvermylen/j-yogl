@@ -17,7 +17,7 @@ import net.sf.yogl.exceptions.NodeNotFoundException;
  * method LinkedList getNeighbors is inherited
  */
 
-public final class DirectedAcyclicGraph<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends KeyValueGraph<VK,VV,EK,EV> {
+public final class DirectedAcyclicGraph<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends KeyValueGraph<VK,VV,EV> {
 
 	/** @see graph.ComparableKeysGraph.getNeighbors
 	 */

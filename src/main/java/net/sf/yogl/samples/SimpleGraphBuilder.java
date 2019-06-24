@@ -22,7 +22,7 @@ public class SimpleGraphBuilder {
 		System.out.println(ndg);
 		
 		System.out.println("\nSecond graph\n-----------");
-		KeyValueGraph<String, String, String, String> alg = new KeyValueGraph<>();
+		KeyValueGraph<String, String, String> alg = new KeyValueGraph<>();
 		String[][]data2 = {
 			{"1", "as the root node"},
 			{"2", "intermediate node"},

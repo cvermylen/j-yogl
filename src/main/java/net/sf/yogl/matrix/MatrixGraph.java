@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import net.sf.yogl.Graph;
-import net.sf.yogl.adjacent.keyValue.KeyValueEdge;
+import net.sf.yogl.adjacent.keyValue.ValueEdge;
 import net.sf.yogl.adjacent.keyValue.KeyValueVertex;
 import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.GraphCorruptedException;
@@ -39,7 +39,7 @@ import net.sf.yogl.types.VertexType;
  * responsibility to find the right combinations of decorators.
  */
 
-public interface MatrixGraph <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Graph<KeyValueVertex<VK, VV, EK, EV>, KeyValueEdge<VK, VV, EK, EV>>{
+public interface MatrixGraph <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Graph<KeyValueVertex<VK, VV, EV>, ValueEdge<VK, VV, EV>>{
 
 	/** Insert a new link between 2 nodes. This new link will be placed 
 	 *  'before' any existing link between these 2 nodes.
@@ -51,7 +51,6 @@ public interface MatrixGraph <VK extends Comparable<VK>, VV, EK extends Comparab
 	public void addLinkFirst(
 		VK nodeKeyFrom,
 		VK nodeKeyTo,
-		EK linkKey,
 		EV linkValue)
 		throws NodeNotFoundException, DuplicateLinkException, GraphCorruptedException;
 
@@ -63,8 +62,7 @@ public interface MatrixGraph <VK extends Comparable<VK>, VV, EK extends Comparab
 	 */
 	public void addLinkFirst(
 		VK nodeKeyFrom,
-		VK nodeKeyTo,
-		EK linkKey)
+		VK nodeKeyTo)
 		throws NodeNotFoundException, DuplicateLinkException, GraphCorruptedException;
 
 	/** Insert a new directed edge from nodeFrom to nodeTo and
@@ -78,7 +76,6 @@ public interface MatrixGraph <VK extends Comparable<VK>, VV, EK extends Comparab
 	public void addLinkLast(
 		VK nodeKeyFrom,
 		VK nodeKeyTo,
-		EK linkKey,
 		EV linkValue)
 		throws NodeNotFoundException, DuplicateLinkException, GraphCorruptedException;
 
@@ -92,8 +89,7 @@ public interface MatrixGraph <VK extends Comparable<VK>, VV, EK extends Comparab
 	 */
 	public void addLinkLast(
 		VK nodeKeyFrom,
-		VK nodeKeyTo,
-		EK linkKey)
+		VK nodeKeyTo)
 		throws NodeNotFoundException, DuplicateLinkException, GraphCorruptedException;
 
 	/** Clones the structure of the graph. User values are not cloned.

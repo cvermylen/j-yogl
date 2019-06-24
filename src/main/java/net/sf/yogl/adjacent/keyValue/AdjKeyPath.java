@@ -3,8 +3,6 @@ package net.sf.yogl.adjacent.keyValue;
 
 import java.util.LinkedList;
 
-import net.sf.yogl.adjacent.list.AdjListEdge;
-
 /** Class used to manage the path of vertices followed during
  * the traversal. Object are pushed on a stack with the number of adjacent
  * neighbors. Each time an object is popped from the traversal stack, the
@@ -12,22 +10,22 @@ import net.sf.yogl.adjacent.list.AdjListEdge;
  * object reaches 0, the top object is removed.
  */
 
-public class AdjKeyPath<VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV>{
+public class AdjKeyPath<VK extends Comparable<VK>, VV, EV>{
 	
 	/** Reference to the vertex' node
 	 */
 	private VK nodeKey = null;
 	
-	private KeyValueEdge<VK,VV, EK,EV> popedValue = null;
+	private ValueEdge<VK,VV, EV> popedValue = null;
 	
 	/** Reference to links exiting from this vertex
 	 *  Order in this stack is extremely important.
 	 *  It MUST follow the same order as the one in the
 	 *  vStack.
 	 */
-	private LinkedList<KeyValueEdge<VK, VV, EK,EV>> outgoingEdges = null;
+	private LinkedList<ValueEdge<VK, VV, EV>> outgoingEdges = null;
 	
-	public AdjKeyPath(VK nodeKey, KeyValueEdge<VK,VV, EK,EV>[]eArray){
+	public AdjKeyPath(VK nodeKey, ValueEdge<VK,VV, EV>[]eArray){
 		this.nodeKey = nodeKey;
 		this.outgoingEdges = new LinkedList<>();
 		//outgoingEdges.push(new AdjKeyEdge<VK,VV, EK,EV>(null, null, null));
@@ -41,9 +39,9 @@ public class AdjKeyPath<VK extends Comparable<VK>, VV, EK extends Comparable<EK>
 	 *  @return the edge used to access to the next
 	 *  node
 	 */
-	public KeyValueEdge<VK,VV, EK,EV> old_dec(){
+	public ValueEdge<VK,VV, EV> old_dec(){
 		
-		KeyValueEdge<VK,VV, EK,EV> usedEdge = outgoingEdges.pop();
+		ValueEdge<VK,VV, EV> usedEdge = outgoingEdges.pop();
 		popedValue = usedEdge;
 		return usedEdge;
 	}
@@ -65,8 +63,8 @@ public class AdjKeyPath<VK extends Comparable<VK>, VV, EK extends Comparable<EK>
 	/** getter method
 	 *  @return the current edge
 	 */
-	public KeyValueEdge<VK, VV, EK,EV> old_getEdge(){
-		KeyValueEdge<VK,VV, EK,EV> edge = null;
+	public ValueEdge<VK, VV, EV> old_getEdge(){
+		ValueEdge<VK,VV, EV> edge = null;
 		
 		if(!outgoingEdges.isEmpty()){
 			if(outgoingEdges.size() > 1){ //last element is empty string
@@ -76,7 +74,7 @@ public class AdjKeyPath<VK extends Comparable<VK>, VV, EK extends Comparable<EK>
 		return edge;
 	}
 	
-	public KeyValueEdge<VK, VV, EK,EV> old_getPopedValue(){
+	public ValueEdge<VK, VV, EV> old_getPopedValue(){
 		
 		return popedValue;
 	}
@@ -87,8 +85,8 @@ public class AdjKeyPath<VK extends Comparable<VK>, VV, EK extends Comparable<EK>
 		return result;
 	}
 	
-	public AdjKeyPath<VK, VV, EK, EV> clone(){
-		AdjKeyPath<VK, VV, EK, EV>result = this.clone();
+	public AdjKeyPath<VK, VV, EV> clone(){
+		AdjKeyPath<VK, VV, EV>result = this.clone();
 		result.nodeKey = this.nodeKey;
 		result.popedValue = this.popedValue;
 		result.outgoingEdges = this.outgoingEdges.stream().map(e -> e.clone()).collect(LinkedList::new, LinkedList::add, LinkedList::addAll);

@@ -40,7 +40,7 @@ import net.sf.yogl.types.VertexType;
  * @version 1.0
  */
 
-public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> implements Graph <KeyValueVertex<VK, VV, EK, EV>, KeyValueEdge<VK, VV, EK, EV>> {
+public class KeyValueGraph <VK extends Comparable<VK>, VV, EV> implements Graph <KeyValueVertex<VK, VV, EV>, ValueEdge<VK, VV, EV>> {
 
 	/** Since it should be too tedious to traverse the whole graph
 	 * just to count the number of edges, this data is stored here.
@@ -50,7 +50,7 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	/** 'vertices' contains all vertices of the graph. This vector
 	 * is automatically resized when all entries are occupied.
 	 */
-	protected Map<VK, KeyValueVertex<VK, VV, EK, EV>> vertices = new HashMap<>();
+	protected Map<VK, KeyValueVertex<VK, VV, EV>> vertices = new HashMap<>();
 
 	/** Contains the list of all entry points in the graph.
 	 *  When a new node is created, it is by default inserted into the set.
@@ -64,8 +64,8 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	/** Will duplicate the content of the vertex and insert it into this graph.
 	 * Method is used to copy vertices from graph to graph
 	 */
-	public KeyValueVertex<VK, VV, EK, EV> addRootVertex (KeyValueVertex<VK, VV, EK, EV> vertex, boolean isRoot) {
-		KeyValueVertex<VK, VV, EK, EV> result = null;
+	public KeyValueVertex<VK, VV, EV> addRootVertex (KeyValueVertex<VK, VV, EV> vertex, boolean isRoot) {
+		KeyValueVertex<VK, VV, EV> result = null;
 		if(!existsNode(vertex.getKey())) {
 			this.vertices.put(vertex.getKey(), vertex);
 			if (isRoot)
@@ -84,9 +84,9 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	 * 		If null, the algorithm will use all nodes marked as 'START'.
 	 */
 	@Override
-	public BreadthFirstIterator<KeyValueVertex<VK, VV, EK, EV>, KeyValueEdge<VK, VV, EK, EV>> breadthFirstIterator(
+	public BreadthFirstIterator<KeyValueVertex<VK, VV, EV>, ValueEdge<VK, VV, EV>> breadthFirstIterator(
 			int maxCycles) throws NodeNotFoundException {
-		return new BreadthFirstIterator<KeyValueVertex<VK, VV, EK, EV>, KeyValueEdge<VK, VV, EK, EV>>(this, maxCycles);
+		return new BreadthFirstIterator<KeyValueVertex<VK, VV, EV>, ValueEdge<VK, VV, EV>>(this, maxCycles);
 	}
 
 	/** @see ComparableKeysGraph#clone
@@ -97,10 +97,10 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 
 	/** @see ComparableKeysGraph#depthFirstIterator
 	 */
-	public DepthFirstIterator<KeyValueVertex<VK, VV, EK, EV>, KeyValueEdge<VK, VV, EK, EV>> depthFirstIterator(Collection<KeyValueVertex<VK, VV, EK, EV>> startVertices, 
+	public DepthFirstIterator<KeyValueVertex<VK, VV, EV>, ValueEdge<VK, VV, EV>> depthFirstIterator(Collection<KeyValueVertex<VK, VV, EV>> startVertices, 
 			int maxCycling)
 		throws GraphException {
-		return new DepthFirstIterator<KeyValueVertex<VK, VV, EK, EV>, KeyValueEdge<VK, VV, EK, EV>>(startVertices, maxCycling);
+		return new DepthFirstIterator<KeyValueVertex<VK, VV, EV>, ValueEdge<VK, VV, EV>>(startVertices, maxCycling);
 	}
 
 	/** @see ComparableKeysGraph#existsNode
@@ -116,7 +116,7 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	 * @exception VertexNotFoundException  thrown if rhs was not
 	 *            found in the graph.
 	 */
-	public KeyValueVertex<VK,VV, EK, EV> findVertexByKey(VK nodeKey)
+	public KeyValueVertex<VK,VV, EV> findVertexByKey(VK nodeKey)
 		throws NodeNotFoundException {
 		if (!vertices.containsKey(nodeKey))
 			throw new NodeNotFoundException(nodeKey.toString());
@@ -137,13 +137,13 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	 * @exception VertexNotFoundException if 1 of the 2 nodes does not
 	 *            exists.
 	 */
-	public List<KeyValueEdge<VK, VV, EK, EV>> getLinksKeysBetween(KeyValueVertex<VK, VV, EK, EV> nodeFromKey, KeyValueVertex<VK, VV, EK, EV> nodeToKey)
+	public List<ValueEdge<VK, VV, EV>> getLinksKeysBetween(KeyValueVertex<VK, VV, EV> nodeFromKey, KeyValueVertex<VK, VV, EV> nodeToKey)
 		throws NodeNotFoundException {
 
-		ArrayList<KeyValueEdge<VK, VV, EK, EV>> result = new ArrayList<>();
-		Iterator<KeyValueEdge<VK, VV, EK, EV>> edgesIter = nodeFromKey.getNeighbors().iterator();
+		ArrayList<ValueEdge<VK, VV, EV>> result = new ArrayList<>();
+		Iterator<ValueEdge<VK, VV, EV>> edgesIter = nodeFromKey.getOutgoingEdges().iterator();
 		while (edgesIter.hasNext()) {
-			KeyValueEdge<VK, VV, EK, EV> edge = edgesIter.next();
+			ValueEdge<VK, VV, EV> edge = edgesIter.next();
 			if (edge.getToVertex().equals(nodeToKey)) {
 				result.add(edge);
 			}
@@ -156,11 +156,11 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	 */
 	private void buildAllStartNodeKeys() {
 		allStartNodeKeys.addAll(vertices.keySet());
-		Iterator<KeyValueVertex<VK, VV, EK, EV>> entriesIter = vertices.values().iterator();
+		Iterator<KeyValueVertex<VK, VV, EV>> entriesIter = vertices.values().iterator();
 		while (entriesIter.hasNext()) {
-			Iterator<KeyValueEdge<VK, VV, EK, EV>> successorsIter = entriesIter.next().getNeighbors().iterator();
+			Iterator<ValueEdge<VK, VV, EV>> successorsIter = entriesIter.next().getOutgoingEdges().iterator();
 			while (successorsIter.hasNext()) {
-				KeyValueVertex<VK, VV, EK, EV> next = successorsIter.next().getToVertex();
+				KeyValueVertex<VK, VV, EV> next = successorsIter.next().getToVertex();
 				if (allStartNodeKeys.contains(next)) {
 					allStartNodeKeys.remove(next);
 				}
@@ -180,7 +180,7 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	 * @param nodeKey identify the node.
 	 */
 	@Override
-	public boolean isRootVertex(KeyValueVertex<VK, VV, EK, EV> nodeKey) {
+	public boolean isRootVertex(KeyValueVertex<VK, VV, EV> nodeKey) {
 		return allStartNodeKeys.contains(nodeKey.getKey());
 	}
 
@@ -216,12 +216,12 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 
 	/** @see ComparableKeysGraph#getNodes
 	 */
-	public List<KeyValueVertex<VK,VV,EK,EV>> getVertices(VertexType type) throws NodeNotFoundException {
+	public List<KeyValueVertex<VK, VV, EV>> getVertices(VertexType type) throws NodeNotFoundException {
 
-		ArrayList<KeyValueVertex<VK, VV, EK, EV>> list = new ArrayList<>();
-		Iterator<KeyValueVertex<VK, VV, EK, EV>> iter = vertices.values().iterator();
+		ArrayList<KeyValueVertex<VK, VV, EV>> list = new ArrayList<>();
+		Iterator<KeyValueVertex<VK, VV, EV>> iter = vertices.values().iterator();
 		while (iter.hasNext()) {
-			KeyValueVertex<VK, VV, EK, EV> vertex = iter.next();
+			KeyValueVertex<VK, VV, EV> vertex = iter.next();
 			if (type.equals(VertexType.ANY) || type.equals(getVertexType(vertex))) {
 
 				if ((getVertexType(vertex) == VertexType.START) || (getVertexType(vertex) == VertexType.STARTEND)) {
@@ -234,23 +234,23 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 		return list;
 	}
 
-	public KeyValueVertex<VK, VV, EK, EV> getVertex (VK key) {
+	public KeyValueVertex<VK, VV, EV> getVertex (VK key) {
 		return this.vertices.get(key);
 	}
 	
 	/** @see ComparableKeysGraph#getType
 	 */
-	public VertexType getVertexType(KeyValueVertex<VK, VV, EK, EV> vertex) {
+	public VertexType getVertexType(KeyValueVertex<VK, VV, EV> vertex) {
 		if (this.allStartNodeKeys.contains(vertex.getKey())) {
-			if ((vertex.getNeighbors() == null)
-				|| (vertex.getNeighbors().size() == 0)) {
+			if ((vertex.getOutgoingEdges() == null)
+				|| (vertex.getOutgoingEdges().size() == 0)) {
 				return VertexType.STARTEND;
 			} else {
 				return VertexType.START;
 			}
 		} else {
-			if ((vertex.getNeighbors() == null)
-				|| (vertex.getNeighbors().size() == 0)) {
+			if ((vertex.getOutgoingEdges() == null)
+				|| (vertex.getOutgoingEdges().size() == 0)) {
 				return VertexType.END;
 			} else {
 				return VertexType.NONE;
@@ -261,7 +261,7 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	/** @see ComparableKeysGraph#getNodeValue
 	 */
 	public VV getNodeValue(VK nodeKey) {
-		KeyValueVertex<VK, VV, EK, EV> v = this.vertices.get(nodeKey);
+		KeyValueVertex<VK, VV, EV> v = this.vertices.get(nodeKey);
 		if (v == null)
 			return null;
 		return v.getUserValue();
@@ -269,13 +269,13 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 
 	/** return all predecessor nodes to a given node.
 	 */
-	public Collection<KeyValueVertex<VK, VV, EK, EV>> getPredecessorVertices(KeyValueVertex<VK, VV, EK, EV> toVertex) {
+	public Collection<KeyValueVertex<VK, VV, EV>> getPredecessorVertices(KeyValueVertex<VK, VV, EV> toVertex) {
 
-		ArrayList<KeyValueVertex<VK, VV, EK, EV>> result = new ArrayList<>();
-		Iterator<Map.Entry<VK, KeyValueVertex<VK,VV,EK,EV>>>iter = vertices.entrySet().iterator();
+		ArrayList<KeyValueVertex<VK, VV, EV>> result = new ArrayList<>();
+		Iterator<Map.Entry<VK, KeyValueVertex<VK,VV,EV>>>iter = vertices.entrySet().iterator();
 		while (iter.hasNext()) {
-			Map.Entry<VK, KeyValueVertex<VK,VV,EK,EV>> entry = iter.next();
-			KeyValueVertex<VK,VV,EK,EV> vertex = entry.getValue();
+			Map.Entry<VK, KeyValueVertex<VK,VV,EV>> entry = iter.next();
+			KeyValueVertex<VK,VV,EV> vertex = entry.getValue();
 			if (null != (vertex.getEdgeTo(toVertex.getKey()))) {
 				result.add(entry.getValue());
 			}
@@ -285,15 +285,15 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 
 	/** Return all predecessor nodes for a given node and link
 	 */
-	public KeyValueVertex<VK, VV, EK, EV> getPredecessorVertex(KeyValueVertex<VK, VV, EK, EV> destVertex, KeyValueEdge<VK, VV, EK, EV> edge) {
-		KeyValueVertex<VK, VV, EK, EV> sourceVertex = null;
-		Iterator<Map.Entry<VK, KeyValueVertex<VK, VV, EK, EV>>> iter = vertices.entrySet().iterator();
+	public KeyValueVertex<VK, VV, EV> getPredecessorVertex(KeyValueVertex<VK, VV, EV> destVertex, ValueEdge<VK, VV, EV> edge) {
+		KeyValueVertex<VK, VV, EV> sourceVertex = null;
+		Iterator<Map.Entry<VK, KeyValueVertex<VK, VV, EV>>> iter = vertices.entrySet().iterator();
 		while (iter.hasNext()) {
-			Map.Entry<VK, KeyValueVertex<VK, VV, EK, EV>> entry = iter.next();
-			KeyValueVertex<VK, VV, EK, EV> vertex = entry.getValue();
-			Iterator<KeyValueEdge<VK, VV, EK, EV>> edgesIter = vertex.getOutgoingEdges().iterator();
+			Map.Entry<VK, KeyValueVertex<VK, VV, EV>> entry = iter.next();
+			KeyValueVertex<VK, VV, EV> vertex = entry.getValue();
+			Iterator<ValueEdge<VK, VV, EV>> edgesIter = vertex.getOutgoingEdges().iterator();
 			while (edgesIter.hasNext()) {
-				KeyValueEdge<VK, VV, EK, EV> testedEdge = edgesIter.next();
+				ValueEdge<VK, VV, EV> testedEdge = edgesIter.next();
 				if (testedEdge.equals(edge)) {
 					sourceVertex = vertex;
 					break;
@@ -305,9 +305,9 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 
 	/** Returns a list of Vertex which are directly adjacent to the node.
 	 */
-	public List<KeyValueVertex<VK, VV, EK, EV>> getSuccessorVertices(KeyValueVertex<VK, VV, EK, EV> node) {
-		Iterator<KeyValueEdge<VK, VV, EK, EV>> edgesIter = node.getNeighbors().iterator();
-		List<KeyValueVertex<VK, VV, EK, EV>>result = new ArrayList<>();
+	public List<KeyValueVertex<VK, VV, EV>> getSuccessorVertices(KeyValueVertex<VK, VV, EV> node) {
+		Iterator<ValueEdge<VK, VV, EV>> edgesIter = node.getOutgoingEdges().iterator();
+		List<KeyValueVertex<VK, VV, EV>>result = new ArrayList<>();
 		while (edgesIter.hasNext()) {
 			result.add(edgesIter.next().getToVertex());
 		}
@@ -318,7 +318,7 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	 */
 	public int getVisitCount(VK nodeKey) throws GraphException {
 
-		KeyValueVertex<VK, VV, EK, EV> vertex = vertices.get(nodeKey);
+		KeyValueVertex<VK, VV, EV> vertex = vertices.get(nodeKey);
 		return vertex.getVisitsCount();
 	}
 
@@ -326,7 +326,7 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	 */
 	public int incVisitCount(VK nodeKey) throws GraphException {
 
-		KeyValueVertex<VK, VV, EK, EV> vertex = vertices.get(nodeKey);
+		KeyValueVertex<VK, VV, EV> vertex = vertices.get(nodeKey);
 		return vertex.incVisitCounts();
 	}
 
@@ -340,7 +340,7 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 
 	/** @see graph.ComparableKeysGraph#linksIterator
 	 */
-	public LinksIterator<KeyValueVertex<VK, VV, EK, EV>, KeyValueEdge<VK, VV, EK, EV>> linksKeysIterator() throws GraphException {
+	public LinksIterator<KeyValueVertex<VK, VV, EV>, ValueEdge<VK, VV, EV>> linksKeysIterator() throws GraphException {
 
 		return new LinksIterator<>(this);
 	}
@@ -363,9 +363,9 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	public Collection<VV> nodesValues() {
 
 		LinkedList<VV> nodes = new LinkedList<>();
-		Iterator<KeyValueVertex<VK, VV, EK, EV>> vertexIter = vertices.values().iterator();
+		Iterator<KeyValueVertex<VK, VV, EV>> vertexIter = vertices.values().iterator();
 		while (vertexIter.hasNext()) {
-			KeyValueVertex<VK, VV, EK, EV> vertex = vertexIter.next();
+			KeyValueVertex<VK, VV, EV> vertex = vertexIter.next();
 			nodes.addLast(vertex.getUserValue());
 		}
 		return nodes;
@@ -375,10 +375,10 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	 */
 	public Collection<EV> linksValues() {
 		LinkedList<EV> v = new LinkedList<>();
-		Iterator<KeyValueVertex<VK, VV, EK, EV>> verticesIter = vertices.values().iterator();
+		Iterator<KeyValueVertex<VK, VV, EV>> verticesIter = vertices.values().iterator();
 		while (verticesIter.hasNext()) {
-			KeyValueVertex<VK, VV, EK, EV> vertex = verticesIter.next();
-			Iterator<KeyValueEdge<VK, VV, EK, EV>> edgesIter = vertex.getNeighbors().iterator();
+			KeyValueVertex<VK, VV, EV> vertex = verticesIter.next();
+			Iterator<ValueEdge<VK, VV, EV>> edgesIter = vertex.getOutgoingEdges().iterator();
 			while (edgesIter.hasNext()) {
 				v.add(edgesIter.next().getUserValue());
 			}
@@ -390,8 +390,8 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	 */
 	public void removeAllLinksBetween(VK nodeKeyFrom, VK nodeKeyTo)
 		throws GraphException {
-		KeyValueVertex<VK, VV, EK, EV> from = this.vertices.get(nodeKeyFrom);
-		Iterator<KeyValueEdge<VK, VV, EK, EV>> edgesIter = from.getEdgeTo(nodeKeyTo).iterator();
+		KeyValueVertex<VK, VV, EV> from = this.vertices.get(nodeKeyFrom);
+		Iterator<ValueEdge<VK, VV, EV>> edgesIter = from.getEdgeTo(nodeKeyTo).iterator();
 		while (edgesIter.hasNext()) {
 			from.removeEdge(edgesIter.next());
 			numberOfEdges--;
@@ -408,11 +408,11 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	public void removeLink(
 		VK nodeFromKey,
 		VK nodeToKey,
-		EK linkKey)
+		ValueEdge<VK, VV, EV> linkKey)
 		throws GraphException {
 
-		KeyValueVertex<VK, VV, EK, EV> vertexFrom = vertices.get(nodeFromKey);
-		vertexFrom.removeEdgeByKey(linkKey);
+		KeyValueVertex<VK, VV, EV> vertexFrom = vertices.get(nodeFromKey);
+		vertexFrom.removeEdge(linkKey);
 
 		numberOfEdges--;
 		buildAllStartNodeKeys();
@@ -427,13 +427,13 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	 */
 	public void removeNode(VK nodeKey) throws NodeNotFoundException {
 
-		KeyValueVertex<VK, VV, EK, EV> v = this.vertices.get(nodeKey);
+		KeyValueVertex<VK, VV, EV> v = this.vertices.get(nodeKey);
 		this.numberOfEdges -= v.getCountEdges();
 		//remove all links to the node
-		Iterator<KeyValueVertex<VK, VV, EK, EV>> vertexIter = vertices.values().iterator();
+		Iterator<KeyValueVertex<VK, VV, EV>> vertexIter = vertices.values().iterator();
 		while (vertexIter.hasNext()) {
-			KeyValueVertex<VK, VV, EK, EV> vertex = vertexIter.next();
-			Iterator<KeyValueEdge<VK, VV, EK, EV>> edgesIter = vertex.getEdgeTo(nodeKey).iterator();
+			KeyValueVertex<VK, VV, EV> vertex = vertexIter.next();
+			Iterator<ValueEdge<VK, VV, EV>> edgesIter = vertex.getEdgeTo(nodeKey).iterator();
 			while (edgesIter.hasNext()) {
 				vertex.removeEdge(edgesIter.next());
 				this.numberOfEdges--;
@@ -446,9 +446,9 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	/** @see ComparableKeysGraph#setPassage
 	 */
 	public void setAllVisitCounts(int count) throws GraphException {
-		Iterator<KeyValueVertex<VK, VV, EK, EV>> nodeValuesIter = this.vertices.values().iterator();
+		Iterator<KeyValueVertex<VK, VV, EV>> nodeValuesIter = this.vertices.values().iterator();
 		while (nodeValuesIter.hasNext()) {
-			KeyValueVertex<VK, VV, EK, EV> vertex = nodeValuesIter.next();
+			KeyValueVertex<VK, VV, EV> vertex = nodeValuesIter.next();
 			vertex.setVisitCounts(count);
 		}
 	}
@@ -457,31 +457,19 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 	 */
 	public void setVisitCount(VK nodeKey, int count)
 		throws GraphException {
-		KeyValueVertex<VK, VV, EK, EV> vertex = vertices.get(nodeKey);
+		KeyValueVertex<VK, VV, EV> vertex = vertices.get(nodeKey);
 		vertex.setVisitCounts(count);
-	}
-
-	/** @see ComparableKeysGraph#getOutgoingLinkValue(java.lang.Object, java.lang.Object)
-	 */
-	public EV getOutgoingLinkValue(VK nodeKeyFrom, EK linkKey)
-		throws NodeNotFoundException {
-		EV result = null;
-		KeyValueVertex<VK, VV, EK, EV> vertex = this.vertices.get(nodeKeyFrom);
-		KeyValueEdge<VK, VV, EK, EV> edge = vertex.getEdgeByKey(linkKey);
-		if (edge != null)
-			result = edge.getUserValue();
-		return result;
 	}
 
 	public int getMaxInDegree() {
 		int max = 0;
 		HashMap<VK, Integer> counts = new HashMap<>();
-		Iterator<KeyValueVertex<VK, VV, EK, EV>> verticesIter = vertices.values().iterator();
+		Iterator<KeyValueVertex<VK, VV, EV>> verticesIter = vertices.values().iterator();
 		while(verticesIter.hasNext()){
-			KeyValueVertex<VK, VV, EK, EV> vertex = verticesIter.next();
-			Iterator<KeyValueEdge<VK, VV, EK, EV>>edgesIter = vertex.getNeighbors().iterator();
+			KeyValueVertex<VK, VV, EV> vertex = verticesIter.next();
+			Iterator<ValueEdge<VK, VV, EV>>edgesIter = vertex.getOutgoingEdges().iterator();
 			while(edgesIter.hasNext()){
-				KeyValueVertex<VK, VV, EK, EV> vertex2 = edgesIter.next().getToVertex();
+				KeyValueVertex<VK, VV, EV> vertex2 = edgesIter.next().getToVertex();
 				if(!counts.containsKey(vertex2)){
 					counts.put(vertex2.getKey(), new Integer(1));
 					max = Math.max(max, 1);
@@ -498,16 +486,16 @@ public class KeyValueGraph <VK extends Comparable<VK>, VV, EK extends Comparable
 
 	public int getMaxOutDegree() {
 		int max = 0;
-		Iterator<KeyValueVertex<VK, VV, EK, EV>> verticesIter = vertices.values().iterator();
+		Iterator<KeyValueVertex<VK, VV, EV>> verticesIter = vertices.values().iterator();
 		while(verticesIter.hasNext()){
-			KeyValueVertex<VK, VV, EK, EV> vertex = verticesIter.next();
+			KeyValueVertex<VK, VV, EV> vertex = verticesIter.next();
 			max = Math.max(max, vertex.getCountEdges());
 		}
 		return max;
 	}
 
 	@Override
-	public Collection<KeyValueVertex<VK, VV, EK, EV>> getRoots() {
+	public Collection<KeyValueVertex<VK, VV, EV>> getRoots() {
 		// TODO Auto-generated method stub
 		return null;
 	}
