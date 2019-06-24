@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import net.sf.yogl.Vertex;
 
-public class UniqueVertex<VC extends UniqueVertexIntf<VC, TC, VK, EK>, TC extends UniqueEdgeIntf<TC, VC, EK, VK>, VK extends Comparable<VK>, EK extends Comparable<EK>> 
+public class UniqueVertex<VC extends UniqueVertex<VC, TC, VK, EK>, TC extends UniqueEdge<TC, VC, EK, VK>, VK extends Comparable<VK>, EK extends Comparable<EK>> 
 		extends Vertex<VC, TC>{
 
 	private VK key;

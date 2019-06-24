@@ -2,7 +2,7 @@ package net.sf.yogl;
 
 import java.util.Collection;
 
-public abstract class Vertex<VC extends VertexIntf<VC, TC>, TC extends EdgeIntf<TC, VC>> implements VertexIntf<VC, TC>{
+public abstract class Vertex<VC extends Vertex<VC, TC>, TC extends Edge<TC, VC>>{
 
 	/** Depending on the graph implementation, entries may not be deleted. They are
      * just market as 'free'.

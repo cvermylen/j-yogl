@@ -17,9 +17,9 @@ import net.sf.yogl.exceptions.NodeNotFoundException;
  * being modified during the traversal.
  */
 
-public class DepthFirstIterator<VC extends VertexIntf<VC, TC>, TC extends EdgeIntf<TC, VC>> implements Iterator<VC> {
+public class DepthFirstIterator<VC extends Vertex<VC, TC>, TC extends Edge<TC, VC>> implements Iterator<VC> {
     
-	protected class LinearEdgesIterator<V1 extends VertexIntf<V1, E1>, E1 extends EdgeIntf<E1, V1>>{
+	protected class LinearEdgesIterator<V1 extends Vertex<V1, E1>, E1 extends Edge<E1, V1>>{
 		
 		/** Reference to the vertex' node
 		 */

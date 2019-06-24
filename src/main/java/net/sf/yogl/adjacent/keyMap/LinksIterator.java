@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import net.sf.yogl.EdgeIntf;
+import net.sf.yogl.Edge;
 import net.sf.yogl.Graph;
-import net.sf.yogl.VertexIntf;
+import net.sf.yogl.Vertex;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.types.VertexType;
 
@@ -17,7 +17,7 @@ import net.sf.yogl.types.VertexType;
  *  
  *  REFACTOR: From a given Vertex, returns an iterator on all outgoing edges (key & value)
  */
-public class LinksIterator<V extends VertexIntf<V, E>, E extends EdgeIntf<E, V>> implements Iterator<E> {
+public class LinksIterator<V extends Vertex<V, E>, E extends Edge<E, V>> implements Iterator<E> {
 
 	private ArrayList<V> predNodes = null;
 	private ArrayList<E> links = null;

@@ -20,7 +20,7 @@ import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.types.VertexType;
 
-public class UniqueElementsGraph<VC extends UniqueVertexIntf<VC, TC, VK, EK>, TC extends UniqueEdgeIntf<TC, VC, EK, VK>, VK extends Comparable<VK>, EK extends Comparable<EK>> 
+public class UniqueElementsGraph<VC extends UniqueVertex<VC, TC, VK, EK>, TC extends UniqueEdge<TC, VC, EK, VK>, VK extends Comparable<VK>, EK extends Comparable<EK>> 
 		implements Graph<VC, TC>{
 	/** Since it should be too tedious to traverse the whole graph
 	 * just to count the number of edges, this data is stored here.

@@ -6,7 +6,7 @@ import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.types.VertexType;
 
-public interface Graph<VC extends VertexIntf<VC, TC>, TC extends EdgeIntf<TC, VC>> {
+public interface Graph<VC extends Vertex<VC, TC>, TC extends Edge<TC, VC>> {
 
 	/** Returns the max degree by only taking into account the incoming
 	 *  edges

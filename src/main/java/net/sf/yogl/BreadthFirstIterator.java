@@ -8,7 +8,7 @@ import java.util.NoSuchElementException;
 
 import net.sf.yogl.exceptions.NodeNotFoundException;
 
-public class BreadthFirstIterator<VC extends VertexIntf<VC, TC>, TC extends EdgeIntf<TC, VC>> implements Iterator<VC> {
+public class BreadthFirstIterator<VC extends Vertex<VC, TC>, TC extends Edge<TC, VC>> implements Iterator<VC> {
 
 	/** breadth first working structure
 	 */
