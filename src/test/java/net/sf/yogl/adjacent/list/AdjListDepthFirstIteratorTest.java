@@ -8,8 +8,8 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-import net.sf.yogl.DepthFirstIterator;
 import net.sf.yogl.exceptions.GraphException;
+import net.sf.yogl.iterators.DepthFirstIterator;
 
 public class AdjListDepthFirstIteratorTest {
 

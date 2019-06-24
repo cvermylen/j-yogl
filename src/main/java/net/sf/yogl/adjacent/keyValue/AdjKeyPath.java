@@ -1,5 +1,5 @@
    
-package net.sf.yogl.adjacent.keyMap;
+package net.sf.yogl.adjacent.keyValue;
 
 import java.util.LinkedList;
 
@@ -18,16 +18,16 @@ public class AdjKeyPath<VK extends Comparable<VK>, VV, EK extends Comparable<EK>
 	 */
 	private VK nodeKey = null;
 	
-	private AdjKeyEdge<VK,VV, EK,EV> popedValue = null;
+	private KeyValueEdge<VK,VV, EK,EV> popedValue = null;
 	
 	/** Reference to links exiting from this vertex
 	 *  Order in this stack is extremely important.
 	 *  It MUST follow the same order as the one in the
 	 *  vStack.
 	 */
-	private LinkedList<AdjKeyEdge<VK, VV, EK,EV>> outgoingEdges = null;
+	private LinkedList<KeyValueEdge<VK, VV, EK,EV>> outgoingEdges = null;
 	
-	public AdjKeyPath(VK nodeKey, AdjKeyEdge<VK,VV, EK,EV>[]eArray){
+	public AdjKeyPath(VK nodeKey, KeyValueEdge<VK,VV, EK,EV>[]eArray){
 		this.nodeKey = nodeKey;
 		this.outgoingEdges = new LinkedList<>();
 		//outgoingEdges.push(new AdjKeyEdge<VK,VV, EK,EV>(null, null, null));
@@ -41,9 +41,9 @@ public class AdjKeyPath<VK extends Comparable<VK>, VV, EK extends Comparable<EK>
 	 *  @return the edge used to access to the next
 	 *  node
 	 */
-	public AdjKeyEdge<VK,VV, EK,EV> old_dec(){
+	public KeyValueEdge<VK,VV, EK,EV> old_dec(){
 		
-		AdjKeyEdge<VK,VV, EK,EV> usedEdge = outgoingEdges.pop();
+		KeyValueEdge<VK,VV, EK,EV> usedEdge = outgoingEdges.pop();
 		popedValue = usedEdge;
 		return usedEdge;
 	}
@@ -65,8 +65,8 @@ public class AdjKeyPath<VK extends Comparable<VK>, VV, EK extends Comparable<EK>
 	/** getter method
 	 *  @return the current edge
 	 */
-	public AdjKeyEdge<VK, VV, EK,EV> old_getEdge(){
-		AdjKeyEdge<VK,VV, EK,EV> edge = null;
+	public KeyValueEdge<VK, VV, EK,EV> old_getEdge(){
+		KeyValueEdge<VK,VV, EK,EV> edge = null;
 		
 		if(!outgoingEdges.isEmpty()){
 			if(outgoingEdges.size() > 1){ //last element is empty string
@@ -76,7 +76,7 @@ public class AdjKeyPath<VK extends Comparable<VK>, VV, EK extends Comparable<EK>
 		return edge;
 	}
 	
-	public AdjKeyEdge<VK, VV, EK,EV> old_getPopedValue(){
+	public KeyValueEdge<VK, VV, EK,EV> old_getPopedValue(){
 		
 		return popedValue;
 	}

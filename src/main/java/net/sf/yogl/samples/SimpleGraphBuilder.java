@@ -3,11 +3,11 @@ package net.sf.yogl.samples;
 
 import java.util.HashMap;
 
-import net.sf.yogl.adjacent.keyMap.AdjKeyGraph;
-import net.sf.yogl.adjacent.keyMap.AdjKeyVertex;
+import net.sf.yogl.adjacent.keyValue.KeyValueGraph;
+import net.sf.yogl.adjacent.keyValue.KeyValueVertex;
 import net.sf.yogl.exceptions.GraphException;
-import net.sf.yogl.extras.GraphBuilderArray;
 import net.sf.yogl.types.NoDataGraph;
+import net.sf.yogl.utils.GraphBuilderArray;
 
 public class SimpleGraphBuilder {
 
@@ -22,7 +22,7 @@ public class SimpleGraphBuilder {
 		System.out.println(ndg);
 		
 		System.out.println("\nSecond graph\n-----------");
-		AdjKeyGraph<String, String, String, String> alg = new AdjKeyGraph<>();
+		KeyValueGraph<String, String, String, String> alg = new KeyValueGraph<>();
 		String[][]data2 = {
 			{"1", "as the root node"},
 			{"2", "intermediate node"},

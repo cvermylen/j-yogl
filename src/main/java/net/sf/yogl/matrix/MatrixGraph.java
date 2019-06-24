@@ -1,17 +1,20 @@
    
-package net.sf.yogl.adjacent.keyMap;
+package net.sf.yogl.matrix;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import net.sf.yogl.Graph;
+import net.sf.yogl.adjacent.keyValue.KeyValueEdge;
+import net.sf.yogl.adjacent.keyValue.KeyValueVertex;
 import net.sf.yogl.exceptions.DuplicateLinkException;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.impl.DuplicateEdgeException;
 import net.sf.yogl.impl.DuplicateVertexException;
+import net.sf.yogl.iterators.LinksIterator;
 import net.sf.yogl.types.VertexType;
 
 /** The interface described here is the top hierarchy of the decorator pattern.
@@ -36,7 +39,7 @@ import net.sf.yogl.types.VertexType;
  * responsibility to find the right combinations of decorators.
  */
 
-public interface MatrixGraph <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Graph<AdjKeyVertex<VK, VV, EK, EV>, AdjKeyEdge<VK, VV, EK, EV>>{
+public interface MatrixGraph <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Graph<KeyValueVertex<VK, VV, EK, EV>, KeyValueEdge<VK, VV, EK, EV>>{
 
 	/** Insert a new link between 2 nodes. This new link will be placed 
 	 *  'before' any existing link between these 2 nodes.

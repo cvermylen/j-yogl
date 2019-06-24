@@ -1,5 +1,5 @@
    
-package net.sf.yogl.extras;
+package net.sf.yogl.utils;
 
 import java.util.HashSet;
 import java.util.Iterator;

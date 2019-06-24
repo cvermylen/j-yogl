@@ -2,6 +2,9 @@ package net.sf.yogl.uniqueElements;
 
 import org.junit.jupiter.api.Test;
 
+import net.sf.yogl.adjacent.key.KeyEdge;
+import net.sf.yogl.adjacent.key.KeyVertex;
+
 public class UniqueElementsGraphTest {
 
 	class StringUniqueVertex extends KeyVertex<String, String, StringUniqueVertex, StringUniqueEdge>{

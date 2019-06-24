@@ -1,13 +1,13 @@
    
-package net.sf.yogl.extras;
+package net.sf.yogl.utils;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import net.sf.yogl.Graph;
-import net.sf.yogl.adjacent.keyMap.AdjKeyEdge;
-import net.sf.yogl.adjacent.keyMap.AdjKeyGraph;
-import net.sf.yogl.adjacent.keyMap.AdjKeyVertex;
+import net.sf.yogl.adjacent.keyValue.KeyValueEdge;
+import net.sf.yogl.adjacent.keyValue.KeyValueGraph;
+import net.sf.yogl.adjacent.keyValue.KeyValueVertex;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.types.NoDataGraph;
@@ -62,7 +62,7 @@ public class GraphBuilderArray {
 	 * @throws GraphException
 	 */
 	public static void buildGraph(String[][] srcData, Graph destGraph) throws GraphException {
-		AdjKeyGraph<String, String, String, String> pg = new AdjKeyGraph<>();
+		KeyValueGraph<String, String, String, String> pg = new KeyValueGraph<>();
 		Set<String>nonRootVerticeKeys = new HashSet<>();
 		for (int i=0; i < srcData.length; i++) {
 			if (srcData[i].length == 4)
@@ -70,15 +70,15 @@ public class GraphBuilderArray {
 		}
 		for (int i = 0; i < srcData.length; i++) {
 			if(srcData[i].length == 2){
-				AdjKeyVertex<String, String, String, String> vertex = new AdjKeyVertex<>(srcData[i][0], srcData[i][1]);
+				KeyValueVertex<String, String, String, String> vertex = new KeyValueVertex<>(srcData[i][0], srcData[i][1]);
 				pg.tryAddVertex(vertex, nonRootVerticeKeys.contains(srcData[i][0]));
 			}
 		}
 		for (int i = 0; i < srcData.length; i++) {
 			if(srcData[i].length == 4){
-				AdjKeyVertex<String, String, String, String> fromVertex = pg.getVertex(srcData[i][0]);
-				AdjKeyVertex<String, String, String, String> toVertex = pg.getVertex(srcData[i][1]);
-				AdjKeyEdge<String, String, String, String> edge = new AdjKeyEdge<String, String, String, String>(srcData[i][1], srcData[i][2], srcData[i][3]);
+				KeyValueVertex<String, String, String, String> fromVertex = pg.getVertex(srcData[i][0]);
+				KeyValueVertex<String, String, String, String> toVertex = pg.getVertex(srcData[i][1]);
+				KeyValueEdge<String, String, String, String> edge = new KeyValueEdge<String, String, String, String>(srcData[i][1], srcData[i][2], srcData[i][3]);
 				fromVertex.tryAddEdge(edge);
 			}
 		}

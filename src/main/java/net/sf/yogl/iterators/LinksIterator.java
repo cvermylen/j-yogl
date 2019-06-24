@@ -1,5 +1,5 @@
    
-package net.sf.yogl.adjacent.keyMap;
+package net.sf.yogl.iterators;
 
 import java.util.ArrayList;
 import java.util.Collection;

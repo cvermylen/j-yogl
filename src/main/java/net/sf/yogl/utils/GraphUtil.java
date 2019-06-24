@@ -1,5 +1,5 @@
    
-package net.sf.yogl.adjacent.keyMap;
+package net.sf.yogl.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import net.sf.yogl.DepthFirstIterator;
 import net.sf.yogl.Edge;
 import net.sf.yogl.Graph;
 import net.sf.yogl.Vertex;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
+import net.sf.yogl.iterators.DepthFirstIterator;
 import net.sf.yogl.types.VertexType;
 
 @FunctionalInterface

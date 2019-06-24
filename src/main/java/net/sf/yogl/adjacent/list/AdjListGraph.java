@@ -6,12 +6,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-import net.sf.yogl.BreadthFirstIterator;
-import net.sf.yogl.DepthFirstIterator;
 import net.sf.yogl.Graph;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
+import net.sf.yogl.iterators.BreadthFirstIterator;
+import net.sf.yogl.iterators.DepthFirstIterator;
 import net.sf.yogl.types.VertexType;
 
 /**

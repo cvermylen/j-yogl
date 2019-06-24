@@ -1,5 +1,5 @@
 
-package net.sf.yogl;
+package net.sf.yogl.iterators;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import net.sf.yogl.Edge;
+import net.sf.yogl.Vertex;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 

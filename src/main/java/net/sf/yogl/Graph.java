@@ -4,6 +4,8 @@ import java.util.Collection;
 
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
+import net.sf.yogl.iterators.BreadthFirstIterator;
+import net.sf.yogl.iterators.DepthFirstIterator;
 import net.sf.yogl.types.VertexType;
 
 public interface Graph<VC extends Vertex<VC, TC>, TC extends Edge<TC, VC>> {

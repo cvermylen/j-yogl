@@ -1,4 +1,4 @@
-package net.sf.yogl.uniqueElements;
+package net.sf.yogl.adjacent.key;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,16 +11,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import net.sf.yogl.BreadthFirstIterator;
-import net.sf.yogl.DepthFirstIterator;
 import net.sf.yogl.Graph;
-import net.sf.yogl.adjacent.keyMap.LinksIterator;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
+import net.sf.yogl.iterators.BreadthFirstIterator;
+import net.sf.yogl.iterators.DepthFirstIterator;
+import net.sf.yogl.iterators.LinksIterator;
 import net.sf.yogl.types.VertexType;
 
-public class UniqueElementsGraph<VC extends UniqueVertex<VC, TC, VK, EK>, TC extends UniqueEdge<TC, VC, EK, VK>, VK extends Comparable<VK>, EK extends Comparable<EK>> 
+public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, TC extends InternalKeyEdge<TC, VC, EK, VK>, VK extends Comparable<VK>, EK extends Comparable<EK>> 
 		implements Graph<VC, TC>{
 	/** Since it should be too tedious to traverse the whole graph
 	 * just to count the number of edges, this data is stored here.

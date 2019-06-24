@@ -1,11 +1,14 @@
    
-package net.sf.yogl;
+package net.sf.yogl.iterators;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import net.sf.yogl.Edge;
+import net.sf.yogl.Graph;
+import net.sf.yogl.Vertex;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 
 public class BreadthFirstIterator<VC extends Vertex<VC, TC>, TC extends Edge<TC, VC>> implements Iterator<VC> {

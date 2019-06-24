@@ -1,4 +1,4 @@
- package net.sf.yogl.adjacent.keyMap;
+ package net.sf.yogl.adjacent.keyValue;
 
 import net.sf.yogl.Edge;
 
@@ -14,7 +14,7 @@ import net.sf.yogl.Edge;
  *  - the interger 'vertex' value points to the destination vertex.
  */
 
-public class AdjKeyEdge <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Edge<AdjKeyEdge<VK, VV, EK, EV>, AdjKeyVertex<VK, VV, EK, EV>>{
+public class KeyValueEdge <VK extends Comparable<VK>, VV, EK extends Comparable<EK>, EV> extends Edge<KeyValueEdge<VK, VV, EK, EV>, KeyValueVertex<VK, VV, EK, EV>>{
 	
 	/** used by traversal algorithms to indicate the number
 	 * of times the edge has been visited.
@@ -38,7 +38,7 @@ public class AdjKeyEdge <VK extends Comparable<VK>, VV, EK extends Comparable<EK
 	 * @param rValue refers to an object that is of the type used
 	 * to define all edges in the graph.
 	 */
-	public AdjKeyEdge(VK nextVertexKey, EK edgeKey, EV userValue) {
+	public KeyValueEdge(VK nextVertexKey, EK edgeKey, EV userValue) {
 		this.edgeKey = edgeKey;
 		this.nextVertexKey = nextVertexKey;
 		this.userValue = userValue;
@@ -47,8 +47,8 @@ public class AdjKeyEdge <VK extends Comparable<VK>, VV, EK extends Comparable<EK
 	/** duplicate referenced edge
 	 * @return a copy of this Edge
 	 */
-	public AdjKeyEdge<VK, VV, EK, EV> clone() {
-		AdjKeyEdge<VK, VV, EK, EV> dup = new AdjKeyEdge<VK, VV, EK, EV>(this.nextVertexKey, this.edgeKey, this.userValue);
+	public KeyValueEdge<VK, VV, EK, EV> clone() {
+		KeyValueEdge<VK, VV, EK, EV> dup = new KeyValueEdge<VK, VV, EK, EV>(this.nextVertexKey, this.edgeKey, this.userValue);
 		return dup;
 	}
 
@@ -63,8 +63,8 @@ public class AdjKeyEdge <VK extends Comparable<VK>, VV, EK extends Comparable<EK
 	public boolean equals(Object rhs) {
 		boolean result = false;
 
-		if (rhs instanceof AdjKeyEdge) {
-			result = edgeKey.equals(((AdjKeyEdge<VK, VV, EK, EV>) rhs).edgeKey);
+		if (rhs instanceof KeyValueEdge) {
+			result = edgeKey.equals(((KeyValueEdge<VK, VV, EK, EV>) rhs).edgeKey);
 		}
 		return result;
 	}

@@ -1,8 +1,8 @@
    
 package net.sf.yogl.samples;
 
-import net.sf.yogl.adjacent.keyMap.GraphUtil;
 import net.sf.yogl.types.NoDataGraph;
+import net.sf.yogl.utils.GraphUtil;
 
 
 public class DepthFirst {

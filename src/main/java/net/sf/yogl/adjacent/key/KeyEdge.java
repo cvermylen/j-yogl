@@ -1,8 +1,8 @@
-package net.sf.yogl.uniqueElements;
+package net.sf.yogl.adjacent.key;
 
 
 public class KeyEdge <EK extends Comparable<EK>, VK extends Comparable<VK>, TS extends KeyEdge<EK, VK, TS, DS>, DS extends KeyVertex<VK, EK, DS, TS>>
-extends UniqueEdge <TS, DS, EK, VK>{
+extends InternalKeyEdge <TS, DS, EK, VK>{
 
 	public KeyEdge(EK key) {
 		super(key);

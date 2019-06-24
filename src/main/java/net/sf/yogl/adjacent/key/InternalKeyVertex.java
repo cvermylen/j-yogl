@@ -1,17 +1,17 @@
-package net.sf.yogl.uniqueElements;
+package net.sf.yogl.adjacent.key;
 
 import java.util.Collection;
 import java.util.HashMap;
 import net.sf.yogl.Vertex;
 
-public class UniqueVertex<VC extends UniqueVertex<VC, TC, VK, EK>, TC extends UniqueEdge<TC, VC, EK, VK>, VK extends Comparable<VK>, EK extends Comparable<EK>> 
+public class InternalKeyVertex<VC extends InternalKeyVertex<VC, TC, VK, EK>, TC extends InternalKeyEdge<TC, VC, EK, VK>, VK extends Comparable<VK>, EK extends Comparable<EK>> 
 		extends Vertex<VC, TC>{
 
 	private VK key;
 	
 	private HashMap<EK, TC> edges= new HashMap<>();
 
-	public UniqueVertex(VK key) {
+	public InternalKeyVertex(VK key) {
 		this.key = key;
 	}
 	
@@ -42,9 +42,9 @@ public class UniqueVertex<VC extends UniqueVertex<VC, TC, VK, EK>, TC extends Un
 	@Override
 	public boolean equals (Object anotherObject) {
 		boolean result = false;
-		if (anotherObject instanceof UniqueVertex<?, ?, ?, ?>) {
+		if (anotherObject instanceof InternalKeyVertex<?, ?, ?, ?>) {
 			@SuppressWarnings("unchecked")
-			UniqueVertex<VC, TC, VK, EK> toVertex = (UniqueVertex<VC, TC, VK, EK>) anotherObject;
+			InternalKeyVertex<VC, TC, VK, EK> toVertex = (InternalKeyVertex<VC, TC, VK, EK>) anotherObject;
 			result = this.getKey().equals(toVertex.getKey());
 		}
 		return result;

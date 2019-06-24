@@ -16,6 +16,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.powermock.reflect.Whitebox;
 
+import net.sf.yogl.iterators.DepthFirstIterator;
+
 public class DepthFirstIteratorTest {
 
 	class V extends Vertex<V, E>{

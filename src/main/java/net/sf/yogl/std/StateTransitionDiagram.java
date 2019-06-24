@@ -7,11 +7,11 @@ import java.util.Iterator;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import net.sf.yogl.adjacent.key.UniqueElementsGraph;
 import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.LinkNotFoundException;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.exceptions.StdExecutionException;
-import net.sf.yogl.uniqueElements.UniqueElementsGraph;
 
 /** The STD implementation is based on a directed graph with the following
  *  restrictions:
