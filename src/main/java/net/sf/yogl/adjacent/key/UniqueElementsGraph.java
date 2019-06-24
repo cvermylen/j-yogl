@@ -20,8 +20,8 @@ import net.sf.yogl.iterators.DepthFirstIterator;
 import net.sf.yogl.iterators.LinksIterator;
 import net.sf.yogl.types.VertexType;
 
-public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, TC extends InternalKeyEdge<TC, VC, EK, VK>, VK extends Comparable<VK>, EK extends Comparable<EK>> 
-		implements Graph<VC, TC>{
+public class UniqueElementsGraph<VERTEX extends InternalKeyVertex<VERTEX, EDGE, VK, EK>, EDGE extends InternalKeyEdge<EDGE, VERTEX, EK, VK>, VK extends Comparable<VK>, EK extends Comparable<EK>> 
+		implements Graph<VERTEX, EDGE>{
 	/** Since it should be too tedious to traverse the whole graph
 	 * just to count the number of edges, this data is stored here.
 	 */
@@ -30,7 +30,7 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 	/** 'vertices' contains all vertices of the graph. This vector
 	 * is automatically resized when all entries are occupied.
 	 */
-	protected Map<VK, VC> vertices = new HashMap<>();
+	protected Map<VK, VERTEX> vertices = new HashMap<>();
 
 	/** Contains the list of all entry points in the graph.
 	 *  When a new node is created, it is by default inserted into the set.
@@ -44,8 +44,8 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 	/** Will duplicate the content of the vertex and insert it into this graph.
 	 * Method is used to copy vertices from graph to graph
 	 */
-	public VC addRootVertex (VC vertex, boolean isRoot) {
-		VC result = null;
+	public VERTEX addRootVertex (VERTEX vertex, boolean isRoot) {
+		VERTEX result = null;
 		if(!existsNode(vertex.getKey())) {
 			this.vertices.put(vertex.getKey(), vertex);
 			if (isRoot)
@@ -64,9 +64,9 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 	 * 		If null, the algorithm will use all nodes marked as 'START'.
 	 */
 	@Override
-	public BreadthFirstIterator<VC, TC> breadthFirstIterator(
+	public BreadthFirstIterator<VERTEX, EDGE> breadthFirstIterator(
 			int maxCycles) throws NodeNotFoundException {
-		return new BreadthFirstIterator<VC, TC>(this, maxCycles);
+		return new BreadthFirstIterator<VERTEX, EDGE>(this, maxCycles);
 	}
 
 	/** @see ComparableKeysGraph#clone
@@ -77,10 +77,10 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 
 	/** @see ComparableKeysGraph#depthFirstIterator
 	 */
-	public DepthFirstIterator<VC, TC> depthFirstIterator(Collection<VC> startVertices, 
+	public DepthFirstIterator<VERTEX, EDGE> depthFirstIterator(Collection<VERTEX> startVertices, 
 			int maxCycling)
 		throws GraphException {
-		return new DepthFirstIterator<VC, TC>(startVertices, maxCycling);
+		return new DepthFirstIterator<VERTEX, EDGE>(startVertices, maxCycling);
 	}
 
 	/** @see ComparableKeysGraph#existsNode
@@ -96,7 +96,7 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 	 * @exception VertexNotFoundException  thrown if rhs was not
 	 *            found in the graph.
 	 */
-	public VC findVertexByKey(VK nodeKey)
+	public VERTEX findVertexByKey(VK nodeKey)
 		throws NodeNotFoundException {
 		if (!vertices.containsKey(nodeKey))
 			throw new NodeNotFoundException(nodeKey.toString());
@@ -117,13 +117,13 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 	 * @exception VertexNotFoundException if 1 of the 2 nodes does not
 	 *            exists.
 	 */
-	public List<TC> getLinksKeysBetween(VC fromVertex, VC toVertex)
+	public List<EDGE> getLinksKeysBetween(VERTEX fromVertex, VERTEX toVertex)
 		throws NodeNotFoundException {
 
-		ArrayList<TC> result = new ArrayList<>();
-		Iterator<TC> edgesIter = fromVertex.getOutgoingEdges().iterator();
+		ArrayList<EDGE> result = new ArrayList<>();
+		Iterator<EDGE> edgesIter = fromVertex.getOutgoingEdges().iterator();
 		while (edgesIter.hasNext()) {
-			TC edge = edgesIter.next();
+			EDGE edge = edgesIter.next();
 			if (edge.getToVertex().equals(toVertex)) {
 				result.add(edge);
 			}
@@ -136,9 +136,9 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 	 */
 	private void buildAllStartNodeKeys() {
 		allStartNodeKeys.addAll(vertices.keySet());
-		Iterator<VC> entriesIter = vertices.values().iterator();
+		Iterator<VERTEX> entriesIter = vertices.values().iterator();
 		while (entriesIter.hasNext()) {
-			Iterator<TC> successorsIter = entriesIter.next().getOutgoingEdges().iterator();
+			Iterator<EDGE> successorsIter = entriesIter.next().getOutgoingEdges().iterator();
 			while (successorsIter.hasNext()) {
 				VK next = successorsIter.next().getToVertex().getKey();
 				if (allStartNodeKeys.contains(next)) {
@@ -160,7 +160,7 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 	 * @param vertex identify the node.
 	 */
 	@Override
-	public boolean isRootVertex(VC vertex) {
+	public boolean isRootVertex(VERTEX vertex) {
 		return allStartNodeKeys.contains(vertex.getKey());
 	}
 
@@ -196,12 +196,12 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 
 	/** @see ComparableKeysGraph#getNodes
 	 */
-	public List<VC> getVertices(VertexType type) throws NodeNotFoundException {
+	public List<VERTEX> getVertices(VertexType type) throws NodeNotFoundException {
 
-		ArrayList<VC> list = new ArrayList<>();
-		Iterator<VC> iter = vertices.values().iterator();
+		ArrayList<VERTEX> list = new ArrayList<>();
+		Iterator<VERTEX> iter = vertices.values().iterator();
 		while (iter.hasNext()) {
-			VC vertex = iter.next();
+			VERTEX vertex = iter.next();
 			if (type.equals(VertexType.ANY) || type.equals(getVertexType(vertex))) {
 
 				if ((getVertexType(vertex) == VertexType.START) || (getVertexType(vertex) == VertexType.STARTEND)) {
@@ -214,13 +214,13 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 		return list;
 	}
 
-	public VC getVertex (VK key) {
+	public VERTEX getVertex (VK key) {
 		return this.vertices.get(key);
 	}
 	
 	/** @see ComparableKeysGraph#getType
 	 */
-	public VertexType getVertexType(VC vertex) {
+	public VertexType getVertexType(VERTEX vertex) {
 		if (this.allStartNodeKeys.contains(vertex.getKey())) {
 			if ((vertex.getOutgoingEdges() == null)
 				|| (vertex.getOutgoingEdges().size() == 0)) {
@@ -240,14 +240,14 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 
 	/** return all predecessor nodes to a given node.
 	 */
-	public Collection<VC> getPredecessorVertices(VC toVertex) {
+	public Collection<VERTEX> getPredecessorVertices(VERTEX toVertex) {
 
-		Map<VK, VC> result = new HashMap<>();
-		Iterator<VC> allVerticesIter = vertices.values().iterator();
+		Map<VK, VERTEX> result = new HashMap<>();
+		Iterator<VERTEX> allVerticesIter = vertices.values().iterator();
 		while (allVerticesIter.hasNext()) {
-			Iterator<TC> edgeIter = allVerticesIter.next().getOutgoingEdges().iterator();
+			Iterator<EDGE> edgeIter = allVerticesIter.next().getOutgoingEdges().iterator();
 			while (edgeIter.hasNext()) {
-				VC vertexCandidate = edgeIter.next().getToVertex();
+				VERTEX vertexCandidate = edgeIter.next().getToVertex();
 				if (toVertex.getKey().equals(vertexCandidate.getKey())) {
 					result.put(vertexCandidate.getKey(), vertexCandidate);
 				}
@@ -258,15 +258,15 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 
 	/** Return all predecessor nodes for a given node and link
 	 */
-	public VC getPredecessorVertex(VC destVertex, TC edge) {
-		VC sourceVertex = null;
-		Iterator<Map.Entry<VK, VC>> iter = vertices.entrySet().iterator();
+	public VERTEX getPredecessorVertex(VERTEX destVertex, EDGE edge) {
+		VERTEX sourceVertex = null;
+		Iterator<Map.Entry<VK, VERTEX>> iter = vertices.entrySet().iterator();
 		while (iter.hasNext()) {
-			Map.Entry<VK, VC> entry = iter.next();
-			VC vertex = entry.getValue();
-			Iterator<TC> edgesIter = vertex.getOutgoingEdges().iterator();
+			Map.Entry<VK, VERTEX> entry = iter.next();
+			VERTEX vertex = entry.getValue();
+			Iterator<EDGE> edgesIter = vertex.getOutgoingEdges().iterator();
 			while (edgesIter.hasNext()) {
-				TC testedEdge = edgesIter.next();
+				EDGE testedEdge = edgesIter.next();
 				if (testedEdge.equals(edge) && (testedEdge.getToVertex().getKey().equals(destVertex.getKey()))) {
 					sourceVertex = vertex;
 					break;
@@ -278,9 +278,9 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 
 	/** Returns a list of Vertex which are directly adjacent to the node.
 	 */
-	public List<VC> getSuccessorVertices(VC node) {
-		Iterator<TC> edgesIter = node.getOutgoingEdges().iterator();
-		List<VC>result = new ArrayList<>();
+	public List<VERTEX> getSuccessorVertices(VERTEX node) {
+		Iterator<EDGE> edgesIter = node.getOutgoingEdges().iterator();
+		List<VERTEX>result = new ArrayList<>();
 		while (edgesIter.hasNext()) {
 			result.add(edgesIter.next().getToVertex());
 		}
@@ -291,7 +291,7 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 	 */
 	public int getVisitCount(VK nodeKey) throws GraphException {
 
-		VC vertex = vertices.get(nodeKey);
+		VERTEX vertex = vertices.get(nodeKey);
 		return vertex.getVisitsCount();
 	}
 
@@ -299,7 +299,7 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 	 */
 	public int incVisitCount(VK nodeKey) throws GraphException {
 
-		VC vertex = vertices.get(nodeKey);
+		VERTEX vertex = vertices.get(nodeKey);
 		return vertex.incVisitCounts();
 	}
 
@@ -313,7 +313,7 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 
 	/** @see graph.ComparableKeysGraph#linksIterator
 	 */
-	public LinksIterator<VC, TC> linksKeysIterator() throws GraphException {
+	public LinksIterator<VERTEX, EDGE> linksKeysIterator() throws GraphException {
 
 		return new LinksIterator<>(this);
 	}
@@ -333,11 +333,11 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 
 	/** Removes all links between the given nodes.
 	 */
-	public void removeAllEdgesBetween(VC vertexFrom, VC vertexTo)
+	public void removeAllEdgesBetween(VERTEX vertexFrom, VERTEX vertexTo)
 		throws GraphException {
-		Iterator<TC> edgesIter = vertexFrom.getOutgoingEdges().iterator();
+		Iterator<EDGE> edgesIter = vertexFrom.getOutgoingEdges().iterator();
 		while (edgesIter.hasNext()) {
-			TC edgeCandidate = edgesIter.next();
+			EDGE edgeCandidate = edgesIter.next();
 			if (edgeCandidate.getToVertex().equals(vertexTo)) {
 				vertexFrom.removeEdge(edgeCandidate);
 			}
@@ -354,22 +354,22 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 	 * @param node user-defined to be removed
 	 */
 	//Refactor: This method should be recursive, as removing 1 vertex may leave other nodes inaccessibles, which in turn should be removed as well.
-	public void removeVertex(VC vertexToBeRemoved) throws NodeNotFoundException {
+	public void removeVertex(VERTEX vertexToBeRemoved) throws NodeNotFoundException {
 
-		Iterator<VC> vertexIter = vertices.values().iterator();
+		Iterator<VERTEX> vertexIter = vertices.values().iterator();
 		while (vertexIter.hasNext()) {
-			VC vertex = vertexIter.next();
-			List<TC> edgesToBeRemoved = new ArrayList<>();
-			Iterator<TC> edgesIter = vertex.getOutgoingEdges().iterator();
+			VERTEX vertex = vertexIter.next();
+			List<EDGE> edgesToBeRemoved = new ArrayList<>();
+			Iterator<EDGE> edgesIter = vertex.getOutgoingEdges().iterator();
 			while (edgesIter.hasNext()) {
-				TC edge = edgesIter.next();
+				EDGE edge = edgesIter.next();
 				if (edge.getToVertex().equals(vertexToBeRemoved)) {
 					edgesToBeRemoved.add(edge);
 				}
-				Iterator<TC>tbrIter = edgesToBeRemoved.iterator();
+				Iterator<EDGE>tbrIter = edgesToBeRemoved.iterator();
 				while (tbrIter.hasNext()) {
-					TC tbr = tbrIter.next();
-					VC v2 = tbr.getToVertex();
+					EDGE tbr = tbrIter.next();
+					VERTEX v2 = tbr.getToVertex();
 					int incEdges = v2.decrementIncomingEdges();
 					vertex.removeEdge(tbr);
 					if (incEdges == 0) {
@@ -384,10 +384,10 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 
 	/** @see ComparableKeysGraph#setPassage
 	 */
-	public void setAllVisitCounts(int count) throws GraphException {
-		Iterator<VC> nodeValuesIter = this.vertices.values().iterator();
+	public void setAllVisiEDGEounts(int count) throws GraphException {
+		Iterator<VERTEX> nodeValuesIter = this.vertices.values().iterator();
 		while (nodeValuesIter.hasNext()) {
-			VC vertex = nodeValuesIter.next();
+			VERTEX vertex = nodeValuesIter.next();
 			vertex.setVisitCounts(count);
 		}
 	}
@@ -396,17 +396,17 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 	 */
 	public void setVisitCount(VK nodeKey, int count)
 		throws GraphException {
-		VC vertex = vertices.get(nodeKey);
+		VERTEX vertex = vertices.get(nodeKey);
 		vertex.setVisitCounts(count);
 	}
 
 	public int getMaxInDegree() {
 		int max = 0;
 		HashMap<VK, Integer> counts = new HashMap<>();
-		Iterator<VC> verticesIter = vertices.values().iterator();
+		Iterator<VERTEX> verticesIter = vertices.values().iterator();
 		while(verticesIter.hasNext()){
-			VC vertex = verticesIter.next();
-			Iterator<TC>edgesIter = vertex.getOutgoingEdges().iterator();
+			VERTEX vertex = verticesIter.next();
+			Iterator<EDGE>edgesIter = vertex.getOutgoingEdges().iterator();
 			while(edgesIter.hasNext()){
 				VK vertexKey = edgesIter.next().getToVertex().getKey();
 				if(!counts.containsKey(vertexKey)){
@@ -425,16 +425,16 @@ public class UniqueElementsGraph<VC extends InternalKeyVertex<VC, TC, VK, EK>, T
 
 	public int getMaxOutDegree() {
 		int max = 0;
-		Iterator<VC> verticesIter = vertices.values().iterator();
+		Iterator<VERTEX> verticesIter = vertices.values().iterator();
 		while(verticesIter.hasNext()){
-			VC vertex = verticesIter.next();
+			VERTEX vertex = verticesIter.next();
 			max = Math.max(max, vertex.getOutgoingEdges().size());
 		}
 		return max;
 	}
 
 	@Override
-	public Collection<VC> getRoots() {
+	public Collection<VERTEX> getRoots() {
 		return this.allStartNodeKeys.stream().map(vk -> vertices.get(vk)).collect(Collectors.toList());
 	}
 

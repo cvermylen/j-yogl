@@ -15,32 +15,32 @@ import net.sf.yogl.Edge;
  *  - the interger 'vertex' value points to the destination vertex.
  */
 
-public class AdjListEdge <VV, EV> extends Edge<AdjListEdge<VV, EV>, AdjListVertex<VV, EV>>{
+public class AdjListEdge <VERTEX_VALUE, EDGE_VALUE> extends Edge<AdjListEdge<VERTEX_VALUE, EDGE_VALUE>, AdjListVertex<VERTEX_VALUE, EDGE_VALUE>>{
 	
 	// index in the vertices vector. Is used as a pointer
 	// to the 'next' vertex.
-	private AdjListVertex<VV, EV> nextVertex = null;
+	private AdjListVertex<VERTEX_VALUE, EDGE_VALUE> nextVertex = null;
 
 	// Value associated to the edge. It is assumed that the 'equals' 
 	// function is defined on the user object.
-	private EV userValue = null;
+	private EDGE_VALUE userValue = null;
 
 	/** 
 	 * @param v points to the destination vertex. 
 	 * @param rValue refers to an object that is of the type used
 	 * to define all edges in the graph.
 	 */
-	public AdjListEdge(EV userValue, AdjListVertex<VV, EV> toVertex) {
+	public AdjListEdge(EDGE_VALUE userValue, AdjListVertex<VERTEX_VALUE, EDGE_VALUE> toVertex) {
 		super(toVertex);
 		this.userValue = userValue;
 	}
 
-	public AdjListVertex<VV, EV> setNextNode(VV value) {
-		AdjListVertex<VV, EV> result = new AdjListVertex<>(value);
+	public AdjListVertex<VERTEX_VALUE, EDGE_VALUE> setNextNode(VERTEX_VALUE value) {
+		AdjListVertex<VERTEX_VALUE, EDGE_VALUE> result = new AdjListVertex<>(value);
 		return this.setNextVertex(result);
 	}
 	
-	public AdjListVertex<VV, EV> setNextVertex(AdjListVertex<VV, EV> v){
+	public AdjListVertex<VERTEX_VALUE, EDGE_VALUE> setNextVertex(AdjListVertex<VERTEX_VALUE, EDGE_VALUE> v){
 		this.nextVertex = v;
 		return v;
 	}
@@ -48,8 +48,8 @@ public class AdjListEdge <VV, EV> extends Edge<AdjListEdge<VV, EV>, AdjListVerte
 	/** duplicate referenced edge
 	 * @return a copy of this Edge
 	 */
-	public AdjListEdge<VV, EV> clone() {
-		AdjListEdge<VV, EV> dup = new AdjListEdge<>(this.userValue, super.getToVertex());
+	public AdjListEdge<VERTEX_VALUE, EDGE_VALUE> clone() {
+		AdjListEdge<VERTEX_VALUE, EDGE_VALUE> dup = new AdjListEdge<>(this.userValue, super.getToVertex());
 		dup.setNextVertex(this.nextVertex);
 		return dup;
 	}
@@ -57,11 +57,11 @@ public class AdjListEdge <VV, EV> extends Edge<AdjListEdge<VV, EV>, AdjListVerte
 	/** getter method
 	 * @return the 'value' referred to
 	 */
-	public EV getUserValue() {
+	public EDGE_VALUE getUserValue() {
 		return userValue;
 	}
 
-	public void setUserValue(EV userValue) {
+	public void setUserValue(EDGE_VALUE userValue) {
 
 		this.userValue = userValue;
 	}
@@ -69,14 +69,14 @@ public class AdjListEdge <VV, EV> extends Edge<AdjListEdge<VV, EV>, AdjListVerte
 	/** setter method
 	 * @param vertex is the new Vertex this edge points to
 	 */
-	public void setToVertex(AdjListVertex<VV, EV> nextVertex) {
+	public void setToVertex(AdjListVertex<VERTEX_VALUE, EDGE_VALUE> nextVertex) {
 		this.nextVertex = nextVertex;
 	}
 
 	/** getter method
 	 * @ return the vertex this edge points to
 	 */
-	public AdjListVertex<VV, EV> getToVertex() {
+	public AdjListVertex<VERTEX_VALUE, EDGE_VALUE> getToVertex() {
 		return nextVertex;
 	}
 

@@ -2,6 +2,7 @@ package net.sf.yogl.adjacent.key;
 
 import java.util.Collection;
 import java.util.HashMap;
+
 import net.sf.yogl.Vertex;
 
 public class InternalKeyVertex<VC extends InternalKeyVertex<VC, TC, VK, EK>, TC extends InternalKeyEdge<TC, VC, EK, VK>, VK extends Comparable<VK>, EK extends Comparable<EK>> 

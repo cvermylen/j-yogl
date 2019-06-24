@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import net.sf.yogl.Vertex;
-import net.sf.yogl.exceptions.GraphCorruptedException;
 /**
  * The Vertex describes the node of the graph. It is a container for a
  * user defined object.
@@ -19,13 +18,13 @@ import net.sf.yogl.exceptions.GraphCorruptedException;
  *  V = user value Object
  */
 
-public class AdjListVertex <VV, EV> extends Vertex<AdjListVertex<VV, EV>, AdjListEdge<VV, EV>> {
+public class AdjListVertex <VERTEX_VALUE, EDGE_VALUE> extends Vertex<AdjListVertex<VERTEX_VALUE, EDGE_VALUE>, AdjListEdge<VERTEX_VALUE, EDGE_VALUE>> {
         
-    private ArrayList<AdjListEdge<VV, EV>> outgoingEdges = new ArrayList<>();
+    private ArrayList<AdjListEdge<VERTEX_VALUE, EDGE_VALUE>> outgoingEdges = new ArrayList<>();
     
-    VV userValue = null;
+    VERTEX_VALUE userValue = null;
     
-    public AdjListVertex(VV userValue){
+    public AdjListVertex(VERTEX_VALUE userValue){
     	super();
     	if(userValue == null) throw new IllegalArgumentException("Null paramter not allowed");
         this.userValue = userValue;
@@ -35,47 +34,47 @@ public class AdjListVertex <VV, EV> extends Vertex<AdjListVertex<VV, EV>, AdjLis
     	super();
     }
     
-    public AdjListVertex<VV, EV> clone(){
+    public AdjListVertex<VERTEX_VALUE, EDGE_VALUE> clone(){
         
-        AdjListVertex<VV, EV> cloned = new AdjListVertex<VV, EV>(userValue);
+        AdjListVertex<VERTEX_VALUE, EDGE_VALUE> cloned = new AdjListVertex<VERTEX_VALUE, EDGE_VALUE>(userValue);
         cloned.setFreeEntry(isFreeEntry());
         cloned.setVisitCounts(getVisitsCount());
         cloned.outgoingEdges = outgoingEdges;
         return cloned;
     }
     
-    public VV getUserValue(){
+    public VERTEX_VALUE getUserValue(){
         return userValue;
     }
     
-    public List<AdjListEdge<VV, EV>> getOutgoingEdges(){
+    public List<AdjListEdge<VERTEX_VALUE, EDGE_VALUE>> getOutgoingEdges(){
         
     	return this.outgoingEdges;
     }
     
-    public AdjListEdge<VV, EV> addLinkLast(AdjListEdge<VV, EV> edge) {
+    public AdjListEdge<VERTEX_VALUE, EDGE_VALUE> addLinkLast(AdjListEdge<VERTEX_VALUE, EDGE_VALUE> edge) {
     	return this.addEdgeLast(edge);
     }
     
-    public AdjListEdge<VV, EV> addEdgeLast(AdjListEdge<VV, EV> newEdge){
+    public AdjListEdge<VERTEX_VALUE, EDGE_VALUE> addEdgeLast(AdjListEdge<VERTEX_VALUE, EDGE_VALUE> newEdge){
         if (newEdge != null){
         	outgoingEdges.add(newEdge);
         }
         return newEdge;
     }
     
-    public AdjListEdge<VV, EV> addLinkFirst(AdjListEdge<VV, EV> edge) {
+    public AdjListEdge<VERTEX_VALUE, EDGE_VALUE> addLinkFirst(AdjListEdge<VERTEX_VALUE, EDGE_VALUE> edge) {
     	return this.addEdgeFirst(edge);
     }
     
-    public AdjListEdge<VV, EV> addEdgeFirst(AdjListEdge<VV, EV> newEdge){
+    public AdjListEdge<VERTEX_VALUE, EDGE_VALUE> addEdgeFirst(AdjListEdge<VERTEX_VALUE, EDGE_VALUE> newEdge){
         if (newEdge != null){
         	outgoingEdges.add(0, newEdge);
         }
         return newEdge;
     }
 
-    public void removeEdge(AdjListEdge<VV, EV> edge){
+    public void removeEdge(AdjListEdge<VERTEX_VALUE, EDGE_VALUE> edge){
         if (edge != null){
             outgoingEdges.remove(edge);
         }
@@ -85,7 +84,7 @@ public class AdjListVertex <VV, EV> extends Vertex<AdjListVertex<VV, EV>, AdjLis
     	outgoingEdges.remove(pos);
     }
     
-    public void removeIf(Predicate<AdjListEdge<VV, EV>> p){
+    public void removeIf(Predicate<AdjListEdge<VERTEX_VALUE, EDGE_VALUE>> p){
     	outgoingEdges.removeIf(p);
     }
     
@@ -93,24 +92,24 @@ public class AdjListVertex <VV, EV> extends Vertex<AdjListVertex<VV, EV>, AdjLis
         outgoingEdges.clear();
     }
     
-    public AdjListVertex<VV, EV> deepCopy() {
-    	AdjListVertex<VV, EV>result = this.clone();
+    public AdjListVertex<VERTEX_VALUE, EDGE_VALUE> deepCopy() {
+    	AdjListVertex<VERTEX_VALUE, EDGE_VALUE>result = this.clone();
     	
     	return result;
     }
 
-	public void tryAddEdgeFirst(AdjListEdge<VV, EV> edge) {
+	public void tryAddEdgeFirst(AdjListEdge<VERTEX_VALUE, EDGE_VALUE> edge) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void tryAddEdge(AdjListEdge<VV, EV> edge) {
+	public void tryAddEdge(AdjListEdge<VERTEX_VALUE, EDGE_VALUE> edge) {
 		// TODO Auto-generated method stub
 		
 	}
 	
-	public void tryAddEdgeLast(AdjListEdge<VV, EV> edge) {
+	public void tryAddEdgeLast(AdjListEdge<VERTEX_VALUE, EDGE_VALUE> edge) {
 		// TODO Auto-generated method stub
 		
 	}
