@@ -38,6 +38,10 @@ public class KeyValueVertex <VERTEX_KEY extends Comparable<VERTEX_KEY>, VERTEX_V
      */
     VERTEX_VALUE userValue = null;
     
+    public KeyValueVertex() {
+    	super();
+    }
+    
     /** ctor with initialisation
      * @param type associates a type to the contents ofthe vertex
      * @param userValue refers to the node object
@@ -48,14 +52,13 @@ public class KeyValueVertex <VERTEX_KEY extends Comparable<VERTEX_KEY>, VERTEX_V
         this.userValue = userValue;
     }
     
-    public KeyValueVertex<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> clone(){
-        
-        KeyValueVertex<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> cloned = new KeyValueVertex<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE>(key, userValue);
-        cloned.setFreeEntry(isFreeEntry());
-        cloned.setVisitCounts(getVisitsCount());
-        cloned.outgoingEdges = outgoingEdges;
-        return cloned;
+    public void cloneTo(KeyValueVertex<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> copyToVertex) {
+    	super.cloneTo(copyToVertex);
+    	copyToVertex.setFreeEntry(isFreeEntry());
+    	copyToVertex.setVisitCounts(getVisitsCount());
+    	copyToVertex.outgoingEdges = outgoingEdges;
     }
+    
     /** compares the userValue objects of 'this' and 'v' if both
      * references are non-null. If either 'this' or 'v' is null
      * the function return 'false'

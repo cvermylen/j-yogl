@@ -24,23 +24,21 @@ public class AdjListVertex <VERTEX_VALUE, EDGE_VALUE> extends Vertex<AdjListVert
     
     VERTEX_VALUE userValue = null;
     
+    public AdjListVertex(){
+    	super();
+    }
+    
     public AdjListVertex(VERTEX_VALUE userValue){
     	super();
     	if(userValue == null) throw new IllegalArgumentException("Null paramter not allowed");
         this.userValue = userValue;
     }
     
-    protected AdjListVertex() {
-    	super();
-    }
-    
-    public AdjListVertex<VERTEX_VALUE, EDGE_VALUE> clone(){
-        
-        AdjListVertex<VERTEX_VALUE, EDGE_VALUE> cloned = new AdjListVertex<VERTEX_VALUE, EDGE_VALUE>(userValue);
-        cloned.setFreeEntry(isFreeEntry());
-        cloned.setVisitCounts(getVisitsCount());
-        cloned.outgoingEdges = outgoingEdges;
-        return cloned;
+    public void cloneTo(AdjListVertex<VERTEX_VALUE, EDGE_VALUE> copyToVertex){
+        super.cloneTo(copyToVertex);
+        copyToVertex.setFreeEntry(isFreeEntry());
+        copyToVertex.setVisitCounts(getVisitsCount());
+        copyToVertex.outgoingEdges = outgoingEdges;
     }
     
     public VERTEX_VALUE getUserValue(){
@@ -92,12 +90,6 @@ public class AdjListVertex <VERTEX_VALUE, EDGE_VALUE> extends Vertex<AdjListVert
         outgoingEdges.clear();
     }
     
-    public AdjListVertex<VERTEX_VALUE, EDGE_VALUE> deepCopy() {
-    	AdjListVertex<VERTEX_VALUE, EDGE_VALUE>result = this.clone();
-    	
-    	return result;
-    }
-
 	public void tryAddEdgeFirst(AdjListEdge<VERTEX_VALUE, EDGE_VALUE> edge) {
 		// TODO Auto-generated method stub
 		

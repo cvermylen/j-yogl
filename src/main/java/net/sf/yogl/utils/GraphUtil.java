@@ -31,13 +31,13 @@ public final class GraphUtil {
 	 *  The resulting subgraph is a new graph, with new vertices and edges, will contain one entry point
 	 *  and one exit point.
 	 */
-	public static <V extends Vertex<V, E>, E extends Edge<E, V>> void subgraph(Graph<V, E> graph, Graph<V, E> result,
+	public static <V extends Vertex<V, E>, E extends Edge<E, V>> void subgraph(Graph<V, E> graph, Graph<V, E> resultingGraph,
 			V startNode, V endNodeKey, Function<V, V> vertexCtor, BiFunction<V, E, E> edgeCtor) throws GraphException {
 
 		if (graph == null) {
 			throw new NullPointerException("input parameter graph is null");
 		}
-		if (result == null) {
+		if (resultingGraph == null) {
 			throw new NullPointerException("input parameter result is null");
 		}
 		if (startNode == null) {
@@ -47,6 +47,8 @@ public final class GraphUtil {
 			throw new NullPointerException("input parameter endNode is null");
 		}
 		int degree = graph.getMaxOutDegree();
+		//1- Insert new root vertex
+		V newRoot = vertexCtor.;
 		DepthFirstIterator<V, E> iter = graph.depthFirstIterator(Arrays.asList(startNode), degree);
 		while (iter.hasNext()) {
 			if (endNodeKey.equals(iter.next())) {
@@ -65,15 +67,15 @@ public final class GraphUtil {
 				V leftNodeKey = nodesIter.next();
 				V rightNodeKey = null;
 				V leftDup = vertexCtor.apply(leftNodeKey);
-				result.addRootVertex(leftDup, graph.isRootVertex(leftNodeKey));
+				resultingGraph.addRootVertex(leftDup, graph.isRootVertex(leftNodeKey));
 				for(E link: links){
 					rightNodeKey = nodesIter.next();
 					V rightDup = vertexCtor.apply(rightNodeKey);
 					if (rightNodeKey.equals(endNodeKey)) {
-						result.addRootVertex(rightDup, graph.isRootVertex(rightNodeKey));
+						resultingGraph.addRootVertex(rightDup, graph.isRootVertex(rightNodeKey));
 
 					} else {
-						result.addRootVertex(rightDup, graph.isRootVertex(rightNodeKey));
+						resultingGraph.addRootVertex(rightDup, graph.isRootVertex(rightNodeKey));
 					}
 					
 					leftDup.tryAddEdge(edgeCtor.apply(rightDup, link));

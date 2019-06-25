@@ -5,39 +5,50 @@ import java.util.HashMap;
 
 import net.sf.yogl.Vertex;
 
-public class InternalKeyVertex<VC extends InternalKeyVertex<VC, TC, VK, EK>, TC extends InternalKeyEdge<TC, VC, EK, VK>, VK extends Comparable<VK>, EK extends Comparable<EK>> 
-		extends Vertex<VC, TC>{
+public abstract class InternalKeyVertex<VERTEX extends InternalKeyVertex<VERTEX, EDGE, VERTEX_KEY, EDGE_KEY>, EDGE extends InternalKeyEdge<EDGE, VERTEX, EDGE_KEY, VERTEX_KEY>, VERTEX_KEY extends Comparable<VERTEX_KEY>, EDGE_KEY extends Comparable<EDGE_KEY>> 
+		extends Vertex<VERTEX, EDGE>{
 
-	private VK key;
+	private VERTEX_KEY key;
 	
-	private HashMap<EK, TC> edges= new HashMap<>();
+	private HashMap<EDGE_KEY, EDGE> edges= new HashMap<>();
 
-	public InternalKeyVertex(VK key) {
+	public InternalKeyVertex(){
+		super();
+	}
+	
+	public InternalKeyVertex(VERTEX_KEY key) {
+		super();
 		this.key = key;
 	}
 	
 	@Override
-	public Collection<TC> getOutgoingEdges() {
+	public Collection<EDGE> getOutgoingEdges() {
 		return edges.values();
 	}
 
-	public TC getOutgoingEdge(EK edgeKey) {
+	public EDGE getOutgoingEdge(EDGE_KEY edgeKey) {
 		return edges.get(edgeKey);
 	}
 	
 	@Override
-	public void tryAddEdge(TC edge) {
+	public void tryAddEdge(EDGE edge) {
 		if (!edges.containsKey(edge.getKey())) {
 			edges.put(edge.getKey(), edge);
 		}
 	}
 	
-	public void removeEdge(TC edge){
+	public void removeEdge(EDGE edge){
 		edges.remove(edge.getKey());
 	}
 	
-	public VK getKey() {
+	public VERTEX_KEY getKey() {
 		return key;
+	}
+	
+	public void cloneTo(InternalKeyVertex<VERTEX, EDGE, VERTEX_KEY, EDGE_KEY> copyToVertex){
+		super.cloneTo(copyToVertex);
+		copyToVertex.key = this.key;
+		
 	}
 	
 	@Override
@@ -45,7 +56,7 @@ public class InternalKeyVertex<VC extends InternalKeyVertex<VC, TC, VK, EK>, TC 
 		boolean result = false;
 		if (anotherObject instanceof InternalKeyVertex<?, ?, ?, ?>) {
 			@SuppressWarnings("unchecked")
-			InternalKeyVertex<VC, TC, VK, EK> toVertex = (InternalKeyVertex<VC, TC, VK, EK>) anotherObject;
+			InternalKeyVertex<VERTEX, EDGE, VERTEX_KEY, EDGE_KEY> toVertex = (InternalKeyVertex<VERTEX, EDGE, VERTEX_KEY, EDGE_KEY>) anotherObject;
 			result = this.getKey().equals(toVertex.getKey());
 		}
 		return result;

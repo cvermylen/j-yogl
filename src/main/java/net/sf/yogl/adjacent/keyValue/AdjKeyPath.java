@@ -85,11 +85,4 @@ public class AdjKeyPath<VERTEX_KEY extends Comparable<VERTEX_KEY>, VERTEX_VALUE,
 		return result;
 	}
 	
-	public AdjKeyPath<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> clone(){
-		AdjKeyPath<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE>result = this.clone();
-		result.nodeKey = this.nodeKey;
-		result.popedValue = this.popedValue;
-		result.outgoingEdges = this.outgoingEdges.stream().map(e -> e.clone()).collect(LinkedList::new, LinkedList::add, LinkedList::addAll);
-		return result;
-	}
 }

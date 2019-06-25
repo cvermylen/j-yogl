@@ -27,6 +27,10 @@ public class ValueEdge <VERTEX_KEY extends Comparable<VERTEX_KEY>, VERTEX_VALUE,
 	// function is defined on the user object.
 	private EDGE_VALUE value = null;
 
+	public ValueEdge() {
+		super();
+	}
+	
 	/** 
 	 * @param v points to the destination vertex. 
 	 * @param rValue refers to an object that is of the type used
@@ -41,14 +45,8 @@ public class ValueEdge <VERTEX_KEY extends Comparable<VERTEX_KEY>, VERTEX_VALUE,
 	/** duplicate referenced edge
 	 * @return a copy of this Edge
 	 */
-	public ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> clone() {
-		ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> dup;
-		try {
-			dup = new ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE>(this.value, super.getToVertex());
-		} catch (NodeNotFoundException e) {
-			throw new NullPointerException("Found 'toVertex' pointing to null object during clone of an edge");
-		}
-		return dup;
+	public void cloneTo(ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> copyToEdge) {
+		super.cloneTo(copyToEdge);
 	}
 
 	/** are equal if they points to the same destination

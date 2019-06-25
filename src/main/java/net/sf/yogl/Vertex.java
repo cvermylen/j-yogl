@@ -20,6 +20,8 @@ public abstract class Vertex<VERTEX extends Vertex<VERTEX, EDGE>, EDGE extends E
      */
     private int incomingEdges = 0;
     
+    public Vertex() {}
+    
     /** setter method
      * @param freeEntry true means that vertex is in a free pool
      */
@@ -76,4 +78,9 @@ public abstract class Vertex<VERTEX extends Vertex<VERTEX, EDGE>, EDGE extends E
     
     public abstract void tryAddEdge(EDGE edge);
     
+    /** Vertices are duplicated with a clone method
+     */
+    public <D_VERTEX extends Vertex<VERTEX, EDGE>> void cloneTo(D_VERTEX copyToVertex){
+    	
+    }
 }

@@ -3,17 +3,27 @@ package net.sf.yogl.adjacent.key;
 import net.sf.yogl.Edge;
 import net.sf.yogl.exceptions.NodeNotFoundException;
 
-public class InternalKeyEdge<TC extends InternalKeyEdge<TC, VC, EK, VK>, VC extends InternalKeyVertex<VC, TC, VK, EK>, EK extends Comparable<EK>, VK extends Comparable<VK>> 
-		extends Edge<TC, VC>{
-	private EK key;
+public abstract class InternalKeyEdge<EDGE extends InternalKeyEdge<EDGE, VERTEX, EDGE_KEY, VERTEX_KEY>, VERTEX extends InternalKeyVertex<VERTEX, EDGE, VERTEX_KEY, EDGE_KEY>, EDGE_KEY extends Comparable<EDGE_KEY>, VERTEX_KEY extends Comparable<VERTEX_KEY>> 
+		extends Edge<EDGE, VERTEX>{
 	
-	public InternalKeyEdge(EK key, VC toVertex) throws NodeNotFoundException {
+	private EDGE_KEY key;
+	
+	public InternalKeyEdge(){
+		super();
+	}
+	
+	public InternalKeyEdge(EDGE_KEY key, VERTEX toVertex) throws NodeNotFoundException {
 		super(toVertex);
 		this.key = key;
 	}
 	
-	public EK getKey() {
+	public EDGE_KEY getKey() {
 		return key;
+	}
+	
+	public void cloneTo(InternalKeyEdge<EDGE, VERTEX, EDGE_KEY, VERTEX_KEY> copyToEdge){
+		super.cloneTo(copyToEdge);
+		copyToEdge.key = this.key;
 	}
 	
 	@Override
@@ -21,7 +31,7 @@ public class InternalKeyEdge<TC extends InternalKeyEdge<TC, VC, EK, VK>, VC exte
 		boolean result = false;
 		if (anotherObject instanceof InternalKeyEdge<?, ?, ?, ?>) {
 			@SuppressWarnings("unchecked")
-			InternalKeyEdge<TC, VC, EK, VK> toVertex = (InternalKeyEdge<TC, VC, EK, VK>) anotherObject;
+			InternalKeyEdge<EDGE, VERTEX, EDGE_KEY, VERTEX_KEY> toVertex = (InternalKeyEdge<EDGE, VERTEX, EDGE_KEY, VERTEX_KEY>) anotherObject;
 			result = this.getKey().equals(toVertex.getKey());
 		}
 		return result;

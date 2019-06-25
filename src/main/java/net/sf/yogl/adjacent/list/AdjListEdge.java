@@ -26,6 +26,10 @@ public class AdjListEdge <VERTEX_VALUE, EDGE_VALUE> extends Edge<AdjListEdge<VER
 	// function is defined on the user object.
 	private EDGE_VALUE userValue = null;
 
+	public AdjListEdge(){
+		super();
+	}
+	
 	/** 
 	 * @param v points to the destination vertex. 
 	 * @param rValue refers to an object that is of the type used
@@ -49,15 +53,9 @@ public class AdjListEdge <VERTEX_VALUE, EDGE_VALUE> extends Edge<AdjListEdge<VER
 	/** duplicate referenced edge
 	 * @return a copy of this Edge
 	 */
-	public AdjListEdge<VERTEX_VALUE, EDGE_VALUE> clone() {
-		AdjListEdge<VERTEX_VALUE, EDGE_VALUE> dup;
-		try {
-			dup = new AdjListEdge<>(this.userValue, super.getToVertex());
-		} catch (NodeNotFoundException e) {
-			throw new NullPointerException("Found 'toVertex' pointing to a null object during clone");
-		}
-		dup.setNextVertex(this.nextVertex);
-		return dup;
+	public void cloneTO(AdjListEdge<VERTEX_VALUE, EDGE_VALUE> copyToEdge) {
+		super.cloneTo(copyToEdge);
+		copyToEdge.setNextVertex(this.nextVertex);
 	}
 
 	/** getter method

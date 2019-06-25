@@ -86,15 +86,6 @@ public class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>, AdjListE
 		throw new UnsupportedOperationException();
 	}
 
-	/** @see ComparableKeysGraph#deepCopy
-	 */
-	public void deepCopy(Graph<AdjListVertex<V, E>, AdjListEdge<V, E>> dest) throws GraphException {
-
-		for(AdjListVertex<V, E> root: roots){
-			dest.addRootVertex(root.deepCopy(), true);
-		}
-	}
-
 	/** @see ComparableKeysGraph#depthFirstIterator
 	 */
 	@Override
