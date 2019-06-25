@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import net.sf.yogl.adjacent.key.KeyEdge;
 import net.sf.yogl.adjacent.key.KeyVertex;
+import net.sf.yogl.exceptions.NodeNotFoundException;
 
 public class UniqueElementsGraphTest {
 
@@ -18,7 +19,7 @@ public class UniqueElementsGraphTest {
 	
 	class StringUniqueEdge extends KeyEdge<String, String, StringUniqueEdge, StringUniqueVertex>{
 
-		public StringUniqueEdge(String key, StringUniqueVertex v) {
+		public StringUniqueEdge(String key, StringUniqueVertex v) throws NodeNotFoundException {
 			super(key, v);
 			// TODO Auto-generated constructor stub
 		}

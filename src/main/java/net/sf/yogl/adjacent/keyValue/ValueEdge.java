@@ -1,6 +1,7 @@
  package net.sf.yogl.adjacent.keyValue;
 
 import net.sf.yogl.Edge;
+import net.sf.yogl.exceptions.NodeNotFoundException;
 
 /** Edge is the container for user-defined edges. There is one list per vertex
  * (see vertex). The Edge object must be unique within this list.
@@ -30,8 +31,9 @@ public class ValueEdge <VERTEX_KEY extends Comparable<VERTEX_KEY>, VERTEX_VALUE,
 	 * @param v points to the destination vertex. 
 	 * @param rValue refers to an object that is of the type used
 	 * to define all edges in the graph.
+	 * @throws NodeNotFoundException 
 	 */
-	public ValueEdge(EDGE_VALUE userValue, KeyValueVertex<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> toVertex) {
+	public ValueEdge(EDGE_VALUE userValue, KeyValueVertex<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> toVertex) throws NodeNotFoundException {
 		super(toVertex);
 		this.value = userValue;
 	}
@@ -40,7 +42,12 @@ public class ValueEdge <VERTEX_KEY extends Comparable<VERTEX_KEY>, VERTEX_VALUE,
 	 * @return a copy of this Edge
 	 */
 	public ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> clone() {
-		ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> dup = new ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE>(this.value, super.getToVertex());
+		ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE> dup;
+		try {
+			dup = new ValueEdge<VERTEX_KEY, VERTEX_VALUE, EDGE_VALUE>(this.value, super.getToVertex());
+		} catch (NodeNotFoundException e) {
+			throw new NullPointerException("Found 'toVertex' pointing to null object during clone of an edge");
+		}
 		return dup;
 	}
 

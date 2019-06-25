@@ -1,12 +1,13 @@
 package net.sf.yogl.std;
 
 import net.sf.yogl.adjacent.key.*;
+import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.exceptions.StdExecutionException;
 
 public abstract class Transition <EK extends Comparable<EK>, VK extends Comparable<VK>, TS extends Transition<EK, VK, TS, DS, PAR>, DS extends State<VK, EK, DS, TS, PAR>, PAR>
 		extends InternalKeyEdge <TS, DS, EK, VK> {
 
-	public Transition(EK key, DS toState) {
+	public Transition(EK key, DS toState) throws NodeNotFoundException {
 		super(key, toState);
 	}
 

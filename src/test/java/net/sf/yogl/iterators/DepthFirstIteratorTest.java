@@ -18,6 +18,7 @@ import org.powermock.reflect.Whitebox;
 
 import net.sf.yogl.Edge;
 import net.sf.yogl.Vertex;
+import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.iterators.DepthFirstIterator;
 
 public class DepthFirstIteratorTest {
@@ -39,7 +40,7 @@ public class DepthFirstIteratorTest {
 	};
 	
 	class E extends Edge<E, V> {
-		public E(V toVertex) {
+		public E(V toVertex) throws NodeNotFoundException {
 			super(toVertex);
 		}
 
@@ -80,7 +81,7 @@ public class DepthFirstIteratorTest {
 	}
 	
 	@Test
-	public void pushVertexShouldAddTheVertexAndAllEdges() {
+	public void pushVertexShouldAddTheVertexAndAllEdges() throws NodeNotFoundException {
 		V o = new V();
 		E e = createEdge(null);
 		o.getOutgoingEdges().add(e);
@@ -93,7 +94,7 @@ public class DepthFirstIteratorTest {
 	}
 	
 	@Test
-	public void internalLinearEdgeShouldReturnOneEdge() {
+	public void internalLinearEdgeShouldReturnOneEdge() throws NodeNotFoundException {
 		V o = new V();
 		E e = createEdge(null);
 		o.getOutgoingEdges().add(e);
@@ -123,7 +124,7 @@ public class DepthFirstIteratorTest {
 	}
 	
 	@Test
-	public void internalLinearEdgeShouldReturn5EdgesInInsertionOrder() {
+	public void internalLinearEdgeShouldReturn5EdgesInInsertionOrder() throws NodeNotFoundException {
 		V root = new V();
 		E e1 = createEdge(null);
 		root.getOutgoingEdges().add(e1);
@@ -167,7 +168,7 @@ public class DepthFirstIteratorTest {
 	}
 	
 	@Test
-	public void firstCallToMoveToNextVertexShouldChangeCurrentVertex() {
+	public void firstCallToMoveToNextVertexShouldChangeCurrentVertex() throws NodeNotFoundException {
 		V root = new V();
 		E e1 = createEdge(null);
 		root.getOutgoingEdges().add(e1);
@@ -210,7 +211,7 @@ public class DepthFirstIteratorTest {
 		assertTrue(b);
 	}
 	
-	private E createEdge(V toVertex) {
+	private E createEdge(V toVertex) throws NodeNotFoundException {
 		E e1 = new E(toVertex);
 		return e1;
 	}

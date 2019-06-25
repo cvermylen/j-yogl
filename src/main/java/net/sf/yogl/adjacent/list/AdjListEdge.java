@@ -2,6 +2,7 @@
 package net.sf.yogl.adjacent.list;
 
 import net.sf.yogl.Edge;
+import net.sf.yogl.exceptions.NodeNotFoundException;
 
 /** Edge is the container for user-defined edges. There is one list per vertex
  * (see vertex). The Edge object must be unique within this list.
@@ -30,7 +31,7 @@ public class AdjListEdge <VERTEX_VALUE, EDGE_VALUE> extends Edge<AdjListEdge<VER
 	 * @param rValue refers to an object that is of the type used
 	 * to define all edges in the graph.
 	 */
-	public AdjListEdge(EDGE_VALUE userValue, AdjListVertex<VERTEX_VALUE, EDGE_VALUE> toVertex) {
+	public AdjListEdge(EDGE_VALUE userValue, AdjListVertex<VERTEX_VALUE, EDGE_VALUE> toVertex) throws NodeNotFoundException {
 		super(toVertex);
 		this.userValue = userValue;
 	}
@@ -49,7 +50,12 @@ public class AdjListEdge <VERTEX_VALUE, EDGE_VALUE> extends Edge<AdjListEdge<VER
 	 * @return a copy of this Edge
 	 */
 	public AdjListEdge<VERTEX_VALUE, EDGE_VALUE> clone() {
-		AdjListEdge<VERTEX_VALUE, EDGE_VALUE> dup = new AdjListEdge<>(this.userValue, super.getToVertex());
+		AdjListEdge<VERTEX_VALUE, EDGE_VALUE> dup;
+		try {
+			dup = new AdjListEdge<>(this.userValue, super.getToVertex());
+		} catch (NodeNotFoundException e) {
+			throw new NullPointerException("Found 'toVertex' pointing to a null object during clone");
+		}
 		dup.setNextVertex(this.nextVertex);
 		return dup;
 	}

@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
+import net.sf.yogl.exceptions.NodeNotFoundException;
+
 public class AdjListVertexTest {
 
 	@Test
@@ -27,7 +29,7 @@ public class AdjListVertexTest {
 	}
 	
 	@Test
-	public void shouldRecordTheLink() {
+	public void shouldRecordTheLink() throws NodeNotFoundException {
 		AdjListVertex<String, String>v = new AdjListVertex<>("string");
 		AdjListVertex<String, String> target = new AdjListVertex<>("target");
 		AdjListEdge<String, String>aLink = new AdjListEdge<>("aLink", target);
@@ -46,7 +48,7 @@ public class AdjListVertexTest {
 	}
 	
 	@Test
-	public void shouldRemoveTheEdgeByObjectAddress() {
+	public void shouldRemoveTheEdgeByObjectAddress() throws NodeNotFoundException {
 		AdjListVertex<String, String>v = new AdjListVertex<>("string");
 		AdjListVertex<String, String> target = new AdjListVertex<>("target");
 		AdjListEdge<String, String>aLink = new AdjListEdge<>("aLink", target);
@@ -64,7 +66,7 @@ public class AdjListVertexTest {
 	}
 	
 	@Test
-	public void shouldRemoveTheEdgeAtAPosition() {
+	public void shouldRemoveTheEdgeAtAPosition() throws NodeNotFoundException {
 		AdjListVertex<String, String>v = new AdjListVertex<>("string");
 		AdjListVertex<String, String> target = new AdjListVertex<>("target");
 		AdjListEdge<String, String>aLink = new AdjListEdge<>("aLink", target);

@@ -1,6 +1,7 @@
    
 package net.sf.yogl.samples;
 
+import net.sf.yogl.exceptions.NodeNotFoundException;
 import net.sf.yogl.exceptions.StdExecutionException;
 import net.sf.yogl.std.State;
 import net.sf.yogl.std.StateTransitionDiagram;
@@ -76,7 +77,7 @@ class MyState extends State<String, String, MyState, MyTransition, MyParameter> 
 
 class MyTransition extends Transition<String, String, MyTransition, MyState, MyParameter>{
 	
-	public MyTransition(String key, MyState toState) {
+	public MyTransition(String key, MyState toState) throws NodeNotFoundException {
 		super(key, toState);
 	}
 

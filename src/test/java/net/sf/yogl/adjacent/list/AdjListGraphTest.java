@@ -4,13 +4,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import net.sf.yogl.exceptions.NodeNotFoundException;
+
 class VertexTest extends AdjListVertex<String, String>{
 	
 }
 
 class EdgeTest extends AdjListEdge<String, String> {
 
-	public EdgeTest(String userValue, AdjListVertex<String, String> toVertex) {
+	public EdgeTest(String userValue, AdjListVertex<String, String> toVertex) throws NodeNotFoundException {
 		super(userValue, toVertex);
 	}
 	
@@ -77,7 +79,7 @@ public class AdjListGraphTest {
 	}
 	
 	@Test
-	public void clearAllVisitCountsShouldClearVerticesAndEdges() {
+	public void clearAllVisitCountsShouldClearVerticesAndEdges() throws NodeNotFoundException {
 		AdjListGraph<String, String> ndg = new AdjListGraph<>();
 		AdjListVertex<String, String> v1 = new AdjListVertex<>("1");
 		AdjListVertex<String, String> va = new AdjListVertex<>("A");
@@ -113,7 +115,7 @@ public class AdjListGraphTest {
 	}
 	
 	@Test
-	public void nodesShouldBePrintedInOrder() {
+	public void nodesShouldBePrintedInOrder() throws NodeNotFoundException {
 		AdjListGraph<String, String> ndg = new AdjListGraph<>();
 		AdjListVertex<String, String> v1 = new AdjListVertex<>("1");
 		AdjListVertex<String, String>root = ndg.addRootVertex(v1);
@@ -136,7 +138,7 @@ public class AdjListGraphTest {
 	}
 
 	@Test
-	public void shouldProcessNodesAndLinks() {
+	public void shouldProcessNodesAndLinks() throws NodeNotFoundException {
 		AdjListGraph<String, String> ndg = new AdjListGraph<>();
 		AdjListVertex<String, String> v1 = new AdjListVertex<>("1");
 		AdjListVertex<String, String>root = ndg.addRootVertex(v1);
@@ -188,7 +190,7 @@ public class AdjListGraphTest {
 	}
 	
 	@Test
-	public void twoEdgesToSameVertexShouldReturnOutDegreeOfTwo() {
+	public void twoEdgesToSameVertexShouldReturnOutDegreeOfTwo() throws NodeNotFoundException {
 		AdjListGraph<String, String> ndg = new AdjListGraph<>();
 		AdjListVertex<String, String> v1 = new AdjListVertex<>("1");
 		AdjListVertex<String, String>root = ndg.addRootVertex(v1);
@@ -213,7 +215,7 @@ public class AdjListGraphTest {
 	}
 	
 	@Test
-	public void countingOutDegreeShouldClearVisitCounters() {
+	public void countingOutDegreeShouldClearVisitCounters() throws NodeNotFoundException {
 		AdjListGraph<String, String> ndg = new AdjListGraph<>();
 		AdjListVertex<String, String> v1 = new AdjListVertex<>("1");
 		AdjListVertex<String, String>root = ndg.addRootVertex(v1);
