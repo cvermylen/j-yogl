@@ -34,7 +34,7 @@ import net.sf.yogl.types.VertexType;
  * @version 1.0
  */
 
-public final class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>, AdjListEdge<V, E>> {
+public class AdjListGraph <V, E> implements Graph <AdjListVertex<V, E>, AdjListEdge<V, E>> {
 
 	/** Contains the list of all entry points in the graph.
 	 *  When a new node is created, it is by default inserted into the set.

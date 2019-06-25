@@ -18,8 +18,8 @@ public class UniqueElementsGraphTest {
 	
 	class StringUniqueEdge extends KeyEdge<String, String, StringUniqueEdge, StringUniqueVertex>{
 
-		public StringUniqueEdge(String key) {
-			super(key);
+		public StringUniqueEdge(String key, StringUniqueVertex v) {
+			super(key, v);
 			// TODO Auto-generated constructor stub
 		}
 		

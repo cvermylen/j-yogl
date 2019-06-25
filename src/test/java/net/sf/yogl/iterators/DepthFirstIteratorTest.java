@@ -1,4 +1,4 @@
-package net.sf.yogl;
+package net.sf.yogl.iterators;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,6 +16,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.powermock.reflect.Whitebox;
 
+import net.sf.yogl.Edge;
+import net.sf.yogl.Vertex;
 import net.sf.yogl.iterators.DepthFirstIterator;
 
 public class DepthFirstIteratorTest {
@@ -37,6 +39,10 @@ public class DepthFirstIteratorTest {
 	};
 	
 	class E extends Edge<E, V> {
+		public E(V toVertex) {
+			super(toVertex);
+		}
+
 		V v;
 		String value;
 		
@@ -76,7 +82,7 @@ public class DepthFirstIteratorTest {
 	@Test
 	public void pushVertexShouldAddTheVertexAndAllEdges() {
 		V o = new V();
-		E e = createEdge("e");
+		E e = createEdge(null);
 		o.getOutgoingEdges().add(e);
 		
 		DepthFirstIterator<V, E>df = new DFImpl();
@@ -89,7 +95,7 @@ public class DepthFirstIteratorTest {
 	@Test
 	public void internalLinearEdgeShouldReturnOneEdge() {
 		V o = new V();
-		E e = createEdge("e");
+		E e = createEdge(null);
 		o.getOutgoingEdges().add(e);
 		
 		DepthFirstIterator<V, E>df = new DFImpl(o, Arrays.asList(o));
@@ -119,15 +125,15 @@ public class DepthFirstIteratorTest {
 	@Test
 	public void internalLinearEdgeShouldReturn5EdgesInInsertionOrder() {
 		V root = new V();
-		E e1 = createEdge("e1");
+		E e1 = createEdge(null);
 		root.getOutgoingEdges().add(e1);
-		E e2 = createEdge("e2");
+		E e2 = createEdge(null);
 		root.getOutgoingEdges().add(e2);
-		E e3 = createEdge("e3");
+		E e3 = createEdge(null);
 		root.getOutgoingEdges().add(e3);
-		E e4 = createEdge("e4");
+		E e4 = createEdge(null);
 		root.getOutgoingEdges().add(e4);
-		E e5 = createEdge("e5");
+		E e5 = createEdge(null);
 		root.getOutgoingEdges().add(e5);
 		
 		DepthFirstIterator<V, E>df = new DFImpl(root, null);
@@ -163,7 +169,7 @@ public class DepthFirstIteratorTest {
 	@Test
 	public void firstCallToMoveToNextVertexShouldChangeCurrentVertex() {
 		V root = new V();
-		E e1 = createEdge("e1");
+		E e1 = createEdge(null);
 		root.getOutgoingEdges().add(e1);
 		
 		DepthFirstIterator<V, E>df = new DFImpl(root, new LinkedList());
@@ -204,9 +210,8 @@ public class DepthFirstIteratorTest {
 		assertTrue(b);
 	}
 	
-	private E createEdge(String value) {
-		E e1 = new E();
-		e1.value = value;
+	private E createEdge(V toVertex) {
+		E e1 = new E(toVertex);
 		return e1;
 	}
 }

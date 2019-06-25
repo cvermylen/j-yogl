@@ -4,6 +4,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+class VertexTest extends AdjListVertex<String, String>{
+	
+}
+
+class EdgeTest extends AdjListEdge<String, String> {
+
+	public EdgeTest(String userValue, AdjListVertex<String, String> toVertex) {
+		super(userValue, toVertex);
+	}
+	
+}
+
+class GraphTest extends AdjListGraph<String, String>{}
+
 public class AdjListGraphTest {
 
 	@Test
@@ -71,19 +85,19 @@ public class AdjListGraphTest {
 		AdjListVertex<String, String> vc = new AdjListVertex<>("C");
 		AdjListVertex<String, String>root = ndg.addRootVertex(v1);
 		root.incVisitCounts();
-		AdjListEdge<String, String>a = new AdjListEdge<>(va);
+		AdjListEdge<String, String>a = new AdjListEdge<String, String>("ev", va);
 		root.addEdgeLast(a);
 		a.incVisitCounts();
 		AdjListVertex<String, String>two = a.setNextNode("2");
 		a.setNextVertex(two);
 		two.incVisitCounts();
-		AdjListEdge<String, String>b = new AdjListEdge<>(vb);
+		AdjListEdge<String, String>b = new AdjListEdge<>("ew", vb);
 		two.addEdgeLast(b);
 		b.incVisitCounts();
 		AdjListVertex<String, String>three = b.setNextNode("3");
 		b.setNextVertex(three);
 		three.incVisitCounts();
-		AdjListEdge<String, String>c = new AdjListEdge<>(vc);
+		AdjListEdge<String, String>c = new AdjListEdge<>("ez", vc);
 		root.addEdgeLast(c);
 		c.setNextVertex(three);
 		c.incVisitCounts();
@@ -106,15 +120,15 @@ public class AdjListGraphTest {
 		AdjListVertex<String, String> va = new AdjListVertex<>("A");
 		AdjListVertex<String, String> vb = new AdjListVertex<>("B");
 		AdjListVertex<String, String> vc = new AdjListVertex<>("C");
-		AdjListEdge<String, String>a = new AdjListEdge<>(va);
+		AdjListEdge<String, String>a = new AdjListEdge<>("ev", va);
 		root.addEdgeLast(a);
 		AdjListVertex<String, String>two = a.setNextNode("2");
 		a.setNextVertex(two);
-		AdjListEdge<String, String>b = new AdjListEdge<>(vb);
+		AdjListEdge<String, String>b = new AdjListEdge<>("ew", vb);
 		two.addEdgeLast(b);
 		AdjListVertex<String, String>three = b.setNextNode("3");
 		b.setNextVertex(three);
-		AdjListEdge<String, String>c = new AdjListEdge<>(vc);
+		AdjListEdge<String, String>c = new AdjListEdge<>("ez", vc);
 		root.addEdgeLast(c);
 		c.setNextVertex(three);
 		System.out.println("A simple graph containing the nodes 1, 2 and 3, where 1 is the root"); 
@@ -129,15 +143,15 @@ public class AdjListGraphTest {
 		AdjListVertex<String, String> va = new AdjListVertex<>("A");
 		AdjListVertex<String, String> vb = new AdjListVertex<>("B");
 		AdjListVertex<String, String> vc = new AdjListVertex<>("C");
-		AdjListEdge<String, String>a = new AdjListEdge<>(va);
+		AdjListEdge<String, String>a = new AdjListEdge<>("ev", va);
 		root.addEdgeLast(a);
 		AdjListVertex<String, String>two = a.setNextNode("2");
 		a.setNextVertex(two);
-		AdjListEdge<String, String>b = new AdjListEdge<>(vb);
+		AdjListEdge<String, String>b = new AdjListEdge<>("ew", vb);
 		two.addEdgeLast(b);
 		AdjListVertex<String, String>three = b.setNextNode("3");
 		b.setNextVertex(three);
-		AdjListEdge<String, String>c = new AdjListEdge<>(vc);
+		AdjListEdge<String, String>c = new AdjListEdge<>("ez", vc);
 		root.addEdgeLast(c);
 		c.setNextVertex(three);
 		StringBuilder nodeValues = new StringBuilder();
@@ -181,15 +195,15 @@ public class AdjListGraphTest {
 		AdjListVertex<String, String> va = new AdjListVertex<>("A");
 		AdjListVertex<String, String> vb = new AdjListVertex<>("B");
 		AdjListVertex<String, String> vc = new AdjListVertex<>("C");
-		AdjListEdge<String, String>a = new AdjListEdge<>(va);
+		AdjListEdge<String, String>a = new AdjListEdge<>("ev", va);
 		root.addEdgeLast(a);
 		AdjListVertex<String, String>two = a.setNextNode("2");
 		a.setNextVertex(two);
-		AdjListEdge<String, String>b = new AdjListEdge<>(vb);
+		AdjListEdge<String, String>b = new AdjListEdge<>("ew", vb);
 		two.addEdgeLast(b);
 		AdjListVertex<String, String>three = b.setNextNode("3");
 		b.setNextVertex(three);
-		AdjListEdge<String, String>c = new AdjListEdge<>(vc);
+		AdjListEdge<String, String>c = new AdjListEdge<>("ez", vc);
 		root.addEdgeLast(c);
 		c.setNextVertex(three);
 		
@@ -206,15 +220,15 @@ public class AdjListGraphTest {
 		AdjListVertex<String, String> va = new AdjListVertex<>("A");
 		AdjListVertex<String, String> vb = new AdjListVertex<>("B");
 		AdjListVertex<String, String> vc = new AdjListVertex<>("C");
-		AdjListEdge<String, String>a = new AdjListEdge<>(va);
+		AdjListEdge<String, String>a = new AdjListEdge<>("ev", va);
 		root.addEdgeLast(a);
 		AdjListVertex<String, String>two = a.setNextNode("2");
 		a.setNextVertex(two);
-		AdjListEdge<String, String>b = new AdjListEdge<>(vb);
+		AdjListEdge<String, String>b = new AdjListEdge<>("ew", vb);
 		two.addEdgeLast(b);
 		AdjListVertex<String, String>three = b.setNextNode("3");
 		b.setNextVertex(three);
-		AdjListEdge<String, String>c = new AdjListEdge<>(vc);
+		AdjListEdge<String, String>c = new AdjListEdge<>("ez", vc);
 		root.addEdgeLast(c);
 		c.setNextVertex(three);
 		

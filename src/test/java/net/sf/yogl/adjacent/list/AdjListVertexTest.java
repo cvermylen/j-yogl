@@ -3,9 +3,8 @@ package net.sf.yogl.adjacent.list;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
 
 public class AdjListVertexTest {
@@ -30,10 +29,13 @@ public class AdjListVertexTest {
 	@Test
 	public void shouldRecordTheLink() {
 		AdjListVertex<String, String>v = new AdjListVertex<>("string");
-		
-		AdjListEdge<String, String>aLink = v.addLinkLast("aLink");
-		AdjListEdge<String, String>atTheEnd = v.addLinkLast("atTheEnd");
-		AdjListEdge<String, String>theFirstOne = v.addLinkFirst("theFirstOne");
+		AdjListVertex<String, String> target = new AdjListVertex<>("target");
+		AdjListEdge<String, String>aLink = new AdjListEdge<>("aLink", target);
+		v.addLinkLast(aLink);
+		AdjListEdge<String, String>atTheEnd = new AdjListEdge<>("atTheEnd", target);
+		v.addLinkLast(atTheEnd);
+		AdjListEdge<String, String>theFirstOne = new AdjListEdge<>("theFirstOne", target);
+		v.addLinkFirst(theFirstOne);
 		
 		assertNotNull(aLink);
 		assertNotNull(atTheEnd);
@@ -46,10 +48,13 @@ public class AdjListVertexTest {
 	@Test
 	public void shouldRemoveTheEdgeByObjectAddress() {
 		AdjListVertex<String, String>v = new AdjListVertex<>("string");
-		
-		AdjListEdge<String, String>aLink = v.addLinkLast("aLink");
-		AdjListEdge<String, String>atTheEnd = v.addLinkLast("atTheEnd");
-		AdjListEdge<String, String>theFirstOne = v.addLinkFirst("theFirstOne");
+		AdjListVertex<String, String> target = new AdjListVertex<>("target");
+		AdjListEdge<String, String>aLink = new AdjListEdge<>("aLink", target);
+		v.addLinkLast(aLink);
+		AdjListEdge<String, String>atTheEnd = new AdjListEdge<>("atTheEnd", target);
+		v.addLinkLast(atTheEnd);
+		AdjListEdge<String, String>theFirstOne = new AdjListEdge<>("theFirstOne", target);
+		v.addLinkFirst(theFirstOne);
 		
 		v.removeEdge(aLink);
 		
@@ -61,10 +66,13 @@ public class AdjListVertexTest {
 	@Test
 	public void shouldRemoveTheEdgeAtAPosition() {
 		AdjListVertex<String, String>v = new AdjListVertex<>("string");
-		
-		v.addLinkLast("aLink");
-		AdjListEdge<String, String>atTheEnd = v.addLinkLast("atTheEnd");
-		AdjListEdge<String, String>theFirstOne = v.addLinkFirst("theFirstOne");
+		AdjListVertex<String, String> target = new AdjListVertex<>("target");
+		AdjListEdge<String, String>aLink = new AdjListEdge<>("aLink", target);
+		v.addLinkLast(aLink);
+		AdjListEdge<String, String>atTheEnd = new AdjListEdge<>("atTheEnd", target);
+		v.addLinkLast(atTheEnd);
+		AdjListEdge<String, String>theFirstOne = new AdjListEdge<>("theFirstOne", target);
+		v.addLinkFirst(theFirstOne);
 		
 		v.removeEdgeAt(1);
 		

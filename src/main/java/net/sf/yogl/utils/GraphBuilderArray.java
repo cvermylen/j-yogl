@@ -62,7 +62,7 @@ public class GraphBuilderArray {
 	 * @throws GraphException
 	 */
 	public static void buildGraph(String[][] srcData, Graph destGraph) throws GraphException {
-		KeyValueGraph<String, String, String, String> pg = new KeyValueGraph<>();
+		KeyValueGraph<String, String, String> pg = new KeyValueGraph<>();
 		Set<String>nonRootVerticeKeys = new HashSet<>();
 		for (int i=0; i < srcData.length; i++) {
 			if (srcData[i].length == 4)
@@ -70,15 +70,15 @@ public class GraphBuilderArray {
 		}
 		for (int i = 0; i < srcData.length; i++) {
 			if(srcData[i].length == 2){
-				KeyValueVertex<String, String, String, String> vertex = new KeyValueVertex<>(srcData[i][0], srcData[i][1]);
+				KeyValueVertex<String, String, String> vertex = new KeyValueVertex<>(srcData[i][0], srcData[i][1]);
 				pg.addRootVertex(vertex, nonRootVerticeKeys.contains(srcData[i][0]));
 			}
 		}
 		for (int i = 0; i < srcData.length; i++) {
 			if(srcData[i].length == 4){
-				KeyValueVertex<String, String, String, String> fromVertex = pg.getVertex(srcData[i][0]);
-				KeyValueVertex<String, String, String, String> toVertex = pg.getVertex(srcData[i][1]);
-				ValueEdge<String, String, String, String> edge = new ValueEdge<String, String, String, String>(srcData[i][2], srcData[i][3], toVertex);
+				KeyValueVertex<String, String, String> fromVertex = pg.getVertex(srcData[i][0]);
+				KeyValueVertex<String, String, String> toVertex = pg.getVertex(srcData[i][1]);
+				ValueEdge<String, String, String> edge = new ValueEdge<String, String, String>(srcData[i][3], toVertex);
 				fromVertex.tryAddEdge(edge);
 			}
 		}
