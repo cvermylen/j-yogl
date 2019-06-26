@@ -1,7 +1,6 @@
    
 package net.sf.yogl.utils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -13,7 +12,6 @@ import java.util.function.Supplier;
 import net.sf.yogl.Edge;
 import net.sf.yogl.Graph;
 import net.sf.yogl.Vertex;
-import net.sf.yogl.exceptions.GraphCorruptedException;
 import net.sf.yogl.exceptions.GraphException;
 import net.sf.yogl.iterators.DepthFirstIterator;
 import net.sf.yogl.types.VertexType;
@@ -33,7 +31,7 @@ public final class GraphUtil {
 	 *  and one exit point.
 	 */
 	public static <V extends Vertex<V, E>, E extends Edge<E, V>> void subgraph(Graph<V, E> graph, Graph<V, E> resultingGraph,
-			V startNode, V endNodeKey, Supplier<V> vertexCtor, Supplier<E> edgeCtor) throws GraphException {
+			V startNode, V endNode, Supplier<V> vertexCtor, Supplier<E> edgeCtor) throws GraphException {
 
 		if (graph == null) {
 			throw new NullPointerException("input parameter graph is null");
@@ -44,7 +42,7 @@ public final class GraphUtil {
 		if (startNode == null) {
 			throw new NullPointerException("input parameter startNode is null");
 		}
-		if (endNodeKey == null) {
+		if (endNode == null) {
 			throw new NullPointerException("input parameter endNode is null");
 		}
 		int degree = graph.getMaxOutDegree();
@@ -53,42 +51,25 @@ public final class GraphUtil {
 		V newRoot = vertexCtor.get();
 		startNode.cloneTo(newRoot);
 		resultingGraph.addRootVertex(newRoot, true);
-		---
-		DepthFirstIterator<V, E> iter = graph.depthFirstIterator(Arrays.asList(startNode), degree);
-		while (iter.hasNext()) {
-			if (endNodeKey.equals(iter.next())) {
-				List<V> nodes = iter.nodePath();
-				ArrayList<V> nodesArray = new ArrayList(Arrays.asList(nodes));
-				nodesArray.add(endNodeKey);
-				Iterator<V> nodesIter = nodesArray.iterator();
-				List<E> links = iter.linkPath();
-				//links.removeFirst();
-				//Check the validity of link & node lists.
-				//The node list must contain 1 more element than the link list.
-				//Otherwise there is a mismatch
-				if (nodesArray.size() - links.size() - 1 != 0) {
-					throw new GraphCorruptedException(
-						"mismatch between link & node lists " ); }
-				V leftNodeKey = nodesIter.next();
-				V rightNodeKey = null;
-				V leftDup = vertexCtor.apply(leftNodeKey);
-				resultingGraph.addRootVertex(leftDup, graph.isRootVertex(leftNodeKey));
-				for(E link: links){
-					rightNodeKey = nodesIter.next();
-					V rightDup = vertexCtor.apply(rightNodeKey);
-					if (rightNodeKey.equals(endNodeKey)) {
-						resultingGraph.addRootVertex(rightDup, graph.isRootVertex(rightNodeKey));
-
-					} else {
-						resultingGraph.addRootVertex(rightDup, graph.isRootVertex(rightNodeKey));
-					}
-					
-					leftDup.tryAddEdge(edgeCtor.apply(rightDup, link));
-					leftNodeKey = rightNodeKey;
-				}
-			}
+		
+		//2- Move connectivity between the 2 end s into the path
+		DepthFirstIterator<V, E> dfIter = graph.depthFirstIterator(Arrays.asList(startNode), degree);
+		while (dfIter.hasNext() && !endNode.equals(dfIter.next())) ;
+		
+		//3- Translate the internal path in the iterator to the new graph
+		Iterator<V> vertexIter = dfIter.nodePath().iterator();
+		V fromVertexCopy = dfIter.next();
+		Iterator<E> edgesIter = dfIter.linkPath().iterator();
+		while (vertexIter.hasNext()) {
+			V toVertex = vertexIter.next();
+			E edge = edgesIter.next();
+			V destVertex = vertexCtor.get();
+			fromVertexCopy.cloneTo(destVertex);
+			E edgeCopy = edgeCtor.get();
+			edge.cloneTo(edgeCopy);
+			destVertex.tryAddEdge(edgeCopy);
+			fromVertexCopy = toVertex;
 		}
-
 	}
 
 	/** Returns the part of the graph that is above the given node

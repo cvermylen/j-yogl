@@ -57,7 +57,6 @@ public class DepthFirstIterator<VERTEX extends Vertex<VERTEX, EDGE>, EDGE extend
 		public E1 peekEdge() {
 			return outgoingEdges.peek();
 		}
-		
 	}
 	
 	protected VERTEX currentVertex;
@@ -100,7 +99,6 @@ public class DepthFirstIterator<VERTEX extends Vertex<VERTEX, EDGE>, EDGE extend
      * @return true if the next() method will return something
      */
     public boolean hasNext(){
-        
         return (vStack.size() > 1) || ((vStack.size() == 1) && (vStack.get(0).hasMoreEdges()));
     }
 
@@ -117,11 +115,9 @@ public class DepthFirstIterator<VERTEX extends Vertex<VERTEX, EDGE>, EDGE extend
     		pushVertex(getNextEdge().getToVertex());
     		traversedEdge = getNextEdge();
     	}
-//    	currentVertex = vStack.getLast().getVertex();
     	
     	currentVertex = (traversedEdge == null)?(vStack.getLast().getVertex()):(traversedEdge.getToVertex());
     	currentVertex.incVisitCounts();
-    	
     }
     
     protected void pushVertex(VERTEX v) {
