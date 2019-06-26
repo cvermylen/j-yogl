@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import net.sf.yogl.Edge;
 import net.sf.yogl.Graph;
@@ -32,7 +33,7 @@ public final class GraphUtil {
 	 *  and one exit point.
 	 */
 	public static <V extends Vertex<V, E>, E extends Edge<E, V>> void subgraph(Graph<V, E> graph, Graph<V, E> resultingGraph,
-			V startNode, V endNodeKey, Function<V, V> vertexCtor, BiFunction<V, E, E> edgeCtor) throws GraphException {
+			V startNode, V endNodeKey, Supplier<V> vertexCtor, Supplier<E> edgeCtor) throws GraphException {
 
 		if (graph == null) {
 			throw new NullPointerException("input parameter graph is null");
@@ -47,8 +48,12 @@ public final class GraphUtil {
 			throw new NullPointerException("input parameter endNode is null");
 		}
 		int degree = graph.getMaxOutDegree();
+		
 		//1- Insert new root vertex
-		V newRoot = vertexCtor.;
+		V newRoot = vertexCtor.get();
+		startNode.cloneTo(newRoot);
+		resultingGraph.addRootVertex(newRoot, true);
+		---
 		DepthFirstIterator<V, E> iter = graph.depthFirstIterator(Arrays.asList(startNode), degree);
 		while (iter.hasNext()) {
 			if (endNodeKey.equals(iter.next())) {
